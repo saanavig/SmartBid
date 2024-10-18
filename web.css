@@ -8,8 +8,6 @@
     /*font-family: 'Times New Roman', Times, serif;*/
 }
 
-
-/* Full-page layout */
 body {
     background-color: #f9f9f9;
     height: 100vh;
@@ -55,7 +53,7 @@ body {
 }
 
 .search-bar {
-    margin-top: 100px; /* Adjust for fixed navbar */
+    margin-top: 100px; 
     display: flex;
     justify-content: center;
     margin-bottom: 40px;
