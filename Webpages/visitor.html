@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <link rel="stylesheet" href="visitor.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>
+        </div>
+        <a href="login.html" class="login-btn">Log In</a>
+    </div>
+
+    <!-- Top Section -->
+    <div class="top-section">
+        <!-- Left Section: Image Carousel-->
+        <div class="left-section">
+            <div class="image-carousel">
+                <div class="thumbnail-container">
+                    <img src="images/octopus mood.jpg" alt="Thumbnail 1" onclick="changeImage(this)">
+                    <img src="images/spiral notebooks.jpg" alt="Thumbnail 2" onclick="changeImage(this)">
+                    <img src="images/jade gua sha.jpg" alt="Thumbnail 3" onclick="changeImage(this)">
+                    <img src="images/cucumber slicer.jpg" alt="Thumbnail 4" onclick="changeImage(this)">
+                    <img src="images/crossbody bag.jpg" alt="Thumbnail 5" onclick="changeImage(this)">
+                </div>
+                <div class="large-image" id="displayed-image">
+                    <img src="images/iphone 15.webp" alt="Large Display">
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Right Section: Item Details -->
+        <div class="right-section">
+            <h2>iPhone 15 Pro Max New</h2>
+            <h3>US $99.99</h3>
+            <p><strong>Closes:</strong> 18d 10h (MM/DD/YYYY)</p>
+            <p><strong>Category:</strong> Category Name</p>
+            <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+            <button class="bid-button">Start Bidding</button>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Comments -->
+    <div class="bottom-section">
+        <!-- Comment Input Section -->
+        <div class="comment-input">
+            <input type="text" placeholder="Leave a comment as a visitor">
+            <div class="comment-buttons">
+                <button class="cancel-button">Cancel</button>
+                <button class="comment-button">Comment</button>
+            </div>
+        </div>
+
+        <!-- Comments Display Section -->
+        <div class="comments">
+            <div class="comment">
+                <p><strong>Srewashi Mondal</strong> - 1 day ago</p>
+                <p>This product is nice.</p>
+                <div class="vote">
+                    <span>▲ 10</span>
+                    <span>▼ 0</span>
+                </div>
+            </div>
+            <div class="comment">
+                <p><strong>Saanavi Goyal</strong> - 2 days ago</p>
+                <p>This item is great! :D</p>
+                <div class="vote">
+                    <span>▲ 8</span>
+                    <span>▼ 0</span>
+                </div>
+            </div>
+            <div class="comment">
+                <p><strong>Debasree Sen</strong> - 1 month ago</p>
+                <p>This was a lifesaver! :)</p>
+                <div class="vote">
+                    <span>▲ 12</span>
+                    <span>▼ 0</span>
+                </div>
+            </div>
+            <!-- Additional comments as needed -->
+        </div>
+    </div>
+
+</body>
+</html>

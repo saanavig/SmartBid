@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar h1 span {
+    margin-left: 8px;
+}
+
+.navbar a {
+    font-size: 22px;
+    color: black;
+    text-decoration: none;
+    margin-left: 40px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+.logo h1 {
+    font-size: 1.8em;
+}
+
+.login-btn {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Top section layout */
+.top-section {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 80px;
+}
+
+.left-section, .right-section {
+    flex: 1;
+}
+
+/* Image carousel styling */
+.image-carousel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.thumbnail-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.thumbnail-container img:hover,
+.thumbnail-container img.active {
+    border-color: #0077cc;
+}
+
+.large-image {
+    width: 500px;
+    height: 500px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.large-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* Right section layout with centered content and lower text */
+.right-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px; /* Lower text */
+}
+
+/* Item details styling */
+.right-section h2 {
+    font-size: 2.8em;
+    font-weight: bold;
+    margin-bottom: 12px;
+    margin-top: 20px; /* Additional space at top */
+}
+
+.right-section h3 {
+    color: #0077cc;
+    font-size: 2.2em;
+    margin-bottom: 12px;
+    margin-top: 15px; /* Additional space at top */
+}
+
+.right-section p {
+    font-size: 1.3em;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    margin-top: 15px; /* Additional space at top */
+}
+
+/* Bid button styling */
+.bid-button {
+    padding: 15px 30px;
+    font-size: 1.4em;
+    color: #fff;
+    background-color: #0077cc;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.bid-button:hover {
+    background-color: #005fa3;
+}
+
+/* Bottom section styling */
+.bottom-section {
+    padding: 20px;
+    border-top: 1px solid #ccc;
+}
+
+.comment-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-input input[type="text"] {
+    width: 80%;
+    height: 100px;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.comment-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    width: 80%;
+}
+
+.comment-buttons button {
+    padding: 12px 24px;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #0077cc;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.comment-buttons button:hover {
+    background-color: #005fa3;
+}
+
+/* Comments styling */
+.comments {
+    margin-top: 40px;
+}
+
+.comments .comment {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.2em;
+    line-height: 1.5;
+}
+
+.comments .comment p {
+    margin-bottom: 12px;
+}
+
+.vote {
+    display: flex;
+    gap: 15px;
+    font-size: 1.4em;
+}
+
+.vote span {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.vote span:hover {
+    transform: scale(1.2);
+}
