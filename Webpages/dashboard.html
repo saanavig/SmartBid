@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid Home</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD CONTENT -->
+    <div class="dashboard-container">
+        <div class="dashboard-title">
+            <h1>My Dashboard</h1>
+        </div>
+
+        <!-- NOTIFICATIONS CONTENT -->
+        <div class="right-section">
+            <h2>Notifications</h2>
+            <div class="notifications">
+                <div class="notification-popup">New bid placed!</div>
+                <div class="notification-popup">Account updated successfully.</div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD CARDS -->
+        <div class="left-section">
+            <a href="account.html" class="dashboard-card">
+                <h2>My Account</h2>
+                <p>View and update your personal information and account balance.</p>
+            </a>
+            <a href="viewbids.html" class="dashboard-card">
+                <h2>View Bids</h2>
+                <p>View and update your current and past bidding transactions.</p>
+            </a>
+            <a href="requests.html" class="dashboard-card">
+                <h2>Requests</h2>
+                <p>Manage your account status or report a user.</p>
+            </a>
+            <a href="viplounge.html" class="dashboard-card">
+                <h2>VIP Lounge</h2>
+                <p>Learn what it means to be a VIP with SmartBid!</p>
+            </a>
+        </div>        
+    </div>
+
+    <script></script>
+</body>
+</html>
+
+<!-- 
+GENERAL NOTES:
+ - You Dropdown: My Profile & Sign Out do not work yet.
+ 
+DASHBOARD NOTES:
+ - Notifications needs to have popups shown.
+-->
