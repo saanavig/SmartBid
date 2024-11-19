@@ -1,3 +1,4 @@
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -39,68 +40,52 @@ body {
 /* Main Container */
 .container {
     margin-top: 80px; /* Space below fixed navbar */
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Header for SmartBid */
-.smartbid-header {
-    font-size: 32px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.smartbid-header span {
-    color: #0084ff;
-}
-
-/* Content Area (Left and Right Sections) */
-.content {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-/* Left Section (Text Box) */
-.left-section {
-    width: 55%;  /* Increase size */
-    padding: 40px;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f9f9f9;
+    flex-direction: column;
+}
+
+/* Unified Section */
+.content-box {
+    width: 100%;
+    max-width: 900px;
+    padding: 40px;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Left Content */
+.left-section {
+    flex: 1; /* Take up equal space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .left-section p {
     font-size: 24px;
     color: #333;
-    text-align: center;
+    text-align: left; /* Align text to the left */
+    margin-bottom: 20px;
 }
 
-/* Right Section (Signup Form) */
+/* Right Content (Form) */
 .right-section {
-    width: 40%;  /* Make the form container smaller */
-    padding: 20px;
+    flex: 1; /* Take up equal space */
 }
 
 .signup-container {
     width: 100%;
-    max-width: 450px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
 }
 
 .signup-container h2 {
-    text-align: center;
+    text-align: left; /* Align header to the left */
     margin-bottom: 20px;
 }
 
