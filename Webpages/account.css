@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;;
+}
+
+body {
+    background-color: #f9f9f9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 180px;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar h1 span {
+    margin-left: 8px;
+}
+
+.navbar a {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    margin-left: 40px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+/** LOG IN + YOU BUTTON */
+.login-btn {
+    cursor: pointer;
+    padding: 0px 40px;
+    background-color: transparent; 
+    border: none;
+    color: black;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-top: 10px; 
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.dropdown-content a:hover {
+    color: blue;
+    text-decoration: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* MY ACCOUNT */
+.account-container {
+    display: flex;
+    margin-top: -200px;
+    gap: 50px;
+    max-width: 4000px;
+    position: relative;
+}
+
+.account-info {
+    min-width: 350px;
+    max-width: 1200px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: -5px;
+}
+
+.account-info h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.info-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.info-field label {
+    flex: 1;
+    font-size: 16px;
+}
+
+.info-field input {
+    flex: 2;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.edit-btn {
+    background-color: #ffe057; 
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background-color: #ebce4e;
+    color: black;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+#save-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#cancel-btn {
+    margin-left: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#save-btn:hover {
+    background-color: #218838;
+}
+
+#cancel-btn {
+    background-color: #dc3545;
+}
+
+#cancel-btn:hover {
+    background-color: #c82333;
+}
+
+.account-balance {
+    min-width: 350px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: -5px;
+}
+
+.account-title {
+    position: absolute;
+    top: -75px;
+    left: 5px;
+    z-index: 1;
+}
+
+.account-balance h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.balance-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.amount-input {
+    margin-bottom: 15px;
+}
+
+.amount-input input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.deposit-btn,
+.withdraw-btn {
+    background-color: #ffe057; 
+    color: black;
+    border: none;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.deposit-btn:hover,
+.withdraw-btn:hover {
+    background-color: #ebce4e;
+    color: black;
+}
+
+#message {
+    padding-top: 20px;
+    color: black;
+}

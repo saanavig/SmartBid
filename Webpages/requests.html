@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid Home</title>
+    <link rel="stylesheet" href="requests.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUESTS CONTENT -->
+    <div class="requests-container">
+        <div class="requests-title">
+            <h1>Requests</h1>
+        </div>
+
+        <!-- MANAGE ACCOUNT STATUS CONTENT -->
+        <div class="manage-account-status">
+            <h2>Manage Account Status</h2>
+            <p>Manage your status or pay a fee.</p>
+            <h3>Account Status: Suspended</h3>
+            <a href="#" onclick="openPopup()">Deactivate Account</a>
+            <h3>Current Fee: $50.00</h3>
+            <a href="#" onclick="openPayFeePopup()">Pay Fee</a>
+
+        </div>
+
+        <!-- REPORT USER CONTENT -->
+        <div class="report-user">
+            <h2>Report User</h2>
+            <p>File a complaint on another user.</p>
+            <a href="#" onclick="openComplaintPopup()">File New Complaint</a>
+        </div>
+    </div>
+
+    <!-- DEACTIVATE ACCOUNT POPUP -->
+    <div id="deactivate-popup" class="deactivate-popup">
+        <div class="deactivate-popup-content">
+            <h3>Are you sure you'd like to deactivate your account?</h3>
+            <p>You’ll no longer have access to your account or it's data.</p>
+            <button onclick="closePopup()">Yes</button>
+            <button onclick="closePopup()">No</button>
+        </div>
+    </div>
+
+    <!-- PAY FEE POPUP -->
+    <div id="pay-fee-popup" class="pay-fee-popup">
+        <div class="pay-fee-popup-content">
+            <h3>You must pay this fee to reactivate your account.</h3>
+            <p>Current Account Balance: $0.00</p>
+            <p>Current Fee Amount: $50.00</p>
+            <button onclick="closePayFeePopup()">Pay</button>
+        </div>
+    </div>
+
+    <!-- FILE NEW COMPLAINT POPUP -->
+    <div id="complaint-popup" class="complaint-popup">
+        <div class="complaintpopup-content">
+            <h3>File a Complaint</h3>
+            <label for="complaint-name">Name:</label>
+            <input type="text" id="complaint-name" placeholder="Enter name" />
+
+            <label for="complaint-issue">Issue:</label>
+            <select id="complaint-issue">
+                <option value="">Select an issue</option>
+                <option value="fraud">Fraud</option>
+                <option value="harassment">Harassment</option>
+                <option value="scam">Scam</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label for="complaint-details">Additional Details:</label>
+            <textarea id="complaint-details" placeholder="Enter any additional details"></textarea>
+
+            <button onclick="closeComplaintPopup()">Submit</button>
+            <button onclick="closeComplaintPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function openPopup() {
+            document.getElementById('deactivate-popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('deactivate-popup').style.display = 'none';
+        }
+
+        function openPayFeePopup() {
+            document.getElementById('pay-fee-popup').style.display = 'flex';
+        }
+
+        function closePayFeePopup() {
+            document.getElementById('pay-fee-popup').style.display = 'none';
+        }
+
+        function openComplaintPopup() {
+            document.getElementById('complaint-popup').style.display = 'flex';
+        }
+
+        function closeComplaintPopup() {
+            document.getElementById('complaint-popup').style.display = 'none';
+        }
+
+        document.getElementById("complaint-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const issue = document.getElementById("issue").value;
+            const details = document.getElementById("details").value;
+
+            alert(`Complaint filed!\nName: ${name}\nIssue: ${issue}\nDetails: ${details}`);
+
+            closeComplaintPopup();
+        });
+
+    </script>
+</body>
+</html>
+
+<!-- 
+GENERAL NOTES:
+ - You Dropdown: My Profile & Sign Out do not work yet.
+ 
+REQUESTS NOTES:
+ - The Account Status and Current Fee needs to be the most up to date information, and can change constantly.
+ - Deactivating an account means that the user signs out and they can't log in with that information again.
+ - When a user pays a fee, their current balance must be reflected there.
+ - Whn a user Fils a New Complaint, the information must be sent to the Super-User
+-->

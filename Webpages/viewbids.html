@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Bids</title>
+    <link rel="stylesheet" href="viewbids.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>
+        </div>
+        <a>You</a>
+    </div>
+
+    <div class="bid-container">
+        <h1>
+            View Bids
+        </h1>
+
+        <!-- Search Bar + Create Listing Buttons-->
+        <div class="button-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Search for bid...">
+                <button id="search-button" style="font-weight: bold;">Search</button>
+                <button id="listing-button" style="margin-left:100px">Create Listing</button>
+            </div>
+        </div>
+
+        <!-- Create Listing Form -->
+        <form id="listing-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-listing">&times;</span>
+                <h2>Create Listing</h2>
+                <div class="title">
+                    <input type="text" placeholder="Title">
+                </div>
+                <div class="description">
+                    <input type="text" placeholder="Description...">
+                </div>
+                <div class="deadline">
+                    <input type="date" placeholder="Deadline" min="2024-11-09">
+                </div>
+                <div class="filter-option">
+                    <select id="categories" placeholder="Category">
+                        <option value="" disabled selected>Category</option>
+                        <option value="category1">Electronics</option>
+                        <option value="category2">Clothing</option>
+                        <option value="category3">Supplies</option>
+                    </select>
+                </div>
+                <div class="filter-option">
+                    <input type="number" id="max-price" placeholder="Starting Bid">
+                </div>
+
+                <div class="file-container">
+                    <p class="upload-header">Upload Files</p>
+                    <div class="upload-text">
+                        <p>Supported Formats: PNG, JPEG</p>
+                        <p>Drag and drop your files</p>
+                        <p>or</p>
+                        <input type="file" id="upload-file" hidden />
+                        <!--hidden custom button-->
+                        <label for="upload-file">Browse Files</label>
+                    </div>
+                </div>
+                <button type=submit id="apply-filters">Create Listing</button>
+            </div>
+        </form>
+
+        <div class="listings-container">
+            <!-- Filter Bids-->
+            <div class="listing-area">
+                <div class="button-container" style="margin-top: 20px;">
+                    <button id="completed-button">Completed</button>
+                    <button id="in-progress-button">In-Progress</button>
+                    <button id="selling-button">Selling</button>
+                    <button id="buying-button">Buying</button>
+                </div>
+
+                <!-- Bid Items -->
+                <div class="item-card">
+                    <!--
+                    <div class="status-line">
+                        <p class="item-type">Buying</p>
+                        <p class="item-status">In-Progress</p>
+                    </div>
+                    -->
+                    <br>
+                    <div class="item-image">
+                        <img src="images\pink fujifilm.png" alt="Item Image">
+                    </div>
+                    <div>
+                        <div class="item-info">
+                            <p class="item-name">Pink Fujifilm </p>
+                            <p class="item-price">US $99.99</p>
+                            <p class="item-time">18d 10h</p>
+                            <br>
+                            <p class="item-account">John Doe - 4.2 (10 Ratings)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card">
+                    <!--
+                    <div class="status-line">
+                        <p class="item-type">Buying</p>
+                        <p class="item-status">In-Progress</p>
+                    </div>
+                    -->
+                    <br>
+                    <div class="item-image">
+                        <img src="images\airpods pro max.jpg" alt="Item Image">
+                    </div>
+                    <div>
+                        <div class="item-info">
+                            <p class="item-name">Apple Airpods Max </p>
+                            <p class="item-price">US $99.99</p>
+                            <p class="item-time">18d 10h</p>
+                            <br>
+                            <p class="item-account">Srewashi Mondal - 4.3 (12 Ratings)</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="item-card">
+                    <!--
+                    <div class="status-line">
+                        <p class="item-type">Buying</p>
+                        <p class="item-status">In-Progress</p>
+                    </div>
+                    -->
+                    <br>
+                    <div class="item-image">
+                        <img src="images\lunch box.avif" alt="Item Image">
+                    </div>
+                    <div>
+                        <div class="item-info">
+                            <p class="item-name">Lunch Box </p>
+                            <p class="item-price">US $99.99</p>
+                            <p class="item-time">18d 10h</p>
+                            <br>
+                            <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <script>
+        const listingButton = document.getElementById('listing-button');
+        const listingPopup = document.getElementById('listing-popup');
+        const closeListing = document.querySelector('.close-listing');
+
+        listingButton.addEventListener('click', () => {
+            listingPopup.style.display = 'block'; // Show the popup
+        });
+
+        // Function to close the filter popup
+        closeListing.addEventListener('click', () => {
+            listingPopup.style.display = 'none'; // Hide the popup
+        });
+    </script>
+</body>
+
+</html>
