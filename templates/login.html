@@ -1,0 +1,65 @@
+<!--This is the page where visitors will sign up, or users will login-->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid Login</title>
+    <link rel="stylesheet" href="{% static 'web.css' %}">
+</head>
+
+<body style="overflow: hidden;">
+    <div class="navbar">
+        <div class="logo">
+            <!-- Corrected the URL tag to 'home' if your root URL is named 'home' -->
+            {% comment %} <a href="{% url 'home' %}" style="text-decoration: none; color: inherit; display: inline-block;"> {% endcomment %}
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header for SmartBid -->
+        <h1 class="smartbid-header">SmartBid <span>💡</span></h1>
+        <div class="content">
+            <!-- Left Section -->
+            <div class="left-section">
+                <p>Bidding made better with SmartBid.</p>
+                <!-- <img src="lightbulb.png" alt="Lightbulb Icon" class="lightbulb-icon"> -->
+            </div>
+
+            <!-- Right Section: Login Form -->
+            <div class="right-section">
+                <h2>Welcome Back!</h2>
+                <form action="{% url 'login' %}" method="post" class="login-form">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username or Email" required>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" placeholder="Password" required>
+                        <span class="toggle-password">👁️</span>
+                    </div>
+
+                    <button type="submit">Login</button>
+                </form>
+                <p>Don’t have an account? <a href="{% url 'account_signup' %}">Sign up!</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Toggle Script -->
+    <script>
+        const togglePassword = document.querySelector('.toggle-password');
+        const passwordField = document.querySelector('input[type="password"]');
+
+        togglePassword.addEventListener('click', function() {
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+        });
+    </script>
+</body>
+
+</html>

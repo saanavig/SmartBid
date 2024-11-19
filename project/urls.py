@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from dashboard import views
 from django.contrib.auth.views import LoginView
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),
-    path('accounts/profile/', views.profile, name="profile"),
-    path('login/', LoginView.as_view(template_name='login.html'), name='login'), 
-]   
+    path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
+    path('accounts/profile/', views.profile, name="profile"),  # Profile view
+    path('', TemplateView.as_view(template_name='login.html')),  # Login page view
+    path('login/', LoginView.as_view(), name='login'),
+]
