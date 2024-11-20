@@ -93,3 +93,6 @@ SOCIALACCOUNT_PROVIDER = {}
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+
+'sign up form'
+ACCOUNT_FORMS = {'signup': 'project.forms.CustomSignupForm'}

@@ -19,11 +19,13 @@ from django.urls import path, include
 from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
+from project.views import CustomSignupView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
     path('accounts/profile/', views.profile, name="profile"),  # Profile view
     path('', TemplateView.as_view(template_name='login.html')),  # Login page view
-    path('login/', LoginView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='login'),  # Login view
+    path('signup/', CustomSignupView.as_view(), name='signup'),
 ]

@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartBid Signup</title>
-    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="{% static 'signup.css' %}">
 </head>
 
 <body>
@@ -31,7 +33,9 @@
             <div class="right-section">
                 <div class="signup-container">
                     <h2>Create a User</h2>
-                    <form action="#" method="POST">
+                    <form action="{% url 'signup' %}" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
                         <div class="form-group">
                             <label for="first-name">First Name</label>
                             <input type="text" id="first-name" name="first-name" required>
@@ -65,7 +69,8 @@
                         </div>
                     </form>
                     <div class="signup-footer">
-                        <p>Already a member? <a href="#">Sign In</a></p>
+                        <p>Already a member? <a href="{% url 'account_login' %}">Sign In</a></p>
+
                     </div>
                 </div>
             </div>
