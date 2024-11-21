@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
     path('accounts/profile/', views.profile, name="profile"),  # Profile view
-    path('', TemplateView.as_view(template_name='login.html')),  # Login page view
-    path('login/', LoginView.as_view(), name='login'),  # Login view
+    path('', TemplateView.as_view(template_name='homepage.html')),    
+    path('login/', LoginView.as_view(), name='login'),
     path('signup/', CustomSignupView.as_view(), name='signup'),
 ]
