@@ -33,16 +33,16 @@
             <div class="right-section">
                 <div class="signup-container">
                     <h2>Create a User</h2>
+                    <!-- Form -->
                     <form action="{% url 'signup' %}" method="POST">
                         {% csrf_token %}
-                        {{ form.as_p }}
                         <div class="form-group">
-                            <label for="first-name">First Name</label>
-                            <input type="text" id="first-name" name="first-name" required>
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" required>
                         </div>
                         <div class="form-group">
-                            <label for="last-name">Last Name</label>
-                            <input type="text" id="last-name" name="last-name" required>
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
@@ -57,20 +57,21 @@
                             <input type="password" id="password" name="password" required>
                         </div>
                         <div class="form-group">
-                            <label for="confirm-password">Confirm Password</label>
-                            <input type="password" id="confirm-password" name="confirm-password" required>
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
                         </div>
                         <div class="form-group">
-                            <label for="security-question">Security Question: What is 5 + 3?</label>
-                            <input type="text" id="security-question" name="security-question" required>
+                            <label for="security_question">Security Question: What is 5 + 3?</label>
+                            <input type="text" id="security_question" name="security_question" required>
                         </div>
                         <div class="form-group">
                             <button type="submit">Sign Up</button>
                         </div>
                     </form>
-                    <div class="signup-footer">
-                        <p>Already a member? <a href="{% url 'account_login' %}">Sign In</a></p>
 
+                    <!-- Footer -->
+                    <div class="signup-footer">
+                        <p>Already a member? <a href="/">Sign In</a></p>
                     </div>
                 </div>
             </div>
