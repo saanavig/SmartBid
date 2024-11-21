@@ -15,6 +15,7 @@ class CustomSignupForm(SignupForm):
                 self.fields['username'] = self.fields.pop('username')
                 self.fields['password1'] = self.fields.pop('password1')
                 self.fields['password2'] = self.fields.pop('password2')
+                #self.fields['security'] = self.fields.pop('security')
 
         def save(self, request):
                 user = super(CustomSignupForm, self).save(request)

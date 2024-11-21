@@ -36,6 +36,7 @@
                     <!-- Form -->
                     <form action="{% url 'signup' %}" method="POST">
                         {% csrf_token %}
+<<<<<<< HEAD
                         <div class="form-group">
                             <label for="first_name">First Name</label>
                             <input type="text" id="first_name" name="first_name" required>
@@ -43,26 +44,52 @@
                         <div class="form-group">
                             <label for="last_name">Last Name</label>
                             <input type="text" id="last_name" name="last_name" required>
+=======
+                        <!--{{ form.as_p }}-->
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            {{ form.first_name }}
+                            <!--<input type="text" id="first-name" name="first-name" required>-->
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            {{ form.last_name }}
+                            <!--<input type="text" id="last-name" name="last-name" required>-->
+>>>>>>> aed88aa0ed4fa6b0ab676a60acf83e5e122a90a2
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required>
+                            {{ form.email }}
+                            <!--<input type="email" id="email" name="email" required>-->
                         </div>
                         <div class="form-group">
                             <label for="username">Username</label>
-                            <input type="text" id="username" name="username" required>
+                            {{ form.username }}
+                            <!--<input type="text" id="username" name="username" required>-->
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" id="password" name="password" required>
+                            {{ form.password1 }}
+                            <!--<input type="password" id="password" name="password" required>-->
                         </div>
                         <div class="form-group">
+<<<<<<< HEAD
                             <label for="confirm_password">Confirm Password</label>
                             <input type="password" id="confirm_password" name="confirm_password" required>
                         </div>
                         <div class="form-group">
                             <label for="security_question">Security Question: What is 5 + 3?</label>
                             <input type="text" id="security_question" name="security_question" required>
+=======
+                            <label for="confirm-password">Confirm Password</label>
+                            {{ form.password2 }}
+                            <!--<input type="password" id="confirm-password" name="confirm-password" required>-->
+                        </div>
+                        <div class="form-group">
+                            <!--{{ form.security }}-->
+                            <label for="security-question">Security Question: What is 5 + 3?</label>
+                            <input type="text" id="security-question" name="security-question" required>
+>>>>>>> aed88aa0ed4fa6b0ab676a60acf83e5e122a90a2
                         </div>
                         <div class="form-group">
                             <button type="submit">Sign Up</button>
