@@ -14,3 +14,4 @@ class CustomSignupView(View):
             form.save(request)
             return redirect('profile')
         return render(request, 'signup.html', {'form': form})
+
