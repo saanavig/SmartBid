@@ -50,14 +50,30 @@
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" required>
                         </div>
-                        <div class="form-group">
-                            <label for="username">Username</label>
+                        <div class="form-group-format">
+                            <div class="align-format">
+                                <label for="username">Username</label>
+                                <button type="button" class="username-info-icon" onclick="toggleSignupPopup('username-info')">ℹ️</button>
+                            </div>
+                            <div class="signup-popup" id="username-info">
+                                Username may include letters, numbers, and symbols between 8 - 16 characters.
+                            </div>
                             <input type="text" id="username" name="username" required>
                         </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
+                        <div class="form-group-format">
+                            <div class="align-format">
+                                <label for="password">Password</label>
+                                <button type="button" class="password-info-icon" onclick="toggleSignupPopup('password-info')">ℹ️</button>
+                            </div>
+                            <div class="signup-popup" id="password-info">
+                                <ul>
+                                    <li>- Minimum 8 characters</li>
+                                    <li>- Must include 1 number</li>
+                                    <li>- Must include 1 symbol</li>
+                                </ul>
+                            </div>  
                             <input type="password" id="password" name="password" required>
-                        </div>
+                        </div>   
                         <div class="form-group">
                             <label for="confirm_password">Confirm Password</label>
                             <input type="password" id="confirm_password" name="confirm_password" required>
@@ -79,6 +95,36 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Select the username and password info icons
+            const usernameInfoIcon = document.querySelector(".username-info-icon");
+            const passwordInfoIcon = document.querySelector(".password-info-icon");
+
+            // Add click event listener for username info icon
+            if (usernameInfoIcon) {
+                usernameInfoIcon.addEventListener("click", () => {
+                    // Find the corresponding popup
+                    const popup = document.getElementById("username-info");
+
+                    // Toggle the 'show' class to display/hide the popup
+                    popup.classList.toggle("show");
+                });
+            }
+
+            // Add click event listener for password info icon
+            if (passwordInfoIcon) {
+                passwordInfoIcon.addEventListener("click", () => {
+                    // Find the corresponding popup
+                    const popup = document.getElementById("password-info");
+
+                    // Toggle the 'show' class to display/hide the popup
+                    popup.classList.toggle("show");
+                });
+            }
+        });
+    </script>
 
 </body>
 
