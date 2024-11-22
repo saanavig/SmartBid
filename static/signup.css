@@ -14,7 +14,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 240px;
+    margin-top: 140px;
 }
 
 /* Navbar */
@@ -154,4 +154,68 @@ body {
 
 .signup-footer a:hover {
     text-decoration: underline;
+}
+
+
+.form-group-format{
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.form-group-format label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-group-format input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group-format input:focus {
+    border-color: #0084ff;
+    outline: none;
+}
+
+.username-info-icon,
+.password-info-icon {
+    cursor: pointer;
+    font-size: 18px;
+    border: none;
+    margin-bottom: 5px;;
+}
+
+.align-format {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.signup-popup {
+    display: none;
+    top: 100%;
+    background-color: #fff6cc;
+    border: 2px solid #f8e386;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    width: 395px;
+
+    z-index: 10;
+    margin-bottom: 10px;
+}
+
+.signup-popup ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.signup-popup.show {
+    display: block;
 }
