@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <link rel="stylesheet" href="startbid.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id='overlay'>
+        <div class="navbar">
+            <div class="logo">
+                <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                    <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+                </a>
+            </div>
+
+            <!-- DROPDOWN FOR USER OPTIONS -->
+            <div class="dropdown">
+                <a class="login-btn">You</a>
+                <div class="dropdown-content">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="signout.html">Sign Out</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Section -->
+        <div class="top-section">
+            <!-- Left Section: Image Carousel-->
+            <div class="left-section">
+                <div class="image-carousel">
+                    <div class="thumbnail-container">
+                        <img src="images/octopus mood.jpg" alt="Thumbnail 1" onclick="changeImage(this)">
+                        <img src="images/spiral notebooks.jpg" alt="Thumbnail 2" onclick="changeImage(this)">
+                        <img src="images/jade gua sha.jpg" alt="Thumbnail 3" onclick="changeImage(this)">
+                        <img src="images/cucumber slicer.jpg" alt="Thumbnail 4" onclick="changeImage(this)">
+                        <img src="images/crossbody bag.jpg" alt="Thumbnail 5" onclick="changeImage(this)">
+                    </div>
+                    <div class="large-image" id="displayed-image">
+                        <img src="images/iphone 15.webp" alt="Large Display">
+                    </div>
+                </div>
+            </div>
+
+            <!--Start Bidding Popup-->
+            <form id="bid-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-listing" id="close-button">&times;</span>
+                    <h2 id="bid-header">Start Bidding</h2>
+                    <div class="row">
+                        <p id="highest-bid">Current Highest Bid: $<span id="highest-amount"
+                                style="font-weight: bold">500.00</span></p>
+                    </div>
+                    <div class="row">
+                        <label for="amount">Your Bid Amount:</label>
+                        <input type="number" id="amount" placeholder="0.00">
+                    </div>
+                    <p class="row" id="invalid"></p>
+                    <button class="make-bid-button" id="make-bid-button">Bid</button>
+                </div>
+            </form>
+
+            <!--Confirmation Popup-->
+            <form id="confirmation-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-listing" id="close-confirmation-button">&times;</span>
+                    <h2 id="bid-header">Bid Placed Successfully!</h2>
+                    <div class="row">
+                        <p>View Bids to get your bidding status on this item and check your
+                            notifications for updates!</p>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Rate Seller Popup -->
+            <form id="rate-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-rating" id="close-rating-button">&times;</span>
+                    <h2>Rate the Seller</h2>
+                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
+                    <div id="star-rating" class="row">
+                        <span onclick="setRating(1)" class="star">★</span>
+                        <span onclick="setRating(2)" class="star">★</span>
+                        <span onclick="setRating(3)" class="star">★</span>
+                        <span onclick="setRating(4)" class="star">★</span>
+                        <span onclick="setRating(5)" class="star">★</span>
+                    </div>
+                    <button class="rate-button" id="rate-button">Rate</button>
+                </div>
+            </form>
+
+
+            <!-- Right Section: Item Details -->
+            <div class="right-section">
+                <h2>iPhone 15 Pro Max New</h2>
+                <h3>US $99.99</h3>
+                <p><strong>Closes:</strong> 18d 10h (MM/DD/YYYY)</p>
+                <p><strong>Category:</strong> Category Name</p>
+                <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                <button class="bid-button" id="bid-button">Start Bidding</button>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Comments -->
+        <div class="bottom-section">
+            <!-- Comment Input Section -->
+            <div class="comment-input">
+                <input type="text" placeholder="Leave a comment as a visitor">
+                <div class="comment-buttons">
+                    <button class="cancel-button">Cancel</button>
+                    <button class="comment-button">Comment</button>
+                </div>
+            </div>
+
+            <!-- Comments Display Section -->
+            <div class="comments">
+                <div class="comment">
+                    <p><strong>Srewashi Mondal</strong> - 1 day ago</p>
+                    <p>This product is nice.</p>
+                    <div class="vote">
+                        <span>▲ 10</span>
+                        <span>▼ 0</span>
+                    </div>
+                </div>
+                <div class="comment">
+                    <p><strong>Saanavi Goyal</strong> - 2 days ago</p>
+                    <p>This item is great! :D</p>
+                    <div class="vote">
+                        <span>▲ 8</span>
+                        <span>▼ 0</span>
+                    </div>
+                </div>
+                <div class="comment">
+                    <p><strong>Debasree Sen</strong> - 1 month ago</p>
+                    <p>This was a lifesaver! :)</p>
+                    <div class="vote">
+                        <span>▲ 12</span>
+                        <span>▼ 0</span>
+                    </div>
+                </div>
+                <!-- Additional comments as needed -->
+            </div>
+        </div>
+    </div>
+    <script>
+        const startBidButton = document.getElementById('bid-button');
+        const startBidPopup = document.getElementById('bid-popup');
+        const makeBidButton = document.getElementById('make-bid-button');
+        const closeButton = document.getElementById('close-button');
+
+        // Valid bid check
+        const bidAmount = document.getElementById('amount');
+        const highestAmount = document.getElementById('highest-amount');
+        const invalidMessage = document.getElementById('invalid');
+
+        // Confirmation
+        const confirmationPopup = document.getElementById('confirmation-popup');
+        const closeConfirmationButton = document.getElementById('close-confirmation-button');
+
+        // Rating
+        const rateButton = document.getElementById('rate-button');
+        const ratePopup = document.getElementById('rate-popup');
+        const closeRatingButton = document.getElementById('close-rating-button');
+        let currentRating = 0;
+
+        startBidButton.addEventListener('click', () => {
+            startBidPopup.style.display = 'block';
+            invalidMessage.innerText = ''; // Clear error messages
+        });
+
+        closeButton.addEventListener('click', () => {
+            startBidPopup.style.display = 'none';
+        });
+
+        closeConfirmationButton.addEventListener('click', () => {
+            confirmationPopup.style.display = 'none';
+            ratePopup.style.display = 'block';
+        });
+
+        closeRatingButton.addEventListener('click', () => {
+            ratePopup.style.display = 'none';
+        });
+
+        makeBidButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent form default behavior
+
+            const amount = parseFloat(bidAmount.value);
+            const currentHighest = parseFloat(highestAmount.innerText);
+
+            if (!isNaN(amount) && amount > currentHighest) {
+                highestAmount.innerText = amount.toFixed(2); // Update the highest bid
+
+                bidAmount.value = '';
+                startBidPopup.style.display = 'none'
+                confirmationPopup.style.display = 'block';
+            } else {
+                invalidMessage.innerText =
+                    'Insufficient funds or bid is not greater than the current highest bid.';
+            }
+        });
+
+        function setRating(rating) {
+            currentRating = rating;
+
+            const stars = document.querySelectorAll("#star-rating .star");
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("selected");
+                } else {
+                    star.classList.remove("selected");
+                }
+            });
+
+            //console.log(`Rating: ${rating}`); // Check it works
+        }
+
+        rateButton.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            ratePopup.style.display = 'none';
+            startBidButton.disabled = true; // disabled button for now once bid already made
+            startBidButton.style.background = 'grey';
+
+            // Process rating logic (send to database) NOT DONE YET
+            // {currentRating}/5
+        });
+    </script>
+</body>
+
+</html>
