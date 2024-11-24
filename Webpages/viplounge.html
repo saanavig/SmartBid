@@ -20,6 +20,7 @@
             <a class="login-btn">You</a>
             <div class="dropdown-content">
                 <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
                 <a href="profile.html">Profile</a>
                 <a href="signout.html">Sign Out</a>
             </div>
@@ -72,40 +73,5 @@
             <p>If you violate any two of the above conditions, say bye to your VIP status!</p>
         </div>
     </div>
-
-    <script>
-                document.addEventListener("DOMContentLoaded", function() {
-            const profileModal = document.getElementById('profile-modal');
-            const closeModalBtn = document.querySelector('.close');
-            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
-
-            // Open modal when profile link is clicked
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent navigation
-                profileModal.style.display = 'block';
-            });
-
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                profileModal.style.display = 'none';
-            });
-
-            // Close modal when clicking outside the modal content
-            window.addEventListener('click', function(event) {
-                if (event.target === profileModal) {
-                    profileModal.style.display = 'none';
-                }
-            });
-        });
-    </script>
-
 </body>
 </html>
-
-<!-- 
-GENERAL NOTES:
- - You Dropdown: My Profile & Sign Out do not work yet.
- 
-VIP LOUNGE NOTES:
- - This card only shows up when the VIP Maintenance apply, otherwise, it should not show up.
--->
