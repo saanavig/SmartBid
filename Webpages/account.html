@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBid Home</title>
+    <title>My Account</title>
     <link rel="stylesheet" href="account.css">
 </head>
 <body>
@@ -20,6 +20,7 @@
             <a class="login-btn">You</a>
             <div class="dropdown-content">
                 <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
                 <a href="profile.html">Profile</a>
                 <a href="signout.html">Sign Out</a>
             </div>
@@ -95,6 +96,76 @@
             <button class="deposit-btn" onclick="deposit()">Deposit</button>
             <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
             <p id="message"></p>
+
+            <h2>Transaction History</h2>
+            <div class="transaction-history">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>11/21/2024</td>
+                            <td>Deposit</td>
+                            <td class="credit">+ $500.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/20/2024</td>
+                            <td>Bid Placed</td>
+                            <td class="debit">- $200.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/19/2024</td>
+                            <td>Withdraw</td>
+                            <td class="debit">- $100.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/18/2024</td>
+                            <td>Refund</td>
+                            <td class="credit">+ $300.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/17/2024</td>
+                            <td>Bid Placed</td>
+                            <td class="debit">- $150.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/16/2024</td>
+                            <td>Deposit</td>
+                            <td class="credit">+ $1,000.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/15/2024</td>
+                            <td>Withdraw</td>
+                            <td class="debit">- $250.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/14/2024</td>
+                            <td>Purchased Item</td>
+                            <td class="debit">- $400.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/13/2024</td>
+                            <td>Refund</td>
+                            <td class="credit">+ $100.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/12/2024</td>
+                            <td>Bid Placed</td>
+                            <td class="debit">- $250.00</td>
+                        </tr>
+                        <tr>
+                            <td>11/11/2024</td>
+                            <td>Deposit</td>
+                            <td class="credit">+ $750.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -104,101 +175,101 @@
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
             const inputFields = document.querySelectorAll('.info-field input');
-            const balanceDisplay = document.getElementById('balance'); // Get the balance display element
-    
+            const balanceDisplay = document.getElementById('balance');
+            const transactionHistory = document.querySelector('.transaction-history tbody');
+
             editBtn.addEventListener('click', () => {
                 inputFields.forEach(input => input.disabled = false);
                 editBtn.style.display = 'none';
                 saveBtn.style.display = 'inline';
                 cancelBtn.style.display = 'inline';
             });
-    
+
             saveBtn.addEventListener('click', () => {
                 inputFields.forEach(input => input.disabled = true);
                 editBtn.style.display = 'inline';
                 saveBtn.style.display = 'none';
                 cancelBtn.style.display = 'none';
             });
-    
+
             cancelBtn.addEventListener('click', () => {
                 inputFields.forEach(input => input.disabled = true);
                 editBtn.style.display = 'inline';
                 saveBtn.style.display = 'none';
                 cancelBtn.style.display = 'none';
             });
-    
-            // DEPOSIT
+
+            function addTransaction(type, amount) {
+                const currentDate = new Date().toLocaleDateString();
+                const row = document.createElement('tr');
+
+                const dateCell = document.createElement('td');
+                dateCell.textContent = currentDate;
+
+                const typeCell = document.createElement('td');
+                typeCell.textContent = type;
+
+                const amountCell = document.createElement('td');
+                amountCell.textContent = (type === "Deposit" ? "+ " : "- ") + "$" + amount.toFixed(2);
+                amountCell.classList.add(type === "Deposit" ? "credit" : "debit");
+
+                row.appendChild(dateCell);
+                row.appendChild(typeCell);
+                row.appendChild(amountCell);
+
+                transactionHistory.insertBefore(row, transactionHistory.firstChild);
+            }
+
             window.deposit = function() {
                 const amountInput = document.getElementById('amount');
                 const amount = parseFloat(amountInput.value);
                 const currentBalance = parseFloat(balanceDisplay.innerText);
-    
+
                 if (!isNaN(amount) && amount > 0) {
                     const newBalance = currentBalance + amount;
-                    balanceDisplay.innerText = newBalance.toFixed(2); // Update balance
-                    amountInput.value = ''; // Clear input
-                    document.getElementById('message').innerText = 'Deposit successful!';
+                    balanceDisplay.innerText = newBalance.toFixed(2);
+                    addTransaction("Deposit", amount);
+                    amountInput.value = '';
+                    showMessage('Deposit successful!');
                 } else {
-                    document.getElementById('message').innerText = 'Please enter a valid amount.';
+                    showMessage('Please enter a valid amount.');
                 }
             };
-    
-            // WITHDRAW
+
             window.withdraw = function() {
                 const amountInput = document.getElementById('amount');
                 const amount = parseFloat(amountInput.value);
                 const currentBalance = parseFloat(balanceDisplay.innerText);
-    
+
                 if (!isNaN(amount) && amount > 0) {
                     if (amount <= currentBalance) {
                         const newBalance = currentBalance - amount;
-                        balanceDisplay.innerText = newBalance.toFixed(2); // Update balance
-                        amountInput.value = ''; // Clear input
-                        document.getElementById('message').innerText = 'Withdrawal successful!';
+                        balanceDisplay.innerText = newBalance.toFixed(2);
+                        addTransaction("Withdraw", amount);
+                        amountInput.value = '';
+                        showMessage('Withdrawal successful!');
                     } else {
-                        document.getElementById('message').innerText = 'Insufficient balance.';
+                        showMessage('Insufficient balance.');
                     }
                 } else {
-                    document.getElementById('message').innerText = 'Please enter a valid amount.';
+                    showMessage('Please enter a valid amount.');
                 }
             };
-        });
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const profileModal = document.getElementById('profile-modal');
-            const closeModalBtn = document.querySelector('.close');
-            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
-
-            // Open modal when profile link is clicked
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent navigation
-                profileModal.style.display = 'block';
-            });
-
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                profileModal.style.display = 'none';
-            });
-
-            // Close modal when clicking outside the modal content
-            window.addEventListener('click', function(event) {
-                if (event.target === profileModal) {
-                    profileModal.style.display = 'none';
-                }
-            });
+            function showMessage(messageText) {
+                const message = document.getElementById('message');
+                message.innerText = messageText;
+                message.style.display = 'block';
+                message.style.opacity = '1';
+                
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        message.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
         });
     </script>
 </body>
 </html>
-
-<!-- 
-GENERAL NOTES:
- - You Dropdown: My Profile & Sign Out do not work yet.
- 
-MY ACCOUNT NOTES:
- - All the information the user made when logging in must show up here.
- - When a user edits and then saves their information, new information must be saved in the database.
- - A user's current account balance needs to be up to date.
- - When a user deposits or withdraws money, it must be reflected in their new saved current balance.
- - When a user spends or earns money for bidding, it must be reflected here.
--->
