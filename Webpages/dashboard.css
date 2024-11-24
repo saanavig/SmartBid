@@ -185,6 +185,7 @@ body {
     flex-direction: column;
     gap: 20px;
     flex: 1;
+    max-width: 400px;
 }
 
 .dashboard-card {
@@ -194,7 +195,7 @@ body {
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    text-decoration: none; /* Remove underline */
+    text-decoration: none;
 }
 
 .dashboard-card:hover {
@@ -214,6 +215,7 @@ body {
 
 .right-section {
     flex: 0 0 45%;
+    max-width: 340px;
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -231,6 +233,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-height: 400px; 
+    overflow-y: auto;
+    width: 300px;
 }
 
 .notification-popup {
@@ -240,4 +245,5 @@ body {
     border-radius: 5px;
     font-size: 14px;
     color: #333;
+    margin-right: 5px;
 }
