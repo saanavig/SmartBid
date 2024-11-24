@@ -37,7 +37,7 @@
         <form id="listing-popup" class="popup">
             <div class="popup-content">
                 <span class="close-listing">&times;</span>
-                <h2>Create Listing</h2>
+                <h2 style="margin-bottom: 20px" ;>Create Listing</h2>
                 <div class="title">
                     <input type="text" placeholder="Title">
                 </div>
@@ -56,21 +56,21 @@
                     </select>
                 </div>
                 <div class="filter-option">
-                    <input type="number" id="max-price" placeholder="Starting Bid">
+                    <input type="number" id="max-price" placeholder="Starting Bid" min="0">
                 </div>
 
                 <div class="file-container">
                     <p class="upload-header">Upload Files</p>
+                    <p style="font-size: 12px;">Supported Formats: PNG, JPEG</p>
                     <div class="upload-text">
-                        <p>Supported Formats: PNG, JPEG</p>
                         <p>Drag and drop your files</p>
-                        <p>or</p>
-                        <input type="file" id="upload-file" hidden />
+                        <p style="margin-bottom: 10px;">or</p>
+                        <input type="file" id="upload-button" accept=".png, .jpeg" hidden />
                         <!--hidden custom button-->
-                        <label for="upload-file">Browse Files</label>
+                        <label for="upload-button">Browse Files</label>
                     </div>
                 </div>
-                <button type=submit id="apply-filters">Create Listing</button>
+                <button type=submit id="apply-filters" style="margin-top: 15px;">Create Listing</button>
             </div>
         </form>
 
@@ -157,6 +157,9 @@
         </div>
     </div>
     <script>
+        const uploadButton = document.getElementById('upload-button');
+        const fileChosen = document.getElementById('file-chosen');
+
         const listingButton = document.getElementById('listing-button');
         const listingPopup = document.getElementById('listing-popup');
         const closeListing = document.querySelector('.close-listing');

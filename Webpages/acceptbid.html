@@ -47,33 +47,17 @@
                 </div>
             </div>
 
-            <!--Start Bidding Popup-->
+            <!--Accept Bid Popup-->
             <form id="bid-popup" class="popup">
                 <div class="popup-content">
                     <span class="close-listing" id="close-button">&times;</span>
-                    <h2 id="bid-header">Start Bidding</h2>
+                    <h2 id="bid-header">Accept or Decline Bid</h2>
+                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
                     <div class="row">
-                        <p id="highest-bid">Current Highest Bid: $<span id="highest-amount"
-                                style="font-weight: bold">500.00</span></p>
+                        <p id="highest-bid" style="font-weight: bold">US $500.00</p>
                     </div>
-                    <div class="row">
-                        <label for="amount">Your Bid Amount:</label>
-                        <input type="number" id="amount" placeholder="0.00" min="0">
-                    </div>
-                    <p class="row" id="invalid"></p>
-                    <button class="make-bid-button" id="make-bid-button">Bid</button>
-                </div>
-            </form>
-
-            <!--Confirmation Popup-->
-            <form id="confirmation-popup" class="popup">
-                <div class="popup-content">
-                    <span class="close-listing" id="close-confirmation-button">&times;</span>
-                    <h2 id="bid-header">Bid Placed Successfully!</h2>
-                    <div class="row">
-                        <p>View Bids to get your bidding status on this item and check your
-                            notifications for updates!</p>
-                    </div>
+                    <button class="accept-bid-button" id="accept-bid-button">Accept</button>
+                    <button class="decline-bid-button" id="decline-bid-button">Decline</button>
                 </div>
             </form>
 
@@ -104,12 +88,12 @@
                 <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-                <button class="bid-button" id="bid-button">Start Bidding</button>
+                <button class="edit-bid-button" id="edit-bid-button">Edit Bid</button>
             </div>
         </div>
 
         <!-- Bottom Section: Comments -->
-        <div class="bottom-section">
+        <div class="bottom-container">
             <!-- Comment Input Section -->
             <div class="comment-input">
                 <input type="text" placeholder="Leave a comment as a visitor">
@@ -147,22 +131,25 @@
                 </div>
                 <!-- Additional comments as needed -->
             </div>
+
+            <!-- Bid Offers -->
+            <div class="bids-section">
+                <div class="bid-container">
+                    <p>John Doe - 4.2 (10 Ratings)</p>
+                    <span style="font-weight: bold;">US $99.00</span>
+                    <div class="manage-bid-buttons">
+                        <button>Accept</button> 
+                        <button>Decline</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        const startBidButton = document.getElementById('bid-button');
-        const startBidPopup = document.getElementById('bid-popup');
-        const makeBidButton = document.getElementById('make-bid-button');
+        const manageBidPopup = document.getElementById('manage-bid-popup');
+        const acceptBidButton = document.getElementById('accept-bid-button');
+        const decineBidButton = document.getElementById('decline-bid-button');
         const closeButton = document.getElementById('close-button');
-
-        // Valid bid check
-        const bidAmount = document.getElementById('amount');
-        const highestAmount = document.getElementById('highest-amount');
-        const invalidMessage = document.getElementById('invalid');
-
-        // Confirmation
-        const confirmationPopup = document.getElementById('confirmation-popup');
-        const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
         // Rating
         const rateButton = document.getElementById('rate-button');
@@ -176,34 +163,20 @@
         });
 
         closeButton.addEventListener('click', () => {
-            startBidPopup.style.display = 'none';
-        });
-
-        closeConfirmationButton.addEventListener('click', () => {
-            confirmationPopup.style.display = 'none';
-            ratePopup.style.display = 'block';
+            manageBidPopup.style.display = 'none';
         });
 
         closeRatingButton.addEventListener('click', () => {
             ratePopup.style.display = 'none';
         });
 
-        makeBidButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent form default behavior
+        acceptBidButton.addEventListener('click', () => {
+            manageBidPopup.style.display = 'none';
+            ratePopup.style.display = 'block';
+        });
 
-            const amount = parseFloat(bidAmount.value);
-            const currentHighest = parseFloat(highestAmount.innerText);
-
-            if (!isNaN(amount) && amount > currentHighest) {
-                highestAmount.innerText = amount.toFixed(2); // Update the highest bid
-
-                bidAmount.value = '';
-                startBidPopup.style.display = 'none'
-                confirmationPopup.style.display = 'block';
-            } else {
-                invalidMessage.innerText =
-                    'Insufficient funds or bid is not greater than the current highest bid.';
-            }
+        declineBidButton.addEventListener('click', () => {
+            manageBidPopup.style.display = 'none';
         });
 
         function setRating(rating) {
