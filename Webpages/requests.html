@@ -20,6 +20,7 @@
             <a class="login-btn">You</a>
             <div class="dropdown-content">
                 <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
                 <a href="profile.html">Profile</a>
                 <a href="signout.html">Sign Out</a>
             </div>
@@ -56,7 +57,6 @@
             <a href="#" onclick="openPopup()">Deactivate Account</a>
             <h3>Current Fee: $50.00</h3>
             <a href="#" onclick="openPayFeePopup()">Pay Fee</a>
-
         </div>
 
         <!-- REPORT USER CONTENT -->
@@ -112,7 +112,7 @@
     </div>
 
     <script>
-                document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {
             const profileModal = document.getElementById('profile-modal');
             const closeModalBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
@@ -135,7 +135,7 @@
                 }
             });
         });
-        
+
         function openPopup() {
             document.getElementById('deactivate-popup').style.display = 'flex';
         }
@@ -174,14 +174,3 @@
     </script>
 </body>
 </html>
-
-<!-- 
-GENERAL NOTES:
- - You Dropdown: My Profile & Sign Out do not work yet.
- 
-REQUESTS NOTES:
- - The Account Status and Current Fee needs to be the most up to date information, and can change constantly.
- - Deactivating an account means that the user signs out and they can't log in with that information again.
- - When a user pays a fee, their current balance must be reflected there.
- - Whn a user Fils a New Complaint, the information must be sent to the Super-User
--->
