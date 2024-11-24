@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications</title>
+    <link rel="stylesheet" href="applications.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATIONS CONTENT -->
+    <div class="applications-container">
+        <h1>Pending User Applications</h1>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search for anything...">
+            <button id="search-button">Search</button>
+        </div>
+
+        <table class="applications-table">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Submission Date</th>
+                    <th>Arithmetic Question</th>
+                    <th>Correct Answer</th>
+                    <th>User Answer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            
+            <tbody id="applications-body">
+                <tr>
+                    <td>Sehr A.</td>
+                    <td>Fourpixels</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Sehr A.')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Sehr A.')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Debasree S.</td>
+                    <td>Wallaweebs</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Debasree S.')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Debasree S.')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Srewashi M.</td>
+                    <td>Srewashi</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Srewashi M.')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Srewashi M.')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Saanavi G.</td>
+                    <td>Saanavi</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Saanavi G.')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Saanavi G.')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Scam Temp</td>
+                    <td>Bot109937</td>
+                    <td>2024-11-20</td>
+                    <td>5 + 7</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
+                    </td>
+                </tr>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="applications-modal" class="applications-modal">
+        <div class="applications-modal-content">
+            <span class="close-applications-modal" onclick="closeApplicationsModal()">&times;</span>
+            <p id="applications-confirmation-message"></p>
+            <div id="additional-info-container" style="display: none;">
+                <label for="additional-info" style="display: block; margin-top: 10px;">Additional Information</label>
+                <textarea id="additional-info" rows="4" cols="40" style="width: 100%; margin-top: 5px; padding: 5px;"></textarea>
+            </div>
+            <div class="applications-modal-actions" style="margin-top: 10px;">
+                <button id="confirm-applications-btn" class="confirm-btn">Yes</button>
+                <button class="cancel-btn" onclick="closeApplicationsModal()">No</button>
+            </div>
+        </div>
+    </div>    
+
+    <script>
+        function confirmApplication(action, name) {
+            const modal = document.getElementById('applications-modal');
+            const message = document.getElementById('applications-confirmation-message');
+            const confirmBtn = document.getElementById('confirm-applications-btn');
+            const additionalInfoContainer = document.getElementById('additional-info-container');
+            const additionalInfo = document.getElementById('additional-info');
+
+            const tableBody = document.getElementById('applications-body');
+            const rows = tableBody.querySelectorAll('tr');
+            let targetRow = null;
+
+            rows.forEach(row => {
+                if (row.cells[0].innerText === name) {
+                    targetRow = row;
+                }
+            });
+
+            message.innerText = `Are you sure you want to ${action} ${name}?`;
+
+            if (action === 'deny') {
+                additionalInfoContainer.style.display = 'block';
+            } else {
+                additionalInfoContainer.style.display = 'none';
+            }
+
+
+            confirmBtn.onclick = function() {
+                if (action === 'approve') {
+                    alert(`${name} has been approved.`);
+                } else if (action === 'deny') {
+                    alert(`${name} has been denied.`);
+                }
+
+                if (targetRow) {
+                    tableBody.removeChild(targetRow);
+                }
+
+                closeApplicationsModal();
+            };
+
+            modal.style.display = 'block';
+        }
+
+        function closeApplicationsModal() {
+            const modal = document.getElementById('applications-modal');
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('applications-modal');
+            if (event.target === modal) {
+                closeApplicationsModal();
+            }
+        };
+
+        document.getElementById("search-button").addEventListener("click", function() {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const tableBody = document.getElementById("applications-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const fullName = row.cells[0].innerText.toLowerCase();
+                if (fullName.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
