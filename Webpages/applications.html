@@ -275,13 +275,18 @@
 
             rows.forEach(row => {
                 const fullName = row.cells[0].innerText.toLowerCase();
-                if (fullName.includes(input)) {
-                    row.style.display = "";
+                const username = row.cells[1].innerText.toLowerCase();
+                const submissionDate = row.cells[2].innerText.toLowerCase();
+
+                // Check if the input matches any of the columns
+                if (fullName.includes(input) || username.includes(input) || submissionDate.includes(input)) {
+                    row.style.display = ""; // Show the row if there's a match
                 } else {
-                    row.style.display = "none";
+                    row.style.display = "none"; // Hide the row if no match
                 }
             });
         });
+
     </script>
 </body>
 </html>
