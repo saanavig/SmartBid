@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints & Disputes</title>
+    <link rel="stylesheet" href="complaints.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+
+        <!-- PROFILE MODAL -->
+        <div id="profile-modal" class="profile-modal">
+            <div class="profile-modal-content">
+                <span class="close">&times;</span>
+                <h1>My Profile</h1>
+                <div class="profile-modal-info">
+                    <div class ="align-profile">
+                        <p>John Doe</p>
+                        <p>- 3.6 (7 Ratings)</p>
+                    </div>
+                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPLAINTS CONTENT -->
+    <div class="complaints-container">
+        <h1>Complaints & Disputes</h1>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search for user...">
+            <button id="search-button">Search</button>
+        </div>
+
+        <table class="complaints-table">
+            <thead>
+                <tr>
+                    <th>Complainant</th>
+                    <th>Complainee</th>
+                    <th>Date Filed</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            
+            <tbody id="complaints-body">
+                <tr data-complainant="John Doe" data-complainee="Stacy Davis" data-category="Delayed Delivery" 
+                    data-description="The delivery of the product was delayed by more than two weeks." 
+                    data-complainant-email="john.doe@example.com" data-complainee-email="stacy.davis@example.com"
+                    data-complainant-username="johndoe123" data-complainee-username="stacydavis456">
+                    <td>John Doe</td>
+                    <td>Stacy Davis</td>
+                    <td>2024-11-20</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
+                </tr>
+
+                <tr data-complainant="Jane Smith" data-complainee="Alex Green" data-category="Quality Issues"
+                    data-description="The item arrived damaged and unusable." 
+                    data-complainant-email="jane.smith@example.com" data-complainee-email="alex.green@example.com"
+                    data-complainant-username="janesmith789" data-complainee-username="alexgreen321">
+                    <td>Jane Smith</td>
+                    <td>Alex Green</td>
+                    <td>2024-11-18</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
+                </tr>
+
+                <tr data-complainant="John Doe" data-complainee="Stacy Davis" data-category="Delayed Delivery" 
+                    data-description="The delivery of the product was delayed by more than two weeks." 
+                    data-complainant-email="john.doe@example.com" data-complainee-email="stacy.davis@example.com"
+                    data-complainant-username="johndoe123" data-complainee-username="stacydavis456">
+                    <td>John Doe</td>
+                    <td>Stacy Davis</td>
+                    <td>2024-11-20</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
+                </tr>
+
+                <tr data-complainant="Jane Smith" data-complainee="Alex Green" data-category="Quality Issues"
+                    data-description="The item arrived damaged and unusable." 
+                    data-complainant-email="jane.smith@example.com" data-complainee-email="alex.green@example.com"
+                    data-complainant-username="janesmith789" data-complainee-username="alexgreen321">
+                    <td>Jane Smith</td>
+                    <td>Alex Green</td>
+                    <td>2024-11-18</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
+                </tr>
+
+                <tr data-complainant="Emily Johnson" data-complainee="Mike Brown" data-category="Overcharging"
+                    data-description="The amount charged was higher than the agreed price." 
+                    data-complainant-email="emily.johnson@example.com" data-complainee-email="mike.brown@example.com"
+                    data-complainant-username="emilyj123" data-complainee-username="mikeb456">
+                    <td>Emily Johnson</td>
+                    <td>Mike Brown</td>
+                    <td>2024-11-15</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
+                </tr>
+
+                <tr data-complainant="Carlos Ramirez" data-complainee="Sara Lee" data-category="Wrong Item"
+                    data-description="The wrong item was sent, not what was ordered." 
+                    data-complainant-email="carlos.ramirez@example.com" data-complainee-email="sara.lee@example.com"
+                    data-complainant-username="carlosr789" data-complainee-username="saralee321">
+                    <td>Carlos Ramirez</td>
+                    <td>Sara Lee</td>
+                    <td>2024-11-12</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
+                </tr>
+
+                <tr data-complainant="Olivia Davis" data-complainee="William Turner" data-category="Missing Package"
+                    data-description="The package was reported as delivered but was never received." 
+                    data-complainant-email="olivia.davis@example.com" data-complainee-email="william.turner@example.com"
+                    data-complainant-username="oliviadavis101" data-complainee-username="willturner88">
+                    <td>Olivia Davis</td>
+                    <td>William Turner</td>
+                    <td>2024-11-10</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
+                </tr>
+
+                <tr data-complainant="Samuel Clark" data-complainee="Grace Morgan" data-category="Customer Service"
+                    data-description="The customer service was unresponsive and unhelpful." 
+                    data-complainant-email="samuel.clark@example.com" data-complainee-email="grace.morgan@example.com"
+                    data-complainant-username="samuelclark234" data-complainee-username="gracemorgan567">
+                    <td>Samuel Clark</td>
+                    <td>Grace Morgan</td>
+                    <td>2024-11-05</td>
+                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- COMPLAINT MODAL -->
+    <div id="complaint-modal" class="complaint-modal">
+        <div class="complaint-modal-content">
+            <span class="complaint-close" onclick="closeComplaintModal()">&times;</span>
+            <h2>Complaint Details</h2>
+            <p><strong>Complainant Name:</strong> <span id="complainant-name"></span></p>
+            <p><strong>Complainant Username:</strong> <span id="complainant-username"></span></p>
+            <p><strong>Complainee Name:</strong> <span id="complainee-name"></span></p>
+            <p><strong>Complainee Username:</strong> <span id="complainee-username"></span></p>
+            <p><strong>Category:</strong> <span id="complaint-category"></span></p>
+            <p><strong>Description:</strong> <span id="complaint-description"></span></p>
+            <div class="modal-actions">
+                <button onclick="contactComplainant()">Contact Complainant</button>
+                <button onclick="contactComplainee()">Contact Complainee</button>
+                <button onclick="resolveComplaint()">Resolve</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const profileModal = document.getElementById('profile-modal');
+            const closeModalBtn = document.querySelector('.close');
+            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+        
+            profileLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                profileModal.style.display = 'block';
+            });
+        
+            closeModalBtn.addEventListener('click', function() {
+                profileModal.style.display = 'none';
+            });
+        
+            window.addEventListener('click', function(event) {
+                if (event.target === profileModal) {
+                    profileModal.style.display = 'none';
+                }
+            });
+        });
+        
+        document.getElementById("search-button").addEventListener("click", function() {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const tableBody = document.getElementById("complaints-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const complainantName = row.cells[0].innerText.toLowerCase();
+                const complaineeName = row.cells[1].innerText.toLowerCase();
+
+                // Check if the input matches either the complainant or complainee name
+                if (complainantName.includes(input) || complaineeName.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        
+        // Toggle complaint status
+        function toggleStatus(button) {
+            if (button.classList.contains("pending")) {
+                button.classList.remove("pending");
+                button.classList.add("resolved");
+                button.textContent = "Resolved";
+            } else {
+                button.classList.remove("resolved");
+                button.classList.add("pending");
+                button.textContent = "Pending";
+            }
+        }
+
+        // Close complaint modal
+        function closeComplaintModal() {
+            document.getElementById("complaint-modal").style.display = "none";
+        }
+        
+        let currentRow = null;  // Store reference to the current row being worked on
+
+        // Show complaint details in the modal
+        function showComplaintDetails(button) {
+            const row = button.closest('tr');  // Get the parent <tr> element
+            currentRow = row;  // Store reference to the current row
+
+            const complaintData = {
+                complainant: row.getAttribute('data-complainant'),
+                complainee: row.getAttribute('data-complainee'),
+                category: row.getAttribute('data-category'),
+                description: row.getAttribute('data-description'),
+                complainantEmail: row.getAttribute('data-complainant-email'),
+                complaineeEmail: row.getAttribute('data-complainee-email'),
+                complainantUsername: row.getAttribute('data-complainant-username'),
+                complaineeUsername: row.getAttribute('data-complainee-username')
+            };
+
+            // Populate modal with the dynamic data
+            document.getElementById("complainant-name").innerText = complaintData.complainant;
+            document.getElementById("complainee-name").innerText = complaintData.complainee;
+            document.getElementById("complaint-category").innerText = complaintData.category;
+            document.getElementById("complaint-description").innerText = complaintData.description;
+            document.getElementById("complainant-username").innerText = complaintData.complainantUsername;
+            document.getElementById("complainee-username").innerText = complaintData.complaineeUsername;
+
+            // Show the complaint modal
+            document.getElementById("complaint-modal").style.display = "block";
+        }
+
+        // Mark complaint as resolved
+        function resolveComplaint() {
+            if (currentRow) {
+                // Find the status button in the current row and update its status
+                const statusButton = currentRow.querySelector(".status-btn");
+                statusButton.classList.remove("pending");
+                statusButton.classList.add("resolved");
+                statusButton.textContent = "Resolved";
+
+                alert("Complaint resolved!");
+                document.getElementById("complaint-modal").style.display = "none";
+            }
+        }
+
+        // Contact complainant via email
+        function contactComplainant() {
+            if (currentRow) {
+                const complainantEmail = currentRow.getAttribute('data-complainant-email');
+                window.location.href = `mailto:${complainantEmail}`;
+            }
+        }
+
+        // Contact complainee via email
+        function contactComplainee() {
+            if (currentRow) {
+                const complaineeEmail = currentRow.getAttribute('data-complainee-email');
+                window.location.href = `mailto:${complaineeEmail}`;
+            }
+        }
+    </script>
+</body>
+</html>
