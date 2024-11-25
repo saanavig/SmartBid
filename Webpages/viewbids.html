@@ -1,31 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Bids</title>
     <link rel="stylesheet" href="viewbids.css">
-</head>
+    <style>
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .image-preview p {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .active-filter {
+            background-color: #FFEAA6;
+            color: rgb(0, 0, 0);
+        }
 
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
 <body>
-    <!-- Navbar -->
+    <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
             <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>
+            </a>                      
         </div>
-        <a>You</a>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
     </div>
 
     <div class="bid-container">
-        <h1>
-            View Bids
-        </h1>
+        <h1>View Bids</h1>
 
-        <!-- Search Bar + Create Listing Buttons-->
-        <div class="button-container">
+        <!-- SEARCH BAR + CREATE LISTING BUTTONS -->
+        <div class="search-container">
             <div class="search-bar">
                 <input type="text" placeholder="Search for bid...">
                 <button id="search-button" style="font-weight: bold;">Search</button>
@@ -37,18 +70,18 @@
         <form id="listing-popup" class="popup">
             <div class="popup-content">
                 <span class="close-listing">&times;</span>
-                <h2 style="margin-bottom: 20px" ;>Create Listing</h2>
+                <h2 style="margin-bottom: 20px">Create Listing</h2>
                 <div class="title">
-                    <input type="text" placeholder="Title">
+                    <input type="text" placeholder="Title" required>
                 </div>
                 <div class="description">
-                    <input type="text" placeholder="Description...">
+                    <textarea placeholder="Enter a detailed description of the item..." rows="5" required></textarea>
                 </div>
                 <div class="deadline">
-                    <input type="date" placeholder="Deadline" min="2024-11-09">
+                    <input type="date" placeholder="Deadline" min="2024-11-09" required>
                 </div>
                 <div class="filter-option">
-                    <select id="categories" placeholder="Category">
+                    <select id="categories" placeholder="Category" required>
                         <option value="" disabled selected>Category</option>
                         <option value="category1">Electronics</option>
                         <option value="category2">Clothing</option>
@@ -56,107 +89,169 @@
                     </select>
                 </div>
                 <div class="filter-option">
-                    <input type="number" id="max-price" placeholder="Starting Bid" min="0">
+                    <input type="number" id="max-price" placeholder="Starting Bid Amount" min="0" required>
                 </div>
-
+        
                 <div class="file-container">
                     <p class="upload-header">Upload Files</p>
                     <p style="font-size: 12px;">Supported Formats: PNG, JPEG</p>
                     <div class="upload-text">
                         <p>Drag and drop your files</p>
                         <p style="margin-bottom: 10px;">or</p>
-                        <input type="file" id="upload-button" accept=".png, .jpeg" hidden />
-                        <!--hidden custom button-->
+                        <input type="file" id="upload-button" accept=".png, .jpeg" multiple required />
                         <label for="upload-button">Browse Files</label>
                     </div>
+                    <div id="image-preview" class="image-preview"></div>
                 </div>
-                <button type=submit id="apply-filters" style="margin-top: 15px;">Create Listing</button>
+                <button type="submit" id="apply-filters" style="margin-top: 15px;">Create Listing</button>
             </div>
         </form>
-
+        
+        <!-- BID ITEMS -->
         <div class="listings-container">
-            <!-- Filter Bids-->
+            <!-- FILTER BUTTONS -->
+            <div class="button-container" style="margin-top: 20px;">
+                <button id="all-button" data-filter="All">All</button>
+                <button id="completed-button" data-filter="Completed">Completed</button>
+                <button id="in-progress-button" data-filter="In-Progress">In-Progress</button>
+                <button id="selling-button" data-filter="Selling">Selling</button>
+                <button id="buying-button" data-filter="Buying">Buying</button>
+            </div>
+
             <div class="listing-area">
-                <div class="button-container" style="margin-top: 20px;">
-                    <button id="completed-button">Completed</button>
-                    <button id="in-progress-button">In-Progress</button>
-                    <button id="selling-button">Selling</button>
-                    <button id="buying-button">Buying</button>
-                </div>
-
-                <!-- Bid Items -->
-                <div class="item-card">
-                    <!--
-                    <div class="status-line">
-                        <p class="item-type">Buying</p>
-                        <p class="item-status">In-Progress</p>
-                    </div>
-                    -->
-                    <br>
+                <div class="item-card Completed">
                     <div class="item-image">
-                        <img src="images\pink fujifilm.png" alt="Item Image">
+                        <img src="images/pink fujifilm.png" alt="Item Image">
                     </div>
-                    <div>
-                        <div class="item-info">
-                            <p class="item-name">Pink Fujifilm </p>
-                            <p class="item-price">US $99.99</p>
-                            <p class="item-time">18d 10h</p>
-                            <br>
-                            <p class="item-account">John Doe - 4.2 (10 Ratings)</p>
-                        </div>
+                    <div class="item-info">
+                        <p class="item-name">Pink Fujifilm</p>
+                        <p class="item-price">US $99.99</p>
+                        <p class="item-time">18d 10h</p>
+                        <p class="item-account">John Doe - 4.2 (10 Ratings)</p>
+                        <p class="item-status">Buying</p>
+                        <p class="item-completion-status">Completed</p>
                     </div>
                 </div>
 
-                <div class="item-card">
-                    <!--
-                    <div class="status-line">
-                        <p class="item-type">Buying</p>
-                        <p class="item-status">In-Progress</p>
-                    </div>
-                    -->
-                    <br>
+                <div class="item-card In-Progress">
                     <div class="item-image">
-                        <img src="images\airpods pro max.jpg" alt="Item Image">
+                        <img src="images/airpods pro max.jpg" alt="Item Image">
                     </div>
-                    <div>
-                        <div class="item-info">
-                            <p class="item-name">Apple Airpods Max </p>
-                            <p class="item-price">US $99.99</p>
-                            <p class="item-time">18d 10h</p>
-                            <br>
-                            <p class="item-account">Srewashi Mondal - 4.3 (12 Ratings)</p>
-                        </div>
+                    <div class="item-info">
+                        <p class="item-name">Apple Airpods Max</p>
+                        <p class="item-price">US $99.99</p>
+                        <p class="item-time">18d 10h</p>
+                        <p class="item-account">Srewashi Mondal - 4.3 (12 Ratings)</p>
+                        <p class="item-status">Selling</p>
+                        <p class="item-completion-status">In-Progress</p>
                     </div>
                 </div>
 
-
-                <div class="item-card">
-                    <!--
-                    <div class="status-line">
-                        <p class="item-type">Buying</p>
-                        <p class="item-status">In-Progress</p>
-                    </div>
-                    -->
-                    <br>
+                <div class="item-card In-Progress">
                     <div class="item-image">
-                        <img src="images\lunch box.avif" alt="Item Image">
+                        <img src="images/lunch box.avif" alt="Item Image">
                     </div>
-                    <div>
-                        <div class="item-info">
-                            <p class="item-name">Lunch Box </p>
-                            <p class="item-price">US $99.99</p>
-                            <p class="item-time">18d 10h</p>
-                            <br>
-                            <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
-                        </div>
+                    <div class="item-info">
+                        <p class="item-name">Lunch Box</p>
+                        <p class="item-price">US $99.99</p>
+                        <p class="item-time">18d 10h</p>
+                        <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
+                        <p class="item-status">Buying</p>
+                        <p class="item-completion-status">In-Progress</p>
                     </div>
                 </div>
 
-
+                <div class="item-card In-Progress">
+                    <div class="item-image">
+                        <img src="images/lunch box.avif" alt="Item Image">
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">Lunch Box</p>
+                        <p class="item-price">US $99.99</p>
+                        <p class="item-time">18d 10h</p>
+                        <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
+                        <p class="item-status">Selling</p>
+                        <p class="item-completion-status">Completed</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchButton = document.getElementById("search-button");
+            const searchInput = document.querySelector("input[type='text']");
+            const filterButtons = document.querySelectorAll('.button-container button');
+            const bidItems = document.querySelectorAll('.item-card');
+
+            let searchTerm = ''; // Store the search term
+            let activeFilters = []; // Store active filters as an array
+
+            // Function to filter the bid items based on search term and active filters
+            function applyFilters() {
+                bidItems.forEach(item => {
+                    const itemName = item.querySelector('.item-name').textContent.toLowerCase();
+                    const itemPrice = item.querySelector('.item-price').textContent.toLowerCase();
+                    const itemStatus = item.querySelector('.item-status').textContent;
+                    const itemCompletionStatus = item.querySelector('.item-completion-status').textContent;
+
+                    // Check if the item matches the search term
+                    const matchesSearch = itemName.includes(searchTerm) || itemPrice.includes(searchTerm);
+
+                    // Check if the item matches all active filters (status and completion status)
+                    const matchesFilters = activeFilters.every(filter => {
+                        if (filter === 'All') return true; // 'All' filter should always show the item
+                        return itemStatus === filter || itemCompletionStatus === filter; // Apply all selected filters
+                    });
+
+                    // Show or hide the item based on both search and filter conditions
+                    if (matchesSearch && matchesFilters) {
+                        item.classList.remove('hidden'); // Show the item
+                    } else {
+                        item.classList.add('hidden'); // Hide the item
+                    }
+                });
+            }
+
+            // Search button event listener
+            searchButton.addEventListener('click', () => {
+                searchTerm = searchInput.value.toLowerCase(); // Update the search term
+                applyFilters(); // Apply the filters after updating the search term
+            });
+
+            // Filter button event listeners
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filterStatus = button.getAttribute('data-filter'); // Get the filter status
+
+                    // Toggle active class on the buttons
+                    button.classList.toggle('active-filter');
+                    
+                    // If the filter is active, add it to the activeFilters array
+                    if (button.classList.contains('active-filter')) {
+                        if (!activeFilters.includes(filterStatus)) {
+                            activeFilters.push(filterStatus);
+                        }
+                    } else {
+                        // If the filter is not active, remove it from the activeFilters array
+                        activeFilters = activeFilters.filter(filter => filter !== filterStatus);
+                    }
+
+                    // Apply the filters after changing the filter statuses
+                    applyFilters();
+                });
+
+                const allButton = document.getElementById('all-button');
+                allButton.addEventListener('click', () => {
+                    activeFilters = ['All']; // Reset filters to 'All', showing all items
+                    filterButtons.forEach(button => button.classList.remove('active-filter')); // Remove active classes from other buttons
+                    allButton.classList.add('active-filter'); // Mark 'All' as active
+                    applyFilters(); // Reapply the filters to show all items
+                });
+            });
+        });
+
         const uploadButton = document.getElementById('upload-button');
         const fileChosen = document.getElementById('file-chosen');
 
@@ -172,7 +267,37 @@
         closeListing.addEventListener('click', () => {
             listingPopup.style.display = 'none'; // Hide the popup
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const uploadButton = document.getElementById('upload-button');
+            const imagePreview = document.getElementById('image-preview');
+            
+            // Track the number of images uploaded
+            let imageCount = 0;
+
+            uploadButton.addEventListener('change', function(event) {
+                const files = event.target.files;
+                imageCount = files.length > 5 ? 5 : files.length;
+
+                // Display images in preview area
+                for (let i = 0; i < imageCount; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+
+                        const pElement = document.createElement('p');
+
+                        const divElement = document.createElement('div');
+                        divElement.appendChild(imgElement);
+                        divElement.appendChild(pElement);
+                        imagePreview.appendChild(divElement);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
     </script>
 </body>
-
 </html>
