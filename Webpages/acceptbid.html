@@ -48,7 +48,7 @@
             </div>
 
             <!--Accept Bid Popup-->
-            <form id="bid-popup" class="popup">
+            <form id="manage-bid-popup" class="popup">
                 <div class="popup-content">
                     <span class="close-listing" id="close-button">&times;</span>
                     <h2 id="bid-header">Accept or Decline Bid</h2>
@@ -56,15 +56,17 @@
                     <div class="row">
                         <p id="highest-bid" style="font-weight: bold">US $500.00</p>
                     </div>
-                    <button class="accept-bid-button" id="accept-bid-button">Accept</button>
-                    <button class="decline-bid-button" id="decline-bid-button">Decline</button>
+                    <div class="row">
+                        <button class="accept-bid-button" id="accept-bid-button">Accept</button>
+                        <button class="decline-bid-button" id="decline-bid-button">Decline</button>
+                    </div>
                 </div>
             </form>
 
             <!-- Rate Seller Popup -->
             <form id="rate-popup" class="popup">
                 <div class="popup-content">
-                    <span class="close-rating" id="close-rating-button">&times;</span>
+                    <span class="close-listing" id="close-rating-button">&times;</span>
                     <h2>Rate the Seller</h2>
                     <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
                     <div id="star-rating" class="row">
@@ -131,36 +133,21 @@
                 </div>
                 <!-- Additional comments as needed -->
             </div>
-
-            <!-- Bid Offers -->
-            <div class="bids-section">
-                <div class="bid-container">
-                    <p>John Doe - 4.2 (10 Ratings)</p>
-                    <span style="font-weight: bold;">US $99.00</span>
-                    <div class="manage-bid-buttons">
-                        <button>Accept</button> 
-                        <button>Decline</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     <script>
         const manageBidPopup = document.getElementById('manage-bid-popup');
         const acceptBidButton = document.getElementById('accept-bid-button');
-        const decineBidButton = document.getElementById('decline-bid-button');
+        const declineBidButton = document.getElementById('decline-bid-button');
         const closeButton = document.getElementById('close-button');
 
+        manageBidPopup.style.display = 'block';
+        
         // Rating
         const rateButton = document.getElementById('rate-button');
         const ratePopup = document.getElementById('rate-popup');
         const closeRatingButton = document.getElementById('close-rating-button');
         let currentRating = 0;
-
-        startBidButton.addEventListener('click', () => {
-            startBidPopup.style.display = 'block';
-            invalidMessage.innerText = ''; // Clear error messages
-        });
 
         closeButton.addEventListener('click', () => {
             manageBidPopup.style.display = 'none';
@@ -170,12 +157,16 @@
             ratePopup.style.display = 'none';
         });
 
-        acceptBidButton.addEventListener('click', () => {
+        acceptBidButton.addEventListener('click', (event) => {
+            event.preventDefault();
+
             manageBidPopup.style.display = 'none';
             ratePopup.style.display = 'block';
         });
 
-        declineBidButton.addEventListener('click', () => {
+        declineBidButton.addEventListener('click', (event) => {
+            event.preventDefault();
+
             manageBidPopup.style.display = 'none';
         });
 
