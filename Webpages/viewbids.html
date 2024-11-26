@@ -5,33 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Bids</title>
     <link rel="stylesheet" href="viewbids.css">
-    <style>
-        .image-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .image-preview img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .image-preview p {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        .active-filter {
-            background-color: #FFEAA6;
-            color: rgb(0, 0, 0);
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
 </head>
 <body>
     <!-- NAVBAR -->
@@ -53,12 +26,12 @@
             </div>
         </div>
 
-        <!-- PROFILE MODAL -->
-        <div id="profile-modal" class="modal">
-            <div class="modal-content">
+        <!-- PROFILE POPUP -->
+        <div id="profile-popup" class="profile-popup">
+            <div class="profile-popup-content">
                 <span class="close">&times;</span>
                 <h1>My Profile</h1>
-                <div class="modal-info">
+                <div class="profile-popup-info">
                     <div class ="align-profile">
                         <p>John Doe</p>
                         <p>- 3.6 (7 Ratings)</p>
@@ -82,11 +55,11 @@
             </div>
         </div>
 
-        <!-- Create Listing Form -->
+        <!-- CREATE LISTING FORM -->
         <form id="listing-popup" class="popup">
             <div class="popup-content">
                 <span class="close-listing">&times;</span>
-                <h2 style="margin-bottom: 20px">Create Listing</h2>
+                <h2 style="margin-top: 40px; margin-bottom: 20px">Create Listing</h2>
                 <div class="title">
                     <input type="text" placeholder="Title" required>
                 </div>
@@ -195,40 +168,39 @@
     </div>
 
     <script>
+        // OPEN PROFILE
         document.addEventListener("DOMContentLoaded", function() {
-            const profileModal = document.getElementById('profile-modal');
-            const closeModalBtn = document.querySelector('.close');
+            const profilePopup = document.getElementById('profile-popup');
+            const closePopupBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
 
-            // Open modal when profile link is clicked
             profileLink.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent navigation
-                profileModal.style.display = 'block';
+                event.preventDefault();
+                profilePopup.style.display = 'block';
             });
 
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                profileModal.style.display = 'none';
+            closePopupBtn.addEventListener('click', function() {
+                profilePopup.style.display = 'none';
             });
 
-            // Close modal when clicking outside the modal content
             window.addEventListener('click', function(event) {
-                if (event.target === profileModal) {
-                    profileModal.style.display = 'none';
+                if (event.target === profilePopup) {
+                    profilePopup.style.display = 'none';
                 }
             });
         });
 
+        // SEARCH
         document.addEventListener("DOMContentLoaded", function() {
             const searchButton = document.getElementById("search-button");
             const searchInput = document.querySelector("input[type='text']");
             const filterButtons = document.querySelectorAll('.button-container button');
             const bidItems = document.querySelectorAll('.item-card');
 
-            let searchTerm = ''; // Store the search term
-            let activeFilters = []; // Store active filters as an array
+            let searchTerm = '';
+            let activeFilters = [];
 
-            // Function to filter the bid items based on search term and active filters
+            // APPLY FILTERS
             function applyFilters() {
                 bidItems.forEach(item => {
                     const itemName = item.querySelector('.item-name').textContent.toLowerCase();
@@ -236,62 +208,59 @@
                     const itemStatus = item.querySelector('.item-status').textContent;
                     const itemCompletionStatus = item.querySelector('.item-completion-status').textContent;
 
-                    // Check if the item matches the search term
                     const matchesSearch = itemName.includes(searchTerm) || itemPrice.includes(searchTerm);
 
-                    // Check if the item matches all active filters (status and completion status)
                     const matchesFilters = activeFilters.every(filter => {
-                        if (filter === 'All') return true; // 'All' filter should always show the item
-                        return itemStatus === filter || itemCompletionStatus === filter; // Apply all selected filters
+                        if (filter === 'All') return true;
+                        return itemStatus === filter || itemCompletionStatus === filter;
                     });
 
-                    // Show or hide the item based on both search and filter conditions
                     if (matchesSearch && matchesFilters) {
-                        item.classList.remove('hidden'); // Show the item
+                        item.classList.remove('hidden');
                     } else {
-                        item.classList.add('hidden'); // Hide the item
+                        item.classList.add('hidden');
                     }
                 });
             }
 
-            // Search button event listener
             searchButton.addEventListener('click', () => {
-                searchTerm = searchInput.value.toLowerCase(); // Update the search term
-                applyFilters(); // Apply the filters after updating the search term
+                searchTerm = searchInput.value.toLowerCase();
+                applyFilters();
             });
 
-            // Filter button event listeners
             filterButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    const filterStatus = button.getAttribute('data-filter'); // Get the filter status
+                    const filterStatus = button.getAttribute('data-filter');
 
-                    // Toggle active class on the buttons
                     button.classList.toggle('active-filter');
                     
-                    // If the filter is active, add it to the activeFilters array
                     if (button.classList.contains('active-filter')) {
+                        if (activeFilters.includes('All')) {
+                            activeFilters = activeFilters.filter(filter => filter !== 'All');
+                            document.getElementById('all-button').classList.remove('active-filter');
+                        }
+
                         if (!activeFilters.includes(filterStatus)) {
                             activeFilters.push(filterStatus);
                         }
                     } else {
-                        // If the filter is not active, remove it from the activeFilters array
                         activeFilters = activeFilters.filter(filter => filter !== filterStatus);
                     }
 
-                    // Apply the filters after changing the filter statuses
                     applyFilters();
                 });
+            });
 
-                const allButton = document.getElementById('all-button');
-                allButton.addEventListener('click', () => {
-                    activeFilters = ['All']; // Reset filters to 'All', showing all items
-                    filterButtons.forEach(button => button.classList.remove('active-filter')); // Remove active classes from other buttons
-                    allButton.classList.add('active-filter'); // Mark 'All' as active
-                    applyFilters(); // Reapply the filters to show all items
-                });
+            const allButton = document.getElementById('all-button');
+            allButton.addEventListener('click', () => {
+                activeFilters = ['All'];
+                filterButtons.forEach(button => button.classList.remove('active-filter'));
+                allButton.classList.add('active-filter');
+                applyFilters();
             });
         });
 
+        // UPLOADING IMAGES
         const uploadButton = document.getElementById('upload-button');
         const fileChosen = document.getElementById('file-chosen');
 
@@ -300,26 +269,23 @@
         const closeListing = document.querySelector('.close-listing');
 
         listingButton.addEventListener('click', () => {
-            listingPopup.style.display = 'block'; // Show the popup
+            listingPopup.style.display = 'block';
         });
 
-        // Function to close the filter popup
         closeListing.addEventListener('click', () => {
-            listingPopup.style.display = 'none'; // Hide the popup
+            listingPopup.style.display = 'none';
         });
 
         document.addEventListener("DOMContentLoaded", function() {
             const uploadButton = document.getElementById('upload-button');
             const imagePreview = document.getElementById('image-preview');
             
-            // Track the number of images uploaded
             let imageCount = 0;
 
             uploadButton.addEventListener('change', function(event) {
                 const files = event.target.files;
                 imageCount = files.length > 5 ? 5 : files.length;
 
-                // Display images in preview area
                 for (let i = 0; i < imageCount; i++) {
                     const file = files[i];
                     const reader = new FileReader();
