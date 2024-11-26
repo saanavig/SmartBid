@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Applications</title>
+    <title>Pending User Applications</title>
     <link rel="stylesheet" href="applications.css">
 </head>
 <body>
@@ -15,6 +15,7 @@
             </a>                      
         </div>
         
+        <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
             <div class="dropdown-content">
@@ -24,35 +25,39 @@
                 <a href="signout.html">Sign Out</a>
             </div>
         </div>
-    </div>
 
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h1>My Profile</h1>
-            <div class="modal-info">
-                <div class ="align-profile">
-                    <p>John Doe</p>
-                    <p>- 3.6 (7 Ratings)</p>
+        <!-- PROFILE POPUP -->
+        <div id="profile-popup" class="profile-popup">
+            <div class="profile-popup-content">
+                <span class="close">&times;</span>
+                <h1>My Profile</h1>
+                <div class="profile-popup-info">
+                    <div class ="align-profile">
+                        <p>John Doe</p>
+                        <p>- 3.6 (7 Ratings)</p>
+                    </div>
+                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
                 </div>
-                <p><strong>Date Joined:</strong> January 1, 2023</p>
-                <p><strong>Total Transactions:</strong> 25</p>
             </div>
         </div>
     </div>
 
     <!-- APPLICATIONS CONTENT -->
     <div class="applications-container">
+        <!-- TITLE -->
         <h1>Pending User Applications</h1>
 
+        <!-- SEARCH BAR -->
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="Search for visitor...">
             <button id="search-button">Search</button>
         </div>
 
+        <!-- APPLICATIONS TABLE -->
         <table class="applications-table">
             <thead>
+                <!-- COLUMN TITLES -->
                 <tr>
                     <th>Full Name</th>
                     <th>Username</th>
@@ -63,10 +68,11 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            
+
+            <!-- APPLICATIONS ROW DATA -->
             <tbody id="applications-body">
                 <tr>
-                    <td>Sehr A.</td>
+                    <td>Sehr Abrar</td>
                     <td>Fourpixels</td>
                     <td>2024-11-20</td>
                     <td>5 + 7</td>
@@ -79,7 +85,7 @@
                 </tr>
 
                 <tr>
-                    <td>Debasree S.</td>
+                    <td>Debasree Sen</td>
                     <td>Wallaweebs</td>
                     <td>2024-11-20</td>
                     <td>5 + 7</td>
@@ -92,7 +98,7 @@
                 </tr>
 
                 <tr>
-                    <td>Srewashi M.</td>
+                    <td>Srewashi Mondal</td>
                     <td>Srewashi</td>
                     <td>2024-11-20</td>
                     <td>5 + 7</td>
@@ -105,7 +111,7 @@
                 </tr>
 
                 <tr>
-                    <td>Saanavi G.</td>
+                    <td>Saanavi Goyal</td>
                     <td>Saanavi</td>
                     <td>2024-11-20</td>
                     <td>5 + 7</td>
@@ -229,29 +235,49 @@
     </div>    
 
     <script>
-         document.addEventListener("DOMContentLoaded", function() {
-            const profileModal = document.getElementById('profile-modal');
-            const closeModalBtn = document.querySelector('.close');
+        // OPEN PROFILE
+        document.addEventListener("DOMContentLoaded", function() {
+            const profilePopup = document.getElementById('profile-popup');
+            const closePopupBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
 
-            // Open modal when profile link is clicked
             profileLink.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent navigation
-                profileModal.style.display = 'block';
+                event.preventDefault();
+                profilePopup.style.display = 'block';
             });
 
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                profileModal.style.display = 'none';
+            closePopupBtn.addEventListener('click', function() {
+                profilePopup.style.display = 'none';
             });
 
-            // Close modal when clicking outside the modal content
             window.addEventListener('click', function(event) {
-                if (event.target === profileModal) {
-                    profileModal.style.display = 'none';
+                if (event.target === profilePopup) {
+                    profilePopup.style.display = 'none';
                 }
             });
         });
+
+        // SEARCH
+        document.getElementById("search-button").addEventListener("click", function() {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const tableBody = document.getElementById("applications-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const fullName = row.cells[0].innerText.toLowerCase();
+                const username = row.cells[1].innerText.toLowerCase();
+                const submissionDate = row.cells[2].innerText.toLowerCase();
+
+                // Check if the input matches any of the columns
+                if (fullName.includes(input) || username.includes(input) || submissionDate.includes(input)) {
+                    row.style.display = ""; // Show the row if there's a match
+                } else {
+                    row.style.display = "none"; // Hide the row if no match
+                }
+            });
+        });
+
+        // CONFIRM APPLICATION MODAL
         function confirmApplication(action, name) {
             const modal = document.getElementById('applications-modal');
             const message = document.getElementById('applications-confirmation-message');
@@ -295,37 +321,19 @@
             modal.style.display = 'block';
         }
 
+        // CLOSE APPLICATION
         function closeApplicationsModal() {
             const modal = document.getElementById('applications-modal');
             modal.style.display = 'none';
         }
 
+        // CLOSE APPLICATION MODAL
         window.onclick = function(event) {
             const modal = document.getElementById('applications-modal');
             if (event.target === modal) {
                 closeApplicationsModal();
             }
         };
-
-        document.getElementById("search-button").addEventListener("click", function() {
-            const input = document.getElementById("search-input").value.toLowerCase();
-            const tableBody = document.getElementById("applications-body");
-            const rows = tableBody.querySelectorAll("tr");
-
-            rows.forEach(row => {
-                const fullName = row.cells[0].innerText.toLowerCase();
-                const username = row.cells[1].innerText.toLowerCase();
-                const submissionDate = row.cells[2].innerText.toLowerCase();
-
-                // Check if the input matches any of the columns
-                if (fullName.includes(input) || username.includes(input) || submissionDate.includes(input)) {
-                    row.style.display = ""; // Show the row if there's a match
-                } else {
-                    row.style.display = "none"; // Hide the row if no match
-                }
-            });
-        });
-
     </script>
 </body>
 </html>
