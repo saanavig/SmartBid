@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="../../static/profile.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="{% url 'profile' %}">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+
+        <!-- PROFILE POPUP -->
+        <div id="profile" class="profile">
+            <div class="profile-content">
+                <span class="close">&times;</span>
+                <h1>My Profile</h1>
+
+                <!-- templates/profile.html -->
+                <h1>Welcome, user {{ user.username }}!</h1>
+                <p>Email: {{ user.email }}</p>
+                <p>First Name: {{ user.first_name }}</p>
+                <p>Last Name: {{ user.last_name }}</p>
+                <!-- Add more profile information as needed -->
+
+                <div class="profile-info">
+                    <div class ="align-profile">
+                        <p>{{ user.first_name }} {{ user.last_name }}</p>
+                        <p>- 3.6 (7 Ratings)</p>
+                    </div>
+                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

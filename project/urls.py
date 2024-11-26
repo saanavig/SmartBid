@@ -20,6 +20,8 @@ from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from project.views import CustomSignupView
+from .views import homepage, profile, CustomSignupView
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +30,9 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='homepage.html')),    
     path('login/', LoginView.as_view(), name='login'),
     path('signup/', CustomSignupView.as_view(), name='signup'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/account/', views.account, name='account'),
+    path('dashboard/viewbids/', views.viewbids, name='viewbids'),
+    path('dashboard/requests/', views.requests, name='requests'),
+    
 ]

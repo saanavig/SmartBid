@@ -22,8 +22,9 @@
             <div class="dropdown">
                 <a class="login-btn">You</a>
                 <div class="dropdown-content">
-                    <a href="dashboard.html">Dashboard</a>
-                    <a href="profile.html">Profile</a>
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="admin.html">Admin</a>
+                    <a href="{% url 'profile' %}">Profile</a>
                     <a href="signout.html">Sign Out</a>
                 </div>
             </div>

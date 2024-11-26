@@ -97,3 +97,5 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 'sign up form'
 ACCOUNT_FORMS = {'signup': 'project.forms.CustomSignupForm'}
+
+LOGIN_REDIRECT_URL = '/accounts/profile/'

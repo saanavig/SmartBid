@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account</title>
-    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="../../static/account.css">
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
-            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>                      
         </div>
@@ -54,19 +54,19 @@
             <h2>Account Information</h2>
             <div class="info-field">
                 <label for="first-name">First Name:</label>
-                <input type="text" id="first-name" value="John" disabled>
+                <input type="text" id="first-name" value="{{ user.first_name }}" disabled>
             </div>
             <div class="info-field">
                 <label for="last-name">Last Name:</label>
-                <input type="text" id="last-name" value="Doe" disabled>
+                <input type="text" id="last-name" value="{{ user.last_name }}" disabled>
             </div>
             <div class="info-field">
                 <label for="email">Email:</label>
-                <input type="email" id="email" value="john.doe@example.com" disabled>
+                <input type="email" id="email" value="{{ user.email }}" disabled>
             </div>
             <div class="info-field">
                 <label for="username">Username:</label>
-                <input type="text" id="username" value="johndoe" disabled>
+                <input type="text" id="username" value="{{ user.username }}" disabled>
             </div>
             <div class="info-field">
                 <label for="shipping-address">Shipping Address:</label>
@@ -74,7 +74,7 @@
             </div>
             <div class="info-field">
                 <label for="current-password">Password:</label>
-                <input type="text" id="password" value="password123" disabled>
+                <input type="text" id="password" value="********" disabled>
             </div>
             
             <div class="buttons">

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Bids</title>
-    <link rel="stylesheet" href="viewbids.css">
+    <link rel="stylesheet" href="../../static/viewbids.css">
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
-            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>                      
         </div>
@@ -19,9 +19,9 @@
         <div class="dropdown">
             <a class="login-btn">You</a>
             <div class="dropdown-content">
-                <a href="dashboard.html">Dashboard</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="admin.html">Admin</a>
-                <a href="profile.html">Profile</a>
+                <a href="{% url 'profile' %}">Profile</a>
                 <a href="signout.html">Sign Out</a>
             </div>
         </div>
@@ -110,7 +110,7 @@
             <div class="listing-area">
                 <div class="item-card Completed">
                     <div class="item-image">
-                        <img src="images/pink fujifilm.png" alt="Item Image">
+                        <img src="..\..\static\images\pink fujifilm.png" alt="Item Image">
                     </div>
                     <div class="item-info">
                         <p class="item-name">Pink Fujifilm</p>
@@ -124,7 +124,7 @@
 
                 <div class="item-card In-Progress">
                     <div class="item-image">
-                        <img src="images/airpods pro max.jpg" alt="Item Image">
+                        <img src="..\..\static\images\airpods pro max.jpg" alt="Item Image">
                     </div>
                     <div class="item-info">
                         <p class="item-name">Apple Airpods Max</p>
@@ -138,7 +138,7 @@
 
                 <div class="item-card In-Progress">
                     <div class="item-image">
-                        <img src="images/lunch box.avif" alt="Item Image">
+                        <img src="..\..\static\images\lunch box.avif" alt="Item Image">
                     </div>
                     <div class="item-info">
                         <p class="item-name">Lunch Box</p>
@@ -152,7 +152,7 @@
 
                 <div class="item-card In-Progress">
                     <div class="item-image">
-                        <img src="images/lunch box.avif" alt="Item Image">
+                        <img src="..\..\static\images\lunch box.avif" alt="Item Image">
                     </div>
                     <div class="item-info">
                         <p class="item-name">Lunch Box</p>

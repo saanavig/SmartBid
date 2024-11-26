@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Lounge</title>
-    <link rel="stylesheet" href="viplounge.css">
+    <link rel="stylesheet" href="../../static/viplounge.css">
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
-            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>                      
         </div>
@@ -19,9 +19,9 @@
         <div class="dropdown">
             <a class="login-btn">You</a>
             <div class="dropdown-content">
-                <a href="dashboard.html">Dashboard</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="admin.html">Admin</a>
-                <a href="profile.html">Profile</a>
+                <a href="{% url 'profile' %}">Profile</a>
                 <a href="signout.html">Sign Out</a>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 <h1>My Profile</h1>
                 <div class="profile-popup-info">
                     <div class ="align-profile">
-                        <p>John Doe</p>
+                        <p>{{ user.first_name }} {{ user.last_name }}</p>
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> January 1, 2023</p>
