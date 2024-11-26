@@ -51,7 +51,7 @@ body {
     text-decoration: underline;
 }
 
-/** LOG IN + YOU BUTTON */
+/* LOG IN + YOU BUTTON */
 .login-btn {
     cursor: pointer;
     padding: 0px 40px;
@@ -94,8 +94,8 @@ body {
     display: block;
 }
 
-/* PROFILE CONTENT */
-.profile-modal {
+/* PROFILE POPUP CONTENT */
+.profile-popup {
     display: none; 
     position: fixed;
     z-index: 1000;
@@ -107,7 +107,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.profile-modal-content {
+.profile-popup-content {
     background-color: #f9f9f9;
     margin: 15% auto;
     padding: 20px;
@@ -118,9 +118,14 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.profile-modal-content h1 {
+.profile-popup-content h1 {
     margin-top: 10px;
     justify-content: center;
+}
+
+.profile-popup-info p {
+    margin: 10px 0;
+    font-size: 1rem;
 }
 
 .align-profile {
@@ -139,7 +144,6 @@ body {
 }
 
 .align-profile {
-
     align-items: center;
     gap: 5x;
 } 
@@ -156,11 +160,6 @@ body {
 .close:focus {
     color: black;
     text-decoration: none;
-}
-
-.profile-modal-info p {
-    margin: 10px 0;
-    font-size: 1rem;
 }
 
 /* SEARCH BAR */
@@ -195,7 +194,7 @@ body {
     background-color: #f3da88;
 }
 
-/* APPLICATIONS PAGE STYLING */
+/* COMPLAINTS PAGE STYLING */
 .complaints-container {
     margin: 20px auto;
     max-width: 80%;
@@ -252,7 +251,7 @@ body {
     background-color: #f1f1f1;
 }
 
-/* COMPLAINS MODAL */
+/* VIEW COMPLAINT POPUP */
 .complaints-modal {
     display: none;
     position: fixed;
@@ -304,7 +303,7 @@ body {
 
 .close-complaints-modal {
     color: #aaa;
-    float: right;
+
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
@@ -366,17 +365,55 @@ body {
     text-align: left;
 }
 
+.complaint-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.complaint-modal-content h2 {
+    margin-top: 10px;
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.complaint-modal-content p {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 10px;
+}
+
 .complaint-close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    margin-left: 530px;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 20px;
 }
 
 .complaint-close:hover {
     color: black;
+}
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end; 
+    width: 100%;
 }
 
 .modal-actions button {
@@ -395,28 +432,6 @@ body {
     transform: scale(1.05);
 }
 
-.complaint-modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.complaint-modal-content h2 {
-    margin-top: 10px;
-    font-size: 24px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    color: #333;
-    text-align: center;
-}
-
 .modal-info {
     display: flex;
     justify-content: space-between; 
@@ -427,7 +442,6 @@ body {
     display: flex;
     justify-content: center;
     margin-top: 20px;
-    gap: 10px;
 }
 
 .modal-actions button {
