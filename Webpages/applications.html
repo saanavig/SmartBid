@@ -79,8 +79,8 @@
                     <td>12</td>
                     <td>12</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Sehr A.')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Sehr A.')">Deny</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Sehr Abrar')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Sehr Abrar')">Deny</button>
                     </td>
                 </tr>
 
@@ -92,8 +92,8 @@
                     <td>12</td>
                     <td>12</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Debasree S.')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Debasree S.')">Deny</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Debasree Sen.')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Debasree Sen')">Deny</button>
                     </td>
                 </tr>
 
@@ -105,20 +105,20 @@
                     <td>12</td>
                     <td>12</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Srewashi M.')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Srewashi M.')">Deny</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Srewashi Mondal')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', 'Srewashi Mondal')">Deny</button>
                     </td>
                 </tr>
 
                 <tr>
-                    <td>Saanavi Goyal</td>
+                    <td>Saanavi </td>
                     <td>Saanavi</td>
                     <td>2024-11-20</td>
                     <td>5 + 7</td>
                     <td>12</td>
                     <td>12</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Saanavi G.')">Approve</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', 'Saanavi Goyal')">Approve</button>
                         <button class="deny-btn" onclick="confirmApplication('deny', 'Saanavi G.')">Deny</button>
                     </td>
                 </tr>
@@ -268,11 +268,10 @@
                 const username = row.cells[1].innerText.toLowerCase();
                 const submissionDate = row.cells[2].innerText.toLowerCase();
 
-                // Check if the input matches any of the columns
                 if (fullName.includes(input) || username.includes(input) || submissionDate.includes(input)) {
-                    row.style.display = ""; // Show the row if there's a match
+                    row.style.display = "";
                 } else {
-                    row.style.display = "none"; // Hide the row if no match
+                    row.style.display = "none";
                 }
             });
         });
