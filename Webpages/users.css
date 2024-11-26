@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;;
+}
+
+body {
+    background-color: #f9f9f9;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 140px;
+    margin-bottom: 50px;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar h1 span {
+    margin-left: 8px;
+}
+
+.navbar a {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    margin-left: 40px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+/** LOG IN + YOU BUTTON */
+.login-btn {
+    cursor: pointer;
+    padding: 0px 40px;
+    background-color: transparent; 
+    border: none;
+    color: black;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-top: 10px; 
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.dropdown-content a:hover {
+    color: blue;
+    text-decoration: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* PROFILE POPUP CONTENT */
+.profile-popup {
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.profile-popup-content {
+    background-color: #f9f9f9;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-popup-content h1 {
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.profile-popup-info p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.align-profile {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.align-profile p:nth-child(1) {
+    color:rgb(27, 143, 252);
+    font-size: 24px;
+}
+
+.align-profile p:nth-child(2) {
+    font-size: 24px;
+}
+
+.align-profile {
+    align-items: center;
+    gap: 5x;
+} 
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* SEARCH BAR */
+.search-bar {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 40px;
+}
+
+.search-bar input {
+    flex: 0 0 80%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px 0 0 30px;
+    font-size: 18px;
+    outline: none;
+    padding-left: 25px;
+}
+
+#search-button {
+    flex: 0 0 20%;
+    padding: 15px;
+    background-color: #FFEAA6;
+    color: black;
+    font-size: 20px;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    cursor: pointer;
+}
+
+#search-button:hover {
+    background-color: #f3da88;
+}
+
+/* USERS CONTENT */
+.users-container {
+    margin: 20px auto;
+    max-width: 80%;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.users-container h1 {
+    text-align: center;
+    margin: 0 auto;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.users-table thead {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    background-color: #eaeaea;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.users-table th,
+.users-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 150px;
+    overflow: hidden;
+}
+
+.users-table th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.users-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 30px;
+    margin-left: 40px;
+}
+
+.close {
+    color: #aaa;
+    margin-right: 20px;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.manage-btn {
+    cursor: pointer;
+}
+
+.modal-content button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+#manage-user-name {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.manage-btn {
+    padding: 5px 10px;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.manage-btn:hover {
+    background-color: #0056b3;
+}
+
+.status-btn {
+    padding: 5px 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.status-btn.active {
+    background-color: #28a745;
+}
+
+.status-btn.inactive {
+    background-color: #ffc107;
+    color: black;
+}
+
+.status-btn.suspended {
+    background-color: #dc3545;
+}
+
+.status-btn.deactivated {
+    background-color: #6c757d;
+}
+
+.status-btn:active {
+    transform: scale(1);
+}
+
+.modal-content button.activate {
+    background-color: #28a745;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.modal-content button.deactivate {
+    background-color: #6c757d;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.modal-content button.suspend {
+    background-color: #dc3545;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.modal-content button.unsuspend {
+    background-color: #28a745;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.modal-content button.contact {
+    font-size: 16px;
+    font-weight: bold;
+}
