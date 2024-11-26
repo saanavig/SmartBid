@@ -26,12 +26,12 @@
             </div>
         </div>
 
-        <!-- PROFILE MODAL -->
-        <div id="profile-modal" class="modal">
-            <div class="modal-content">
+        <!-- PROFILE POPUP -->
+        <div id="profile-popup" class="profile-popup">
+            <div class="profile-popup-content">
                 <span class="close">&times;</span>
                 <h1>My Profile</h1>
-                <div class="modal-info">
+                <div class="profile-popup-info">
                     <div class ="align-profile">
                         <p>John Doe</p>
                         <p>- 3.6 (7 Ratings)</p>
@@ -74,26 +74,24 @@
     </div>
 
     <script>
+        // OPEN PROFILE
         document.addEventListener("DOMContentLoaded", function() {
-            const profileModal = document.getElementById('profile-modal');
-            const closeModalBtn = document.querySelector('.close');
+            const profilePopup = document.getElementById('profile-popup');
+            const closePopupBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
 
-            // Open modal when profile link is clicked
             profileLink.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent navigation
-                profileModal.style.display = 'block';
+                event.preventDefault();
+                profilePopup.style.display = 'block';
             });
 
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                profileModal.style.display = 'none';
+            closePopupBtn.addEventListener('click', function() {
+                profilePopup.style.display = 'none';
             });
 
-            // Close modal when clicking outside the modal content
             window.addEventListener('click', function(event) {
-                if (event.target === profileModal) {
-                    profileModal.style.display = 'none';
+                if (event.target === profilePopup) {
+                    profilePopup.style.display = 'none';
                 }
             });
         });
