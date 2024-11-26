@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="users.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>                      
+        </div>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+
+        <!-- PROFILE POPUP -->
+        <div id="profile-popup" class="profile-popup">
+            <div class="profile-popup-content">
+                <span class="close">&times;</span>
+                <h1>My Profile</h1>
+                <div class="profile-popup-info">
+                    <div class ="align-profile">
+                        <p>John Doe</p>
+                        <p>- 3.6 (7 Ratings)</p>
+                    </div>
+                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USERS CONTENT -->
+    <div class="users-container">
+        <!-- TITLE -->
+        <h1>User Management</h1>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search for user...">
+            <button id="search-button">Search</button>
+        </div>
+
+        <!-- USERS TABLE -->
+        <table class="users-table">
+            <thead>
+                <!-- COLUMN NAMES -->
+                <tr>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                    <th>Total Bids</th>
+                    <th>Status</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            
+            <!-- USERS ROW DATA -->
+            <tbody id="users-body">
+                <tr>
+                    <td>John Doe</td>
+                    <td>johndoe123</td>
+                    <td>john.doe@example.com</td>
+                    <td>2023-01-01</td>
+                    <td>25</td>
+                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('John Doe', 'john.doe@example.com')">Manage</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>janesmith456</td>
+                    <td>jane.smith@example.com</td>
+                    <td>2022-11-15</td>
+                    <td>15</td>
+                    <td><button class="status-btn suspended" onclick="toggleStatus(this)">Suspended</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Jane Smith', 'jane.smith@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Michael Johnson</td>
+                    <td>mjohnson789</td>
+                    <td>michael.johnson@example.com</td>
+                    <td>2021-08-22</td>
+                    <td>40</td>
+                    <td><button class="status-btn deactivated" onclick="toggleStatus(this)">Deactivated</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Michael Johnson', 'michael.johnson@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Emily Davis</td>
+                    <td>emilyd2023</td>
+                    <td>emily.davis@example.com</td>
+                    <td>2023-04-10</td>
+                    <td>5</td>
+                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Emily Davis', 'emily.davis@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Chris Lee</td>
+                    <td>clee999</td>
+                    <td>chris.lee@example.com</td>
+                    <td>2024-10-01</td>
+                    <td>2</td>
+                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Chris Lee', 'chris.lee@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Alex Brown</td>
+                    <td>alexb_no_bids</td>
+                    <td>alex.brown@example.com</td>
+                    <td>2023-06-30</td>
+                    <td>0</td>
+                    <td><button class="status-btn deactivated" onclick="toggleStatus(this)">Deactivated</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Alex Brown', 'alex.brown@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Olivia Wilson</td>
+                    <td>olivia_wilson</td>
+                    <td>olivia.wilson@example.com</td>
+                    <td>2020-12-05</td>
+                    <td>100</td>
+                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Olivia Wilson', 'olivia.wilson@example.com')">Manage</button>
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td>Daniel Green</td>
+                    <td>dgreen007</td>
+                    <td>daniel.green@example.com</td>
+                    <td>2022-03-12</td>
+                    <td>30</td>
+                    <td><button class="status-btn suspended" onclick="toggleStatus(this)">Suspended</button></td>
+                    <td>
+                        <button class="manage-btn" onclick="openManageModal('Daniel Green', 'daniel.green@example.com')">Manage</button>
+                    </td>
+                </tr>                     
+            </tbody>
+        </table>
+    </div>
+
+    <!-- MANAGE USER POPUP -->
+    <div id="manage-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeManageModal()">&times;</span>
+            <h2>Manage User</h2>
+            <h3 id="manage-user-name">User: John Doe</h3>
+            <button class="activate" onclick="changeUserStatus('activate')">Activate</button>
+            <button class="deactivate" onclick="changeUserStatus('deactivate')">Deactivate</button>
+            <button class="suspend" onclick="changeUserStatus('suspend')">Suspend</button>
+            <button class="unsuspend" onclick="changeUserStatus('unsuspend')">Unsuspend</button>
+            <button class="contact" onclick="contactUser()">Contact</button>
+        </div>
+    </div>
+
+    <script>
+        // OPEN PROFILE
+        document.addEventListener("DOMContentLoaded", function() {
+            const profilePopup = document.getElementById('profile-popup');
+            const closePopupBtn = document.querySelector('.close');
+            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+
+            profileLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                profilePopup.style.display = 'block';
+            });
+
+            closePopupBtn.addEventListener('click', function() {
+                profilePopup.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === profilePopup) {
+                    profilePopup.style.display = 'none';
+                }
+            });
+        });
+        
+        // SEARCH
+        document.getElementById("search-button").addEventListener("click", function () {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const tableBody = document.getElementById("users-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const fullName = row.cells[0].innerText.toLowerCase();
+                const username = row.cells[1].innerText.toLowerCase();
+
+                if (fullName.includes(input) || username.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        const manageModal = document.getElementById("manage-modal");
+        const manageUserName = document.getElementById("manage-user-name");
+        let selectedUserEmail = "";
+
+        // OPEN MANAGE USER POPUP
+        function openManageModal(userName, userEmail) {
+            manageUserName.textContent = `User: ${userName}`;
+            selectedUserEmail = userEmail;
+            manageModal.style.display = "block";
+        }
+
+        // CLOSE MANAGE USER POPUP
+        function closeManageModal() {
+            manageModal.style.display = "none";
+        }
+
+        // CLOSE MANAGE MODAL IF CLICKED OUTSIDE
+        window.onclick = function(event) {
+            if (event.target === manageModal) {
+                closeManageModal();
+            }
+        };
+
+        // CHANGE USER STATUS
+        function changeUserStatus(action) {
+            const tableBody = document.getElementById("users-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const emailCell = row.cells[2];
+                const statusButton = row.cells[5].querySelector("button");
+
+                if (emailCell.textContent === selectedUserEmail) {
+                    if (action === "activate" || action === "unsuspend") {
+                        statusButton.className = "status-btn active";
+                        statusButton.textContent = "Active";
+                    } else if (action === "deactivate") {
+                        statusButton.className = "status-btn deactivated";
+                        statusButton.textContent = "Deactivated";
+                    } else if (action === "suspend") {
+                        statusButton.className = "status-btn suspended";
+                        statusButton.textContent = "Suspended";
+                    }
+                }
+            });
+
+            closeManageModal();
+        }
+
+        // CONTACT USER
+        function contactUser() {
+            window.location.href = `mailto:${selectedUserEmail}`;
+        }
+    </script>
+</body>
+</html>
