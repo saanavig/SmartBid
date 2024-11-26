@@ -95,8 +95,8 @@ body {
     display: block;
 }
 
-/* PROFILE CONTENT */
-.modal {
+/* PROFILE POPUP CONTENT */
+.profile-popup {
     display: none; 
     position: fixed;
     z-index: 1000;
@@ -108,7 +108,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
+.profile-popup-content {
     background-color: #f9f9f9;
     margin: 15% auto;
     padding: 20px;
@@ -119,9 +119,14 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.modal-content h1 {
+.profile-popup-content h1 {
     margin-top: 10px;
     justify-content: center;
+}
+
+.profile-popup-info p {
+    margin: 10px 0;
+    font-size: 1rem;
 }
 
 .align-profile {
@@ -140,7 +145,6 @@ body {
 }
 
 .align-profile {
-
     align-items: center;
     gap: 5x;
 } 
@@ -157,11 +161,6 @@ body {
 .close:focus {
     color: black;
     text-decoration: none;
-}
-
-.modal-info p {
-    margin: 10px 0;
-    font-size: 1rem;
 }
 
 /* SEARCH BAR */
@@ -278,12 +277,14 @@ body {
     border-radius: 10px;
     text-align: center;
     font-size: 20px;
+    max-width: 600px;
 }
 
 .popup-content input[type="text"],
 .popup-content input[type="date"],
 .popup-content input[type="number"],
-.popup-content select {
+.popup-content select,
+.description textarea {
     width: 70%;
     padding: 12px;
     margin: 10px 0;
@@ -315,7 +316,8 @@ body {
     border: none;
     cursor: pointer;
     transition: color 0.3s ease, transform 0.2s ease;
-    margin-left: 600px;
+    float: right;
+    margin-right: 10px;
 }
 
 .close-listing:hover,
@@ -324,26 +326,18 @@ body {
     text-decoration: none;
 }
 
-.description {
-    min-width: 500px;
-    max-width: 500px;
-    margin-top: 10px;
-    margin: 10px auto;
-    text-align: center;
-}
-
 .description textarea {
-    min-width: 470px;
-    max-width: 470px;
-    min-height: 50px;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    outline: none;
-    resize: vertical; 
+    width: 70%;
+    padding: 12px;
+    margin: 10px 0;
     box-sizing: border-box;
-    transition: background-color 0.3s ease;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+    max-width: 70%;
 }
 
 .description textarea::placeholder {
@@ -530,4 +524,30 @@ label {
     display: flex;
     justify-content: space-between;
     width: 100%;
+}
+
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+.image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.image-preview p {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.active-filter {
+    background-color: #FFEAA6;
+    color: rgb(0, 0, 0);
+}
+
+.hidden {
+    display: none;
 }
