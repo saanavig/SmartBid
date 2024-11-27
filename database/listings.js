@@ -41,7 +41,7 @@ const createListing = async (user_id, title, description, price, availability) =
 }
 
 //update listing details and mark as sold or rented, if needed
-const updateListing = async (listing_id, user_id, title, description, price, availability) => 
+const updateListing = async (listing_id, user_id, title, description, price, availability) =>
 {
     //get current listings
     const {data: listing, error: listingError} = await supabase
