@@ -155,3 +155,5 @@ const completeTransaction = async (user_id, listing_id, transaction_id, amount) 
 
     return {success: true, message: "Transaction completed successfully", transaction: data}
 }
+
+export {deposit, withdraw, getTransactions, completeTransaction};
