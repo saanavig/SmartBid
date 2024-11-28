@@ -19,7 +19,7 @@ class CustomSignupView(View):
             return redirect('profile')
         else:
             print(form.errors)  # Log form errors
-        return render(request, 'signup.html', {'form': form})
+        return render(request, 'signup.html', {'form': form, 'errors': form.errors})
 
 # Homepage View
 def homepage(request):
