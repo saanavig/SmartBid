@@ -338,6 +338,13 @@ body {
     max-height: 200px;
     margin: auto;
     overflow-y: auto;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.transaction-history::-webkit-scrollbar {
+    display: none;
 }
 
 .transaction-table {
