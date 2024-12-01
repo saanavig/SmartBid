@@ -8,19 +8,19 @@
 </head>
 
 <body>
-    <!-- Navbar -->
+    <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
             <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>
+            </a>                      
         </div>
         <a href="login.html" class="login-btn">Log In</a>
     </div>
 
-    <!-- Top Section -->
+    <!-- TOP SECTION -->
     <div class="top-section">
-        <!-- Left Section: Image Carousel-->
+        <!-- LEFT SECTION: IMAGE CAROUSEL -->
         <div class="left-section">
             <div class="image-carousel">
                 <div class="thumbnail-container">
@@ -36,59 +36,106 @@
             </div>
         </div>
 
-
-        <!-- Right Section: Item Details -->
+        <!-- RIGHT SECTION: ITEM DETAILS -->
         <div class="right-section">
             <h2>iPhone 15 Pro Max New</h2>
             <h3>US $99.99</h3>
             <p><strong>Closes:</strong> 18d 10h (MM/DD/YYYY)</p>
             <p><strong>Category:</strong> Category Name</p>
             <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-            <button class="bid-button">Start Bidding</button>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
+               et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+            <button class="bid-button" onclick="window.location.href='login.html';">Start Bidding</button>
         </div>
     </div>
 
-    <!-- Bottom Section: Comments -->
+    <!-- BOTTOM SECTION: COMMENTS -->
     <div class="bottom-section">
-        <!-- Comment Input Section -->
+        <!-- COMMENT INPUT SECTION -->
         <div class="comment-input">
-            <input type="text" placeholder="Leave a comment as a visitor">
+            <input type="text" placeholder="Leave a comment as a Visitor">
             <div class="comment-buttons">
-                <button class="cancel-button">Cancel</button>
-                <button class="comment-button">Comment</button>
-            </div>
+                <button class="cancel-button" onclick="clearComment()">Cancel</button>
+                <button class="comment-button" onclick="addComment()">Comment</button>
+            </div>            
         </div>
 
-        <!-- Comments Display Section -->
+        <!-- COMMENTS DISPLAY SECTION -->
         <div class="comments">
             <div class="comment">
-                <p><strong>Srewashi Mondal</strong> - 1 day ago</p>
+                <p><strong>Srewashi Mondal</strong></p>
                 <p>This product is nice.</p>
-                <div class="vote">
-                    <span>▲ 10</span>
-                    <span>▼ 0</span>
-                </div>
             </div>
             <div class="comment">
-                <p><strong>Saanavi Goyal</strong> - 2 days ago</p>
+                <p><strong>Saanavi Goyal</strong></p>
                 <p>This item is great! :D</p>
-                <div class="vote">
-                    <span>▲ 8</span>
-                    <span>▼ 0</span>
-                </div>
             </div>
             <div class="comment">
-                <p><strong>Debasree Sen</strong> - 1 month ago</p>
+                <p><strong>Debasree Sen</strong></p>
                 <p>This was a lifesaver! :)</p>
-                <div class="vote">
-                    <span>▲ 12</span>
-                    <span>▼ 0</span>
-                </div>
             </div>
-            <!-- Additional comments as needed -->
         </div>
     </div>
 
+    <script>
+        function changeImage(thumbnail) {
+            // Get the larger image element
+            const largeImage = document.querySelector("#displayed-image img");
+
+            // Update the src of the larger image
+            largeImage.src = thumbnail.src;
+
+            // Remove the active class from all thumbnails
+            document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                img.classList.remove("active");
+            });
+
+            // Add the active class to the clicked thumbnail
+            thumbnail.classList.add("active");
+        }
+
+        function addComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+            const commentText = commentInput.value.trim();
+
+            if (commentText) {
+                // Create a new comment div
+                const newComment = document.createElement("div");
+                newComment.classList.add("comment");
+
+                // Add author and timestamp
+                const authorPara = document.createElement("p");
+                authorPara.innerHTML = `<strong>Visitor</strong>`;
+
+                // Add comment text
+                const textPara = document.createElement("p");
+                textPara.textContent = commentText;
+
+                // Append all parts to the new comment div
+                newComment.appendChild(authorPara);
+                newComment.appendChild(textPara);
+
+                // Insert the new comment at the top of the comments container
+                commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+
+                // Store the last added comment for undo
+                lastComment = newComment;
+
+                // Clear the input field
+                commentInput.value = "";
+            } else {
+                alert("Please enter a comment.");
+            }
+        }
+
+        function clearComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+
+            // Clear the input field
+            commentInput.value = "";
+        }
+    </script> 
 </body>
 </html>
