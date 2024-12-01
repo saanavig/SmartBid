@@ -237,6 +237,9 @@ body {
     max-height: 400px; 
     overflow-y: auto;
     width: 300px;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .notification-popup {
