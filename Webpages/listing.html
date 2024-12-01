@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <link rel="stylesheet" href="listing.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id='overlay'>
+        <div class="navbar">
+            <div class="logo">
+                <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                    <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+                </a>
+            </div>
+
+            <!-- DROPDOWN FOR USER OPTIONS -->
+            <div class="dropdown">
+                <a class="login-btn">You</a>
+                <div class="dropdown-content">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="signout.html">Sign Out</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Section -->
+        <div class="top-section">
+            <!-- Left Section: Image Carousel-->
+            <div class="left-section">
+                <div class="image-carousel">
+                    <div class="thumbnail-container">
+                        <img src="images/octopus mood.jpg" alt="Thumbnail 1" onclick="changeImage(this)">
+                        <img src="images/spiral notebooks.jpg" alt="Thumbnail 2" onclick="changeImage(this)">
+                        <img src="images/jade gua sha.jpg" alt="Thumbnail 3" onclick="changeImage(this)">
+                        <img src="images/cucumber slicer.jpg" alt="Thumbnail 4" onclick="changeImage(this)">
+                        <img src="images/crossbody bag.jpg" alt="Thumbnail 5" onclick="changeImage(this)">
+                    </div>
+                    <div class="large-image" id="displayed-image">
+                        <img src="images/iphone 15.webp" alt="Large Display">
+                    </div>
+                </div>
+            </div>
+
+            <!--START BIDDING POPUP -->
+            <form id="bid-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-listing" id="close-button">&times;</span>
+                    <h2 id="bid-header">Start Bidding</h2>
+                    <div class="row">
+                        <p id="highest-bid">Current Highest Bid: $<span id="highest-amount"
+                                style="font-weight: bold">500.00</span></p>
+                    </div>
+                    <div class="row">
+                        <label for="amount">Your Bid Amount:</label>
+                        <input type="number" id="amount" placeholder="0.00">
+                    </div>
+                    <p class="row" id="invalid"></p>
+                    <button class="make-bid-button" id="make-bid-button">Bid</button>
+                </div>
+            </form>
+
+            <!--CONFIRMATION POPUP-->
+            <form id="confirmation-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-listing" id="close-confirmation-button">&times;</span>
+                    <h2 id="bid-header">Bid Placed Successfully!</h2>
+                    <div class="row">
+                        <p>
+                            <a href="viewbids.html" class="view-bids-link">View Bids </a>to get your bidding status on this item and check your notifications for updates!
+                        </p>
+                    </div>
+                </div>
+            </form>
+
+            <!-- RATE SELLER POPUP -->
+            <form id="rate-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-rating" id="close-rating-button">&times;</span>
+                    <h2>Rate User</h2>
+                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
+                    <div id="star-rating" class="row">
+                        <span onclick="setRating(1)" class="star">★</span>
+                        <span onclick="setRating(2)" class="star">★</span>
+                        <span onclick="setRating(3)" class="star">★</span>
+                        <span onclick="setRating(4)" class="star">★</span>
+                        <span onclick="setRating(5)" class="star">★</span>
+                    </div>
+                    <button class="rate-button" id="rate-button">Rate</button>
+                </div>
+            </form>
+
+            <!-- RIGHT SECTION: ITEM DETAILS -->
+            <div class="right-section">
+                <h2>iPhone 15 Pro Max New</h2>
+                <h3>US $99.99</h3>
+                <p><strong>Closes:</strong> 18d 10h (MM/DD/YYYY)</p>
+                <p><strong>Category:</strong> Category Name</p>
+                <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                   et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                <button class="bid-button" id="bid-button">Start Bidding</button>
+            </div>
+
+            <!-- ACCEPT/DECLINE BID -->
+            <form id="manage-bid-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-listing" id="close-button">&times;</span>
+                    <h2 id="bid-header">Accept or Decline Bid</h2>
+                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
+                    <div class="row">
+                        <p id="highest-bid" style="font-weight: bold">US $500.00</p>
+                    </div>
+                    <div class="row">
+                        <button class="accept-bid-button" id="accept-bid-button">Accept</button>
+                        <button class="decline-bid-button" id="decline-bid-button">Decline</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- BOTTOM SECTION: COMMENTS -->
+        <div class="bottom-section">
+            <!-- COMMENT INPUT SECTION -->
+            <div class="comment-input">
+                <input type="text" placeholder="Leave a comment as a user">
+                <div class="comment-buttons">
+                    <button class="cancel-button" onclick="clearComment()">Cancel</button>
+                    <button class="comment-button" onclick="addComment()">Comment</button>
+                </div>   
+            </div>     
+
+            <div class="align-bottom">
+                <!-- COMMENT DISPLAYS SECTION -->
+                <div class="comments">
+                    <div class="comment">
+                        <p><strong>Srewashi Mondal</strong></p>
+                        <p>This product is nice.</p>
+                    </div>
+                    <div class="comment">
+                        <p><strong>Saanavi Goyal</strong></p>
+                        <p>This item is great! :D</p>
+                    </div>
+                    <div class="comment">
+                        <p><strong>Debasree Sen</strong></p>
+                        <p>This was a lifesaver! :)</p>
+                    </div>
+                </div>
+
+                <div class="current-bids">
+                    <h2>Current Bids</h2>
+                    <div class="bid-card">
+                        <div class="bid-info">
+                            <p><strong>John Doe</strong></p>
+                            <p>$550.00</p>
+                        </div>
+                        <div class="bid-actions">
+                            <button class="accept-button" id="accept-button">Accept</button>
+                            <button class="decline-button" id="decline-button">Decline</button>
+                        </div>
+                    </div>
+                    <div class="bid-card">
+                        <div class="bid-info">
+                            <p><strong>Jane Smith</strong></p>
+                            <p>$525.00</p>
+                        </div>
+                        <div class="bid-actions">
+                            <button class="accept-button" id="accept-button">Accept</button>
+                            <button class="decline-button" id="decline-button">Decline</button>
+                        </div>
+                    </div>
+                    <div class="bid-card">
+                        <div class="bid-info">
+                            <p><strong>John Doe</strong></p>
+                            <p>$550.00</p>
+                        </div>
+                        <div class="bid-actions">
+                            <button class="accept-button" id="accept-button">Accept</button>
+                            <button class="decline-button" id="decline-button">Decline</button>
+                        </div>
+                    </div>
+                    <div class="bid-card">
+                        <div class="bid-info">
+                            <p><strong>John Doe</strong></p>
+                            <p>$550.00</p>
+                        </div>
+                        <div class="bid-actions">
+                            <button class="accept-button" id="accept-button">Accept</button>
+                            <button class="decline-button" id="decline-button">Decline</button>
+                        </div>
+                    </div>
+                    <div class="bid-card">
+                        <div class="bid-info">
+                            <p><strong>John Doe</strong></p>
+                            <p>$550.00</p>
+                        </div>
+                        <div class="bid-actions">
+                        <button class="accept-button" id="accept-button">Accept</button>
+                        <button class="decline-button" id="decline-button">Decline</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        const startBidButton = document.getElementById('bid-button');
+        const startBidPopup = document.getElementById('bid-popup');
+        const makeBidButton = document.getElementById('make-bid-button');
+        const closeButton = document.getElementById('close-button');
+
+        // Valid bid check
+        const bidAmount = document.getElementById('amount');
+        const highestAmount = document.getElementById('highest-amount');
+        const invalidMessage = document.getElementById('invalid');
+
+        // Confirmation
+        const confirmationPopup = document.getElementById('confirmation-popup');
+        const closeConfirmationButton = document.getElementById('close-confirmation-button');
+
+        // Rating
+        const rateButton = document.getElementById('rate-button');
+        const ratePopup = document.getElementById('rate-popup');
+        const closeRatingButton = document.getElementById('close-rating-button');
+        let currentRating = 0;
+
+        startBidButton.addEventListener('click', () => {
+            startBidPopup.style.display = 'block';
+            invalidMessage.innerText = ''; // Clear error messages
+        });
+
+        closeButton.addEventListener('click', () => {
+            startBidPopup.style.display = 'none';
+        });
+
+        closeConfirmationButton.addEventListener('click', () => {
+            confirmationPopup.style.display = 'none';
+            ratePopup.style.display = 'block';
+        });
+
+        closeRatingButton.addEventListener('click', () => {
+            ratePopup.style.display = 'none';
+        });
+
+        makeBidButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent form default behavior
+
+            const amount = parseFloat(bidAmount.value);
+            const currentHighest = parseFloat(highestAmount.innerText);
+
+            if (!isNaN(amount) && amount > currentHighest) {
+                highestAmount.innerText = amount.toFixed(2); // Update the highest bid
+
+                bidAmount.value = '';
+                startBidPopup.style.display = 'none'
+                confirmationPopup.style.display = 'block';
+            } else {
+                alert('Insufficient funds or bid is not greater than the current highest bid.');
+            }
+        });
+
+        function setRating(rating) {
+            currentRating = rating;
+
+            const stars = document.querySelectorAll("#star-rating .star");
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("selected");
+                } else {
+                    star.classList.remove("selected");
+                }
+            });
+
+            //console.log(`Rating: ${rating}`); // Check it works
+        }
+
+        rateButton.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            ratePopup.style.display = 'none';
+            startBidButton.disabled = true; // disabled button for now once bid already made
+            startBidButton.style.background = 'grey';
+
+            // Process rating logic (send to database) NOT DONE YET
+            // {currentRating}/5
+        });
+
+        function changeImage(thumbnail) {
+            // Get the larger image element
+            const largeImage = document.querySelector("#displayed-image img");
+
+            // Update the src of the larger image
+            largeImage.src = thumbnail.src;
+
+            // Remove the active class from all thumbnails
+            document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                img.classList.remove("active");
+            });
+
+            // Add the active class to the clicked thumbnail
+            thumbnail.classList.add("active");
+        }
+
+        function addComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+            const commentText = commentInput.value.trim();
+
+            if (commentText) {
+                // Create a new comment div
+                const newComment = document.createElement("div");
+                newComment.classList.add("comment");
+
+                // Add author and timestamp
+                const authorPara = document.createElement("p");
+                authorPara.innerHTML = `<strong>Visitor</strong>`;
+
+                // Add comment text
+                const textPara = document.createElement("p");
+                textPara.textContent = commentText;
+
+                // Append all parts to the new comment div
+                newComment.appendChild(authorPara);
+                newComment.appendChild(textPara);
+
+                // Insert the new comment at the top of the comments container
+                commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+
+                // Store the last added comment for undo
+                lastComment = newComment;
+
+                // Clear the input field
+                commentInput.value = "";
+            } else {
+                alert("Please enter a comment.");
+            }
+        }
+
+        function clearComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+
+            // Clear the input field
+            commentInput.value = "";
+        }  
+
+        // Add event listeners for Accept and Decline buttons
+        document.querySelectorAll(".accept-button").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                
+                // Open the Rate Buyer popup
+                ratePopup.style.display = 'block';
+
+                // Store reference to the bid card container and header
+                const bidCardContainer = document.querySelector(".current-bids");
+                const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
+
+                // When the user rates the buyer, remove all the bid cards and update the header
+                rateButton.addEventListener('click', (rateEvent) => {
+                    rateEvent.preventDefault();
+                    // Remove all bid cards
+                    const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
+                    allBidCards.forEach(card => card.remove());
+
+                    // Change the header text to "Bid Completed"
+                    currentBidsHeader.textContent = "Bid Completed"; // Update the header text
+
+                    // Close the Rate Buyer popup
+                    ratePopup.style.display = 'none';
+                });
+            });
+        });
+
+        // Add event listener for "Decline" button
+        document.querySelectorAll(".decline-button").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                const bidCard = button.closest(".bid-card"); // Get the parent bid card
+                bidCard.style.display = 'none'; // Hide the declined bid
+            });
+        });
+    </script>
+</body>
+</html>
