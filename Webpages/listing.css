@@ -1,0 +1,559 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    height: 100vh;
+    justify-content: center;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar h1 span {
+    margin-left: 8px;
+}
+
+.navbar a {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    margin-left: 40px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+/** LOG IN + YOU BUTTON */
+.login-btn {
+    cursor: pointer;
+    padding: 0px 40px;
+    background-color: transparent; 
+    border: none;
+    color: black;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-top: 10px; 
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.dropdown-content a:hover {
+    color: blue;
+    text-decoration: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* PROFILE POPUP CONTENT */
+.profile-popup {
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.profile-popup-content {
+    background-color: #f9f9f9;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-popup-content h1 {
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.profile-popup-info p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.align-profile {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.align-profile p:nth-child(1) {
+    color:rgb(27, 143, 252);
+    font-size: 24px;
+}
+
+.align-profile p:nth-child(2) {
+    font-size: 24px;
+}
+
+.align-profile {
+    align-items: center;
+    gap: 5x;
+} 
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Top section layout */
+.top-section {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 80px;
+}
+
+.left-section, .right-section {
+    padding-top: 30px;
+    flex: 1;
+}
+
+.left-section {
+    padding-left: 100px;
+}
+
+/* Image carousel styling */
+.image-carousel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.thumbnail-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.thumbnail-container img:hover,
+.thumbnail-container img.active {
+    border-color: #0077cc;
+}
+
+.large-image {
+    width: 500px;
+    height: 500px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.large-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.thumbnail-container {
+    max-height: 500px;
+    overflow-x: auto; 
+}
+
+/* Right section layout with centered content and lower text */
+.right-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin-top: 20px;
+    padding-left: 20px;
+    padding-right: 100px;
+}
+
+/* Item details styling */
+.right-section h2 {
+    font-size: 2.8em;
+    font-weight: bold;
+}
+
+.right-section h3 {
+    color: #0077cc;
+    font-size: 2.2em;
+    margin-bottom: 12px;
+}
+
+.right-section p {
+    font-size: 1.3em;
+    line-height: 1.4;
+}
+
+/* Bid button styling */
+.bid-button {
+    padding: 15px 30px;
+    font-size: 1.4em;
+    color: #fff;
+    background-color: #0077cc;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+}
+
+.bid-button:hover {
+    background-color: #005fa3;
+}
+
+.bottom-section {
+    padding-left: 40px;
+    padding-top: 40px;
+}
+
+.comment-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%; 
+    align-items: flex-start;
+    padding-left: 80px;
+}
+
+.comment-input input[type="text"] {
+    width: 60%;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    font-size: 18px;
+    padding: 5px 0;
+    background: none;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.comment-input input[type="text"]:focus {
+    border-bottom: 2px solid #0077cc;
+}
+
+.comment-buttons {
+    display: flex;
+    gap: 15px;
+    margin-left: -20px;
+    width: 100%;
+    padding-left: 20px; 
+}
+
+.comment-buttons button {
+    font-size: 1.2em;
+    color: #0077cc;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.comment-buttons button::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #0077cc;
+    transition: width 0.3s ease;
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+}
+
+.comment-buttons button:hover {
+    color: #005fa3;
+}
+
+.comment-buttons button:hover::after {
+    width: 100%;
+}
+
+.comments {
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.comments .comment {
+    padding: 15px;
+    padding-left: 80px;
+    font-size: 1.1em;
+    line-height: 1.0;
+}
+
+.comments .comment p {
+    margin-bottom: 12px;
+}
+
+/* Popup styles */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.popup-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+}
+
+/* The X to close the popup*/
+.close-listing, .close-rating, .close-confirmation-button {
+    color: #161010;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.close-listing:hover, .close-listing:focus, 
+.close-rating:hover, 
+.close-rating:focus, .close-confirmation-button:hover, 
+.close-confirmation-button:focus {
+    color: rgb(69, 69, 69);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.row {
+    margin-top:20px;
+}
+
+#invalid {
+    font-size: 15px;
+}
+
+#amount {
+    width: 40%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Rate User */
+#rate-popup .star {
+    font-size: 2rem;
+    color: #ccc; 
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#rate-popup .star:hover,
+#rate-popup .star.selected {
+    color: gold; 
+}
+
+.popup-content h2 {
+    margin-top: 30px;
+}
+
+#amount {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#amount::placeholder {
+    color: #aaa;
+}
+
+#amount:focus {
+    border-color: #0077cc;
+    background-color: #fff;
+}
+
+#amount:hover {
+    border-color: #0077cc;
+}
+
+#make-bid-button, #rate-button {
+    padding: 15px 30px;
+    font-size: 1.0em;
+    color: #fff;
+    background-color: #0077cc;
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+    margin-top: 9px;
+}
+
+#make-bid-button:hover, #rate-button:hover  {
+    background-color: #005fa3;
+}
+
+.comment-buttons button:hover::after {
+    width: 100%;
+}
+
+.view-bids-link {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.view-bids-link:hover {
+    text-decoration: underline;
+}
+
+.align-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; 
+}
+
+.comments, .current-bids {
+    flex: 1; 
+    max-width: 48%;
+}
+
+.current-bids {
+    background-color: #f2f2f2;
+    max-height: 260px;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    max-width: 500px;
+    margin-right: 150px;
+    overflow-y: auto;
+    overflow-x: hidden; 
+}
+
+.current-bids::-webkit-scrollbar {
+    display: none;
+}
+
+.current-bids h2 {
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 1.9em;
+    text-align: center;
+}
+
+.bid-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bid-card:last-child {
+    margin-bottom: 0;
+}
+
+.bid-info p {
+    margin: 0;
+    color: #333;
+    font-size: 1em;
+}
+
+.bid-actions button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.accept-button {
+    background-color: #4caf50;
+}
+
+.accept-button:hover {
+    background-color: #45a049;
+}
+
+.decline-button {
+    background-color: #f44336;
+}
+
+.decline-button:hover {
+    background-color: #d32f2f;
+}
