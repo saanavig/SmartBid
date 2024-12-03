@@ -19,7 +19,7 @@ from django.urls import path, include
 from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
-from project.views import CustomSignupView
+#from project.views import CustomSignupView
 from .views import homepage, profile, CustomSignupView
 from . import views
 
