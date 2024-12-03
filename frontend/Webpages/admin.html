@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
+            </a>
+        </div>
+        
+        <!-- DROPDOWN FOR USER OPTIONS -->
+        <div class="dropdown">
+            <a class="login-btn">You</a>
+            <div class="dropdown-content">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <a href="profile.html">Profile</a>
+                <a href="signout.html">Sign Out</a>
+            </div>
+        </div>
+
+        <!-- PROFILE POPUP -->
+        <div id="profile-popup" class="profile-popup">
+            <div class="profile-popup-content">
+                <span class="close">&times;</span>
+                <h1>My Profile</h1>
+                <div class="profile-popup-info">
+                    <div class ="align-profile">
+                        <p>John Doe</p>
+                        <p>- 3.6 (7 Ratings)</p>
+                    </div>
+                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN CONTENT -->
+    <div class="admin-container">
+        <div class="admin-title">
+            <h1>Admin</h1>
+        </div>
+
+        <!-- NOTIFICATIONS CONTENT -->
+        <div class="right-section">
+            <h2>Notifications</h2>
+            <div class="notifications">
+                <div class="notification-popup">New bid placed by John Doe!</div>
+                <div class="notification-popup">Congratulations! Your bid has been accepted.</div>
+                <div class="notification-popup">Sarah M. has outbid you on Item #1234.</div>
+                <div class="notification-popup">System update: New features added to SmartBid.</div>
+                <div class="notification-popup">Bid of $200 has been placed on "Vintage Watch".</div>
+                <div class="notification-popup">Mark L. canceled their bid on "Antique Vase".</div>
+                <div class="notification-popup">New bid placed by Emily R. on "Smartphone".</div>
+                <div class="notification-popup">Your profile information has been updated.</div>
+                <div class="notification-popup">New message received from the auction organizer.</div>
+                <div class="notification-popup">Michael T. placed a $500 bid on "Luxury Bag".</div>
+                <div class="notification-popup">Reminder: Auction for "Gaming Console" ends in 2 hours!</div>
+                <div class="notification-popup">Account updated successfully.</div>
+                <div class="notification-popup">James P. has left feedback on your bid.</div>
+                <div class="notification-popup">You have successfully logged in.</div>
+                <div class="notification-popup">New bidder alert: Lisa H. joined the auction!</div>
+                <div class="notification-popup">Upcoming event: Live Auction starts at 7 PM.</div>
+            </div>
+        </div>
+
+        <!-- ADMIN CARDS -->
+        <div class="left-section">
+            <a href="applications.html" class="admin-card">
+                <h2>Pending User Applications</h2>
+                <p>Approve visitor applications to become users.</p>
+            </a>
+            <a href="complaints.html" class="admin-card">
+                <h2>Complains & Disputes</h2>
+                <p>Manage user complaints and disputes.</p>
+            </a>
+            <a href="users.html" class="admin-card">
+                <h2>User Management</h2>
+                <p>View, suspend, and reactivate users based on ratings or complaints.</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // OPEN PROFILE
+        document.addEventListener("DOMContentLoaded", function() {
+            const profilePopup = document.getElementById('profile-popup');
+            const closePopupBtn = document.querySelector('.close');
+            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+
+            profileLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                profilePopup.style.display = 'block';
+            });
+
+            closePopupBtn.addEventListener('click', function() {
+                profilePopup.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === profilePopup) {
+                    profilePopup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
