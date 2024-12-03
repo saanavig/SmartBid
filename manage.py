@@ -16,6 +16,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    except Exception as e:
+        print(f"An error occurred: {e}")
     execute_from_command_line(sys.argv)
 
 
