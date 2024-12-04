@@ -20,25 +20,34 @@
             <a class="login-btn">You</a>
             <div class="dropdown-content">
                 <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="admin.html">Admin</a>
+                <a href="{% url 'adminPage' %}">Admin</a>
                 <a href="{% url 'profile' %}">Profile</a>
                 <a href="signout.html">Sign Out</a>
+                <a href="profile.html">Profile Popup</a>
             </div>
         </div>
 
         <!-- PROFILE POPUP -->
-        <div id="profile-popup" class="profile-popup">
-            <div class="profile-popup-content">
-                <span class="close">&times;</span>
-                <h1>My Profile</h1>
-                <div class="profile-popup-info">
-                    <div class ="align-profile">
-                        <p>{{ user.first_name }} {{ user.last_name }}</p>
-                        <p>- 3.6 (7 Ratings)</p>
-                    </div>
-                    <p><strong>Date Joined:</strong> January 1, 2023</p>
-                    <p><strong>Total Transactions:</strong> 25</p>
+    <div id="profile-popup" class="profile-popup">
+        <div class="profile-popup-content">
+            <span class="close">&times;</span>
+            <h1>My Profile</h1>
+
+            <!-- templates/profile.html -->
+            <h1>Welcome User {{ user.username }}!</h1>
+
+            <div class="profile-popup-info">
+                <div class="align-profile">
+                    <p>{{ user.first_name }} {{ user.last_name }}</p>
+                    <p>- 3.6 (7 Ratings)</p>
                 </div>
+            <p>Email: {{ user.email }}</p>
+            <p>First Name: {{ user.first_name }}</p>
+            <p>Last Name: {{ user.last_name }}</p>
+            <!-- Add more profile information as needed -->
+
+                <p><strong>Date Joined:</strong> January 1, 2023</p>
+                <p><strong>Total Transactions:</strong> 25</p>
             </div>
         </div>
     </div>

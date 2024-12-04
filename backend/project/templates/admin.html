@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../../../static/admin.css">
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
-            <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>
         </div>
@@ -19,10 +19,11 @@
         <div class="dropdown">
             <a class="login-btn">You</a>
             <div class="dropdown-content">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="admin.html">Admin</a>
-                <a href="profile.html">Profile</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'adminPage' %}">Admin</a>
+                <a href="{% url 'profile' %}">Profile</a>
                 <a href="signout.html">Sign Out</a>
+                <a href="profile.html">Profile Popup</a>
             </div>
         </div>
 
@@ -33,7 +34,7 @@
                 <h1>My Profile</h1>
                 <div class="profile-popup-info">
                     <div class ="align-profile">
-                        <p>John Doe</p>
+                        <p>{{ user.first_name }} {{ user.last_name }}</p>
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> January 1, 2023</p>
@@ -46,14 +47,14 @@
     <!-- ADMIN CONTENT -->
     <div class="admin-container">
         <div class="admin-title">
-            <h1>Admin</h1>
+            <h1>Admin for {{ user.first_name }} {{ user.last_name }}</h1>
         </div>
 
         <!-- NOTIFICATIONS CONTENT -->
         <div class="right-section">
             <h2>Notifications</h2>
             <div class="notifications">
-                <div class="notification-popup">New bid placed by John Doe!</div>
+                <div class="notification-popup">New bid placed by {{ user.first_name }} {{ user.last_name }}!</div>
                 <div class="notification-popup">Congratulations! Your bid has been accepted.</div>
                 <div class="notification-popup">Sarah M. has outbid you on Item #1234.</div>
                 <div class="notification-popup">System update: New features added to SmartBid.</div>
@@ -74,15 +75,15 @@
 
         <!-- ADMIN CARDS -->
         <div class="left-section">
-            <a href="applications.html" class="admin-card">
+            <a href="{% url 'applications' %}" class="admin-card">
                 <h2>Pending User Applications</h2>
                 <p>Approve visitor applications to become users.</p>
             </a>
-            <a href="complaints.html" class="admin-card">
+            <a href="{% url 'complaints' %}" class="admin-card">
                 <h2>Complains & Disputes</h2>
                 <p>Manage user complaints and disputes.</p>
             </a>
-            <a href="users.html" class="admin-card">
+            <a href="{% url 'users' %}" class="admin-card">
                 <h2>User Management</h2>
                 <p>View, suspend, and reactivate users based on ratings or complaints.</p>
             </a>

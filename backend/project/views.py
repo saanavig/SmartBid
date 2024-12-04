@@ -46,3 +46,19 @@ def viewbids(request):
 #Dashboard's Requests
 def requests(request):
     return render(request, 'requests.html')
+
+#Admin page - for Superusers
+def adminPage(request):
+    return render(request, 'admin.html')
+
+#applications page - for Superusers
+def applications(request):
+    return render(request, 'applications.html')
+
+#complaints page - for Superusers
+def complaints(request):
+    return render(request, 'complaints.html')
+
+#users page - for Superusers
+def users(request):
+    return render(request, 'users.html')

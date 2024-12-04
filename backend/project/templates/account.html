@@ -20,9 +20,10 @@
             <a class="login-btn">You</a>
             <div class="dropdown-content">
                 <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="admin.html">Admin</a>
-                <a href="profile.html">Profile</a>
+                <a href="{% url 'adminPage' %}">Admin</a>
+                <a href="{% url 'profile' %}">Profile</a>
                 <a href="signout.html">Sign Out</a>
+                <a href="profile.html">Profile Popup</a>
             </div>
         </div>
 
@@ -33,7 +34,7 @@
                 <h1>My Profile</h1>
                 <div class="profile-popup-info">
                     <div class ="align-profile">
-                        <p>John Doe</p>
+                        <p>{{ user.first_name }} {{ user.last_name }}</p>
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> January 1, 2023</p>
