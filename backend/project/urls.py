@@ -26,7 +26,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
-    path('accounts/profile/', views.profile, name="profile"),  # Profile view
+    path('accounts/profile/', views.profile, name='profile'),  # Profile view
     #path('', TemplateView.as_view(template_name='homepage.html')),
     path('', homepage, name='homepage'),
     path('login/', LoginView.as_view(), name='login'),

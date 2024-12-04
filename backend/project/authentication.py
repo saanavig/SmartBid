@@ -1,6 +1,12 @@
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.models import User
-from supabaseClient import create_client
+from django.contrib.auth.models import User 
+from django.conf import settings
+#from supabaseClient import create_client 
+
+def create_client():
+    SUPABASE_URL = settings.SUPABASE_URL
+    SUPABASE_KEY = settings.SUPABASE_KEY
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 class SupabaseAuthBackend(BaseBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):

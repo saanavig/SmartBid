@@ -26,9 +26,10 @@ def homepage(request):
     return render(request, 'homepage.html')
 
 # Profile View (Login Required)
-@login_required
+#@login_required
 def profile(request):
     return render(request, 'profile.html', {'user': request.user})
+
 
 #Dashboard View
 def dashboard(request):

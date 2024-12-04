@@ -94,7 +94,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS =[
-    'dashboard.authentication.SupabaseAuthBackend',
+    #'dashboard.authentication.SupabaseAuthBackend',
+    'project.authentication.SupabaseAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
@@ -113,5 +114,5 @@ ACCOUNT_EMAIL_REQUIRED = True
 'sign up form'
 ACCOUNT_FORMS = {'signup': 'project.forms.CustomSignupForm'}
 
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+# LOGIN_REDIRECT_URL = '/accounts/profile/'
 # LOGIN_REDIRECT_URL = '/dashboard/'
