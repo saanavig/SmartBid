@@ -10,6 +10,16 @@ from supabase import create_client
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.urls import reverse
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # Custom Signup View
@@ -128,9 +138,6 @@ from supabase import create_client
 from django.conf import settings
 
 def homepage(request):
-    # Initialize Supabase client
-    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
-
     # Fetch listings grouped by category
     try:
         electronics = supabase.table('listings').select('*').eq('category', 'Electronics').execute()
@@ -153,8 +160,6 @@ def homepage(request):
 
 # visit listings
 def listing(request, id):
-    # Initialize Supabase client
-    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
     try:
         # Fetch the specific listing
         result = supabase.table('listings').select('*').eq('id', id).execute()
