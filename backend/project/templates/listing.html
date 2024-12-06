@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Details</title>
-    <link rel="stylesheet" href="listing.css">
+    <link rel="stylesheet" href="../../../static/listing.css">
 </head>
 
 <body>
@@ -13,7 +13,7 @@
     <div id='overlay'>
         <div class="navbar">
             <div class="logo">
-                <a href="homepage.html" style="text-decoration: none; color: inherit; display: inline-block;">
+                <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                     <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
                 </a>
             </div>
@@ -22,9 +22,11 @@
             <div class="dropdown">
                 <a class="login-btn">You</a>
                 <div class="dropdown-content">
-                    <a href="dashboard.html">Dashboard</a>
-                    <a href="profile.html">Profile</a>
-                    <a href="signout.html">Sign Out</a>
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'adminPage' %}">Admin</a>
+                    <a href="{% url 'profile' %}">Profile</a>
+                    <a href="{% url 'logout' %}">Sign Out</a>
+                    <a href="profile.html">Profile Popup</a>
                 </div>
             </div>
         </div>

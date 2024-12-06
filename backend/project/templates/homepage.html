@@ -65,14 +65,16 @@
         <div class="item-carousel">
             {% for item in electronics %}
             <div class="item-card">
-                <div class="item-image">
-                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
-                </div>
-                <div class="item-info">
-                    <p class="item-name">{{ item.title }}</p>
-                    <p class="item-price">${{ item.price }}</p>
-                    <p class="item-time">{{ item.availability }}</p>
-                </div>
+                <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
+                    <div class="item-image">
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-price">${{ item.price }}</p>
+                        <p class="item-time">{{ item.availability }}</p>
+                    </div>
+                </a>
             </div>
             {% empty %}
             <p>No electronics listings available</p>
@@ -80,6 +82,7 @@
         </div>
     </div>
     {% endif %}
+
 
     {% if school_essentials %}
     <div class="category-section">

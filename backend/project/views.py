@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.urls import reverse
 
+
 # Custom Signup View
 class CustomSignupView(View):
     def get(self, request):
@@ -37,8 +38,6 @@ class CustomSignupView(View):
         else:
             print(form.errors)  # Debug invalid form submissions
         return render(request, 'signup.html', {'form': form, 'errors': form.errors})
-
-
 
 # class CustomLoginView(View):
 #     def get(self, request):
@@ -130,7 +129,7 @@ from django.conf import settings
 
 def homepage(request):
     # Initialize Supabase client
-    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
+    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
 
     # Fetch listings grouped by category
     try:
@@ -151,3 +150,17 @@ def homepage(request):
     except Exception as e:
         print(f"Error fetching from Supabase: {str(e)}")
         return render(request, 'homepage.html', {'error': 'Unable to load listings'})
+
+# visit listings
+def listing(request, id):
+    # Initialize Supabase client
+    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
+    try:
+        # Fetch the specific listing
+        result = supabase.table('listings').select('*').eq('id', id).execute()
+        listing = result.data[0] if result.data else None
+
+        return render(request, 'listing.html', {'listing': listing})
+    except Exception as e:
+        print(f"Error fetching listing from Supabase: {str(e)}")
+        return render(request, 'listing.html', {'error': 'Unable to load listing'})

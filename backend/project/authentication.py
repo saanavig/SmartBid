@@ -2,6 +2,7 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import User
 from django.conf import settings
 from supabase import create_client
+#from dashboard.models import UserApplications
 
 def create_client():
     SUPABASE_URL = settings.SUPABASE_URL

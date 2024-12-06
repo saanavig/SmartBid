@@ -44,6 +44,7 @@ urlpatterns = [
     path('dashboard/requests/', views.requests, name='requests'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('listings/', views.homepage, name='listings'),
+    path('listing/<int:id>/', views.listing, name='listing'),
 ]
 
 
