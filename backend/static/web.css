@@ -14,8 +14,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin-top: 200px;
+    justify-content: flex-start;
 }
 
 /* Navbar */
@@ -52,6 +51,23 @@ body {
     text-decoration: underline;
 }
 
+.search-bar {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 40px;
+    padding-top: 100px;
+}
+
+.search-bar input {
+    flex: 0 0 80%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px 0 0 30px;
+    font-size: 18px;
+    outline: none;
+    padding-left: 25px;
+}
+
 /* Search Bar */
 .search-bar {
     display: flex;
@@ -63,12 +79,36 @@ body {
 
 /* Search Bar's Input: Search for anything... */
 .search-bar input {
-    flex: 0 0 70%;
+    flex: 0 0 60%;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 30px 0 0 30px;
     font-size: 18px;
     outline: none;
+    padding-left: 25px;
+}
+
+#category-dropdown {
+    flex: 0 0 15%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-left: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#search-button {
+    padding: 15px;
+    background-color: #FFEAA6;
+    color: black;
+    font-size: 20px;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    cursor: pointer;
+}
+
+#search-button:hover {
+    background-color: #f3da88;
 }
 
 /* Filter button  */
@@ -86,26 +126,6 @@ body {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease;
-}
-
-
-#search-button {
-    flex: 0 0 26%;
-    padding: 15px;
-    margin-left: 5px;
-    background-color: #ffe057;
-    color: white;
-    border: none;
-    border-radius: 0 30px 30px 0;
-    cursor: pointer;
-}
-
-.search-bar button:hover {
-    background-color: #8ed0f3;
-}
-
-.search-button:hover {
-    background-color: #d3d338;
 }
 
 
@@ -181,10 +201,16 @@ body {
 }
 
 .item-carousel {
+    margin-top: 10px;
     display: flex;
     overflow-x: auto;
     gap: 20px;
     padding-bottom: 10px;
+}
+
+/* Hide scrollbar but keep scrollable */
+.item-carousel::-webkit-scrollbar {
+    display: none;
 }
 
 .item-card {
@@ -193,12 +219,13 @@ body {
     border-radius: 10px;
     padding: 20px;
     width: 200px;
-    text-align: center;
     transition: transform 0.3s ease;
+    scroll-snap-align: start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .item-card:hover {
-    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .item-image img {
