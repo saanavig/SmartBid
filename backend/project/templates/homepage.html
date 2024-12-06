@@ -22,11 +22,22 @@
     <!-- Search Bar -->
     <div class="search-bar">
         <input type="text" placeholder="Search for anything...">
-        <button id="filter-button" title="Filters">🔍</button>
+        
+        <!-- Category Dropdown -->
+        <select id="category-dropdown">
+            <option value="all">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="School Essentials">School Essentials</option>
+            <option value="Fashion & Apparel">Fashion & Apparel</option>
+            <option value="Accessories & Gadgets">Accessories & Gadgets</option>
+            <option value="Home & Kitchen">Home & Kitchen</option>
+        </select>
+
         <button id="search-button">Search</button>
     </div>
+    
 
-    <!-- Filter Popup -->
+    <!-- Filter Popup 
     <div id="filter-popup" class="popup">
         <div class="popup-content">
             <span class="close-button">&times;</span>
@@ -34,28 +45,22 @@
             <div class="filter-option">
                 <label for="categories">Categories:</label>
                 <select id="categories">
-                    <option value="category1">Trending</option>
-                    <option value="category2">Back To School</option>
-                    <option value="category3">TikTok Famous</option>
+                    <option value="all">All Categories</option>
+                    <option value="category1">Electronics</option>
+                    <option value="category2">School Essentials</option>
+                    <option value="category3">Fashion & Apparel</option>
+                    <option value="category3">Accessories & Gadgets</option>
+                    <option value="category3">Home & Kitchen</option>
                 </select>
-            </div>
-            <div class="filter-option">
-                <label for="min-price">Minimum Price: $</label>
-                <input type="number" id="min-price">
-            </div>
-            <div class="filter-option">
-                <label for="max-price">Maximum Price: $</label>
-                <input type="number" id="max-price">
             </div>
             <button id="apply-filters">Apply</button>
         </div>
     </div>
-
-
+    -->
 
     <!-- Category Sections -->
     <div class="category-section">
-        <h1>Trending</h1>
+        <h1>Electronics</h1>
         <div class="item-carousel">
             <div class="item-card">
                 <div class="item-image">
@@ -127,11 +132,41 @@
                     <p class="item-time">18d 10h</p>
                 </div>
             </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\dinosaur costume.avif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Dinosaur Costume</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\dinosaur costume.avif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Dinosaur Costume</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\dinosaur costume.avif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Dinosaur Costume</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="category-section">
-        <h1>Back to School</h1>
+        <h1>School Essentials</h1>
         <div class="item-carousel">
 
             <div class="item-card">
@@ -204,11 +239,31 @@
                     <p class="item-time">18d 10h</p>
                 </div>
             </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\lunch box.avif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Lunch Box</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\lunch box.avif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Lunch Box</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="category-section">
-        <h1>TikTok Famous</h1>
+        <h1>Fashion & Apparel</h1>
         <div class="item-carousel">
 
             <div class="item-card">
@@ -281,9 +336,297 @@
                     <p class="item-time">18d 10h</p>
                 </div>
             </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="category-section">
+        <h1>Accessories & Gadgets</h1>
+        <div class="item-carousel">
+
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\moon lamp.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Levitating Moon Lamp</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\among us push pop it.webp" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">AmongUs Pop It</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\anua cleansing oil.webp" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Anua Cleansing Oil</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\collagen mask.jfif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Collagen Mask</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\crossbody bag.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">CrossBody Bag</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\cucumber slicer.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Cucumber Slicer</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-section">
+        <h1>Home & Kitchen</h1>
+        <div class="item-carousel">
+
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\moon lamp.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Levitating Moon Lamp</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\among us push pop it.webp" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">AmongUs Pop It</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\anua cleansing oil.webp" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Anua Cleansing Oil</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\collagen mask.jfif" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Collagen Mask</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\crossbody bag.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">CrossBody Bag</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\cucumber slicer.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Cucumber Slicer</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="..\static\images\jade gua sha.jpg" alt="Item Image">
+                </div>
+                <div class="item-info">
+                    <p class="item-name">Jade Gua Sha</p>
+                    <p class="item-price">$99.99</p>
+                    <p class="item-time">18d 10h</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.querySelector('.search-bar input');
+            const searchButton = document.getElementById('search-button');
+            const categoryDropdown = document.getElementById('category-dropdown');
+            const itemCards = document.querySelectorAll('.item-card');
+            const categorySections = document.querySelectorAll('.category-section');
+            const resultsLabel = document.createElement('h2');
+            const noResultsMessage = document.createElement('p');
+
+            resultsLabel.textContent = 'Results';
+            resultsLabel.id = 'results-label';
+            resultsLabel.style.display = 'none';
+            document.querySelector('.search-bar').after(resultsLabel);
+
+            noResultsMessage.textContent = 'No results found';
+            noResultsMessage.id = 'no-results-message';
+            noResultsMessage.style.display = 'none';
+            document.querySelector('.search-bar').after(noResultsMessage);
+
+        searchButton.addEventListener('click', function () {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedCategory = categoryDropdown.value.toLowerCase();
+            let resultsFound = false;
+
+            // Hide all sections, item cards, and reset visibility for labels
+            categorySections.forEach(section => {
+                section.style.display = 'none';
+                const header = section.querySelector('h1');
+                if (header) header.style.display = 'none'; // Hide the category header
+            });
+
+            itemCards.forEach(card => {
+                card.style.display = 'none';
+            });
+
+            resultsLabel.style.display = 'none';
+            noResultsMessage.style.display = 'none';
+
+            // Search and filter item cards
+            itemCards.forEach(card => {
+                const itemName = card.querySelector('.item-name').textContent.toLowerCase();
+                const categorySection = card.closest('.category-section');
+                const categoryHeader = categorySection.querySelector('h1');
+
+                const isSearchMatch = itemName.includes(searchTerm);
+                const isCategoryMatch = selectedCategory === 'all' || categoryHeader.textContent.toLowerCase().includes(selectedCategory);
+
+                if (isSearchMatch && isCategoryMatch) {
+                    card.style.display = 'block'; // Show the matching card
+                    categorySection.style.display = 'block'; // Show the category section
+                    resultsFound = true;
+                }
+            });
+
+            // Show the "Results" header or "No Results Found" message
+            if (resultsFound) {
+                resultsLabel.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'block';
+            }
+        });
+
+        const maxLength = 15; // Set the maximum length for item names
+        const itemNames = document.querySelectorAll('.item-name');
+
+        itemNames.forEach(itemName => {
+            const fullText = itemName.textContent.trim();
+            if (fullText.length > maxLength) {
+                itemName.textContent = fullText.slice(0, maxLength) + '...';
+                itemName.setAttribute('title', fullText); // Add a tooltip with the full name
+            }
+        });
+        });
+    </script>
 </body>
 </html>

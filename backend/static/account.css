@@ -96,7 +96,7 @@ body {
 
 /* PROFILE POPUP CONTENT */
 .profile-popup {
-    display: none; 
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -146,7 +146,7 @@ body {
 .align-profile {
     align-items: center;
     gap: 5x;
-} 
+}
 
 .close {
     color: #aaa;
@@ -207,7 +207,7 @@ body {
 }
 
 .edit-btn {
-    background-color: #ffe057; 
+    background-color: #ffe057;
     color: black;
     border: none;
     padding: 10px 20px;

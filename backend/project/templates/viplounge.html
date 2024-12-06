@@ -12,9 +12,9 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
-        
+
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -22,7 +22,7 @@
                 <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="{% url 'adminPage' %}">Admin</a>
                 <a href="{% url 'profile' %}">Profile</a>
-                <a href="signout.html">Sign Out</a>
+                <a href="{% url 'logout' %}">Sign Out</a>
                 <a href="profile.html">Profile Popup</a>
             </div>
         </div>
