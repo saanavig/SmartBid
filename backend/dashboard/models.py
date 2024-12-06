@@ -36,6 +36,19 @@ class Listing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    category = models.CharField(
+        max_length=50,
+        choices=[
+            ('electronics', 'Electronics'),
+            ('furniture', 'Furniture'),
+            ('clothing', 'Clothing'),
+            ('books', 'Books'),
+            ('vehicles', 'Vehicles'),
+            ('other', 'Other')
+        ],
+        default='other'
+    )
+
     class Meta:
         managed = False
         db_table = 'listings'

@@ -125,3 +125,29 @@ def users(request):
     return render(request, 'users.html')
 
 
+from supabase import create_client
+from django.conf import settings
+
+def homepage(request):
+    # Initialize Supabase client
+    supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
+
+    # Fetch listings grouped by category
+    try:
+        electronics = supabase.table('listings').select('*').eq('category', 'Electronics').execute()
+        school_essentials = supabase.table('listings').select('*').eq('category', 'School Essentials').execute()
+        fashion = supabase.table('listings').select('*').eq('category', 'Fashion & Apparel').execute()
+        accessories = supabase.table('listings').select('*').eq('category', 'Accessories & Gadgets').execute()
+
+        context = {
+            'electronics': electronics.data,
+            'school_essentials': school_essentials.data,
+            'fashion': fashion.data,
+            'accessories': accessories.data
+        }
+
+        return render(request, 'homepage.html', context)
+
+    except Exception as e:
+        print(f"Error fetching from Supabase: {str(e)}")
+        return render(request, 'homepage.html', {'error': 'Unable to load listings'})

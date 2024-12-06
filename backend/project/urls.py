@@ -43,6 +43,7 @@ urlpatterns = [
     path('dashboard/viewbids/', views.viewbids, name='viewbids'),
     path('dashboard/requests/', views.requests, name='requests'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('listings/', views.homepage, name='listings'),
 ]
 
 
