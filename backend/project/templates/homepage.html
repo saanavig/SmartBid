@@ -90,6 +90,7 @@
         <div class="item-carousel">
             {% for item in school_essentials %}
             <div class="item-card">
+                <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
                 <div class="item-image">
                     <img src="{{ item.image_url }}" alt="{{ item.title }}">
                 </div>
@@ -112,6 +113,7 @@
         <div class="item-carousel">
             {% for item in fashion %}
             <div class="item-card">
+                <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
                 <div class="item-image">
                     <img src="{{ item.image_url }}" alt="{{ item.title }}">
                 </div>
@@ -134,6 +136,7 @@
         <div class="item-carousel">
             {% for item in accessories %}
             <div class="item-card">
+                <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
                 <div class="item-image">
                     <img src="{{ item.image_url }}" alt="{{ item.title }}">
                 </div>
@@ -156,6 +159,7 @@
         <div class="item-carousel">
             {% for item in home_kitchen %}
             <div class="item-card">
+                <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
                 <div class="item-image">
                     <img src="{{ item.image_url }}" alt="{{ item.title }}">
                 </div>
