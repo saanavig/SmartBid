@@ -17,16 +17,27 @@ class CustomSignupView(View):
         form = CustomSignupForm()
         return render(request, 'signup.html', {'form': form})
 
+    # def post(self, request):
+    #     print(request.POST)
+    #     form = CustomSignupForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save(request)
+    #         login(request, user)
+    #         return redirect('profile')
+    #     else:
+    #         print(form.errors)
+    #     return render(request, 'signup.html', {'form': form, 'errors': form.errors})
     def post(self, request):
-        print(request.POST)
         form = CustomSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(request)
+            user = form.save(request)  # This calls the overridden save method
+            print(f"New user created: {user.username} ({user.id})")
             login(request, user)
             return redirect('profile')
         else:
-            print(form.errors)
+            print(form.errors)  # Debug invalid form submissions
         return render(request, 'signup.html', {'form': form, 'errors': form.errors})
+
 
 
 # class CustomLoginView(View):
@@ -47,7 +58,17 @@ class CustomSignupView(View):
 #             messages.error(request, 'Invalid username or password')
 #             return render(request, 'login.html', {'error': 'Invalid credentials'})
 
+# class CustomLoginView(LoginView):
+#     def get_success_url(self):
+#         return reverse('profile')
+
 class CustomLoginView(LoginView):
+    def post(self, request, *args, **kwargs):
+        print(f"Attempting login for: {request.POST.get('username')}")
+        response = super().post(request, *args, **kwargs)
+        print(f"Login successful for: {request.user.username if request.user.is_authenticated else 'None'}")
+        return response
+
     def get_success_url(self):
         return reverse('profile')
 
@@ -57,7 +78,10 @@ def homepage(request):
 
 # Profile View (Login Required)
 @login_required
+# def profile(request):
+#     return render(request, 'profile.html', {'user': request.user})
 def profile(request):
+    print(f"Logged in user: {request.user.username} ({request.user.id})")
     return render(request, 'profile.html', {'user': request.user})
 
 # Dashboard View
@@ -99,3 +123,5 @@ def complaints(request):
 @superuser_access
 def users(request):
     return render(request, 'users.html')
+
+
