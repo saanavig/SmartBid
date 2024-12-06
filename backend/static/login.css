@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 500px;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h1 {
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar h1 span {
+    margin-left: 8px;
+}
+
+.navbar a {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    margin-left: 40px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+
+/* Popup styles */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.popup-content {
+    background-color: white;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 20%;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+}
+
+/* Main Container */
+.container {
+    width: 60%;
+    max-width: 900px;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 20px 40px;
+    text-align: center;
+    margin-top: -290px;
+    overflow: hidden;
+}
+
+/*SmartBid Header */
+.smartbid-header {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+/* Left and Right Content Wrapper */
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.left-section {
+    width: 45%;
+    text-align: left;
+}
+
+.left-section p {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/*.lightbulb-icon {
+    width: 100px;
+    margin-top: 20px;
+} */
+
+/* Right Section */
+.right-section {
+    width: 45%;
+}
+
+.right-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #e0e0e0;
+    color: rgb(5, 3, 3);
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5e6670;
+    color: white
+}
+
+.right-section p {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.right-section a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.right-section a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-bar input {
+        width: 80%;
+    }
+
+    .item-carousel {
+        flex-wrap: nowrap;
+        gap: 15px;
+    }
+
+    .item-card {
+        width: 150px;
+    }
+}
