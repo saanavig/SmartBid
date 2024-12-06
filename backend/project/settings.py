@@ -33,6 +33,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -114,5 +116,11 @@ ACCOUNT_EMAIL_REQUIRED = True
 'sign up form'
 ACCOUNT_FORMS = {'signup': 'project.forms.CustomSignupForm'}
 
-# LOGIN_REDIRECT_URL = '/accounts/profile/'
-# LOGIN_REDIRECT_URL = '/dashboard/'
+# # LOGIN_REDIRECT_URL = '/profile/'
+# # LOGIN_REDIRECT_URL = '/dashboard/'
+# LOGOUT_REDIRECT_URL = '/'
+# # LOGIN_URL = '/login/'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGOUT_REDIRECT_URL = 'homepage'

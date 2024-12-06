@@ -19,17 +19,20 @@ from django.urls import path, include
 from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
-#from project.views import CustomSignupView
-from .views import homepage, profile, CustomSignupView
+#from .views import CustomSignupView
+from .views import homepage, profile, CustomSignupView, CustomLoginView
 from . import views
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
-    path('accounts/profile/', views.profile, name='profile'),  # Profile view
+    path('profile/', profile, name='profile'),  # Profile view
+    path('login/', CustomLoginView.as_view(next_page='profile'), name='login'),
     #path('', TemplateView.as_view(template_name='homepage.html')),
     path('', homepage, name='homepage'),
-    path('login/', LoginView.as_view(), name='login'),
+    #path('login/', LoginView.as_view(), name='login'),
+    # path('login/', CustomLoginView.as_view(), name='login'),
     path('signup/', CustomSignupView.as_view(), name='signup'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('adminPage/', views.adminPage, name='adminPage'),
@@ -39,4 +42,7 @@ urlpatterns = [
     path('dashboard/account/', views.account, name='account'),
     path('dashboard/viewbids/', views.viewbids, name='viewbids'),
     path('dashboard/requests/', views.requests, name='requests'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
+
+

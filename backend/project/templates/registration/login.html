@@ -44,7 +44,8 @@
                         <span class="toggle-password">👁️</span>
                     </div>
 
-                    <button type="submit" formaction="{% url 'profile' %}">Login</button>
+                    {% comment %} <button type="submit" formaction="{% url 'profile' %}">Login</button> {% endcomment %}
+                    <button type="submit">Login</button>
                 </form>
                 <p>Don’t have an account? <a href="{% url 'signup' %}">Sign up!</a></p>
             </div>

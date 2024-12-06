@@ -32,3 +32,8 @@ class CustomSignupForm(SignupForm):
         complete_signup(request, user, backend, None)
 
         return user
+
+
+class CustomLoginForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput)
