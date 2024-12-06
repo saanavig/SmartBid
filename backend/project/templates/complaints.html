@@ -27,8 +27,8 @@
             </div>
         </div>
 
-     <!-- PROFILE POPUP -->
-     <div id="profile-popup" class="profile-popup">
+    <!-- PROFILE POPUP -->
+    <div id="profile-popup" class="profile-popup">
         <div class="profile-popup-content">
             <span class="close">&times;</span>
             <h1>My Profile</h1>
@@ -37,7 +37,7 @@
                     <p>{{ user.first_name }} {{ user.last_name }}</p>
                     <p>- 3.6 (7 Ratings)</p>
                 </div>
-                <p><strong>Date Joined:</strong> January 1, 2023</p>
+                <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
                 <p><strong>Total Transactions:</strong> 25</p>
             </div>
         </div>
@@ -67,7 +67,7 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            
+
             <!-- COMPLAINTS ROW DATA -->
             <tbody id="complaints-body">
                 <tr data-complainant="John Doe" data-complainee="Stacy Davis" data-issue="Delayed Delivery" 

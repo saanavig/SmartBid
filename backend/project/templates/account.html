@@ -12,9 +12,9 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
-        
+
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -37,7 +37,7 @@
                         <p>{{ user.first_name }} {{ user.last_name }}</p>
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
-                    <p><strong>Date Joined:</strong> January 1, 2023</p>
+                    <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
                     <p><strong>Total Transactions:</strong> 25</p>
                 </div>
             </div>
@@ -289,7 +289,7 @@
                 message.innerText = messageText;
                 message.style.display = 'block';
                 message.style.opacity = '1';
-                
+
                 setTimeout(function() {
                     message.style.opacity = '0';
                     setTimeout(function() {
