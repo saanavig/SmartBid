@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate
 from django.urls import reverse
 from dotenv import load_dotenv
 import os
+from django.conf import settings
+
 
 load_dotenv()
 
@@ -98,13 +100,39 @@ def profile(request):
 def dashboard(request):
     if request.user.is_superuser:
         return render(request, 'admin.html', {'admin_dashboard': True})
-    else:
-        return render(request, 'dashboard.html', {'user_dashboard': True})
+    try:
+        user_email = request.user.email
+        response = supabase.table('users').select('balance').eq('email', user_email).execute()
+        balance = response.data[0]['balance'] if response.data else 0
+        context = {
+            'user_dashboard': True,
+            'current_balance': balance
+        }
+        return render(request, 'dashboard.html', context)
+
+    except Exception as e:
+        print(f"Error fetching balance from Supabase: {str(e)}")
+        return render(request, 'dashboard.html', {
+            'user_dashboard': True,
+            'error': 'Unable to load balance'
+        })
+
 
 # Dashboard's My Account View
 @login_required
 def account(request):
-    return render(request, 'account.html')
+    try:
+        # Fetch the user's balance
+        user_email = request.user.email
+        response = supabase.table('users').select('balance').eq('email', user_email).execute()
+        balance = response.data[0]['balance'] if response.data else 0
+
+        return render(request, 'account.html', {'current_balance': balance})
+
+    except Exception as e:
+        print(f"Error fetching balance for account page: {str(e)}")
+        return render(request, 'account.html', {'error': 'Unable to load balance'})
+
 
 # Dashboard's View Bids
 @login_required
@@ -132,10 +160,6 @@ def complaints(request):
 @superuser_access
 def users(request):
     return render(request, 'users.html')
-
-
-from supabase import create_client
-from django.conf import settings
 
 def homepage(request):
     # Fetch listings grouped by category

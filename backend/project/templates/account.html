@@ -22,7 +22,7 @@
                 <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="{% url 'adminPage' %}">Admin</a>
                 <a href="{% url 'profile' %}">Profile</a>
-                <a href="signout.html">Sign Out</a>
+                <a href="{% url 'logout' %}">Sign Out</a>
                 <a href="profile.html">Profile Popup</a>
             </div>
         </div>
@@ -89,7 +89,7 @@
         <div class="account-balance">
             <h2>Account Balance</h2>
             <div class="balance-field">
-                <p id="current-balance">Current Balance: $<span id="balance">0.00</span></p>
+                <p>Your current balance is: <strong>${{ current_balance }}</strong></p>
             </div>
             <div class="amount-input">
                 <input type="number" id="amount" placeholder="Enter transfer amount" />
