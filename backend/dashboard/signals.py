@@ -5,6 +5,7 @@ from supabase import create_client
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import supabase
 
 load_dotenv()
 
@@ -17,13 +18,11 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 @receiver(post_save, sender=User)
 def sync_auth_user_to_supabase(sender, instance, created, **kwargs):
         if created:
-            # 1. Get the auth_user ID for the newly created user
             auth_user = supabase.table("auth_users").select("id").eq("email", instance.email).execute()
             user_id = auth_user.data[0]['id']
 
-            # 2. Create users record with the same ID
             supabase.table("users").insert({
-                "id": user_id,  # This links the record to auth_users
+                "id": user_id,
                 "email": instance.email,
                 "username": instance.username,
                 "first_name": instance.first_name,

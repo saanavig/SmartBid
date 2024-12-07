@@ -13,6 +13,11 @@ from django.urls import reverse
 from dotenv import load_dotenv
 import os
 from django.conf import settings
+from django.http import JsonResponse
+from django.http import HttpResponse
+from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 load_dotenv()
@@ -96,29 +101,27 @@ def profile(request):
     return render(request, 'profile.html', {'user': request.user})
 
 # Dashboard View
-@login_required
-def dashboard(request):
-    if request.user.is_superuser:
-        return render(request, 'admin.html', {'admin_dashboard': True})
-    try:
-        user_email = request.user.email
-        response = supabase.table('users').select('balance').eq('email', user_email).execute()
-        balance = response.data[0]['balance'] if response.data else 0
-        context = {
-            'user_dashboard': True,
-            'current_balance': balance
-        }
-        return render(request, 'dashboard.html', context)
+# @login_required
+# def dashboard(request):
+#     if request.user.is_superuser:
+#         return render(request, 'admin.html', {'admin_dashboard': True})
+#     try:
+#         user_email = request.user.email
+#         response = supabase.table('users').select('balance').eq('email', user_email).execute()
+#         balance = response.data[0]['balance'] if response.data else 0
+#         context = {
+#             'user_dashboard': True,
+#             'current_balance': balance
+#         }
+#         return render(request, 'dashboard.html', context)
 
-    except Exception as e:
-        print(f"Error fetching balance from Supabase: {str(e)}")
-        return render(request, 'dashboard.html', {
-            'user_dashboard': True,
-            'error': 'Unable to load balance'
-        })
+#     except Exception as e:
+#         print(f"Error fetching balance from Supabase: {str(e)}")
+#         return render(request, 'dashboard.html', {
+#             'user_dashboard': True,
+#             'error': 'Unable to load balance'
+#         })
 
-
-# Dashboard's My Account View
 @login_required
 def account(request):
     try:
@@ -128,10 +131,23 @@ def account(request):
         balance = response.data[0]['balance'] if response.data else 0
 
         return render(request, 'account.html', {'current_balance': balance})
-
     except Exception as e:
         print(f"Error fetching balance for account page: {str(e)}")
         return render(request, 'account.html', {'error': 'Unable to load balance'})
+
+
+# Dashboard View
+@login_required
+def dashboard(request):
+    if request.user.is_superuser:
+        return render(request, 'admin.html', {'admin_dashboard': True})
+    else:
+        return render(request, 'dashboard.html', {'user_dashboard': True})
+
+# Dashboard's My Account View
+# @login_required
+# def account(request):
+#     return render(request, 'account.html')
 
 
 # Dashboard's View Bids
@@ -193,3 +209,97 @@ def listing(request, id):
     except Exception as e:
         print(f"Error fetching listing from Supabase: {str(e)}")
         return render(request, 'listing.html', {'error': 'Unable to load listing'})
+@login_required
+def manage_funds(request):
+    user_email = request.user.email
+    new_balance = 0
+
+    try:
+        response = supabase.table('users').select('balance').eq('email', user_email).execute()
+
+        # Validate the response and extract balance
+        if response.data and len(response.data) > 0:
+            raw_balance = response.data[0].get('balance')
+
+            try:
+                current_balance = float(raw_balance) if raw_balance is not None else 0.0
+            except ValueError as ve:
+                messages.error(request, "Error parsing balance. Please try again.")
+                return redirect('accounts')
+        else:
+            messages.error(request, "No balance data found. Please contact support.")
+            return redirect('accounts')
+
+        if request.method == "POST":
+            action = request.POST.get('action')
+            amount = float(request.POST.get('amount', 0))
+
+            if amount > 0:
+                if action == "deposit":
+                    new_balance = current_balance + amount
+                    supabase.table('users').update({'balance': new_balance}).eq('email', user_email).execute()
+                    messages.success(request, f"${amount} deposited successfully!")
+
+                elif action == "withdraw":
+                    print(f"Action: {action}, Amount: {amount}, Current Balance: {current_balance}")
+                    if current_balance >= amount:
+                        new_balance = current_balance - amount
+                        update_response = supabase.table('users').update({'balance': new_balance}).eq('email', user_email).execute()
+                        messages.success(request, f"${amount} withdrawn successfully!")
+                    else:
+                        messages.error(request, "Insufficient balance.")
+                        print("Error: Insufficient balance.")
+                else:
+                    messages.error(request, "Invalid action.")
+            else:
+                messages.error(request, "Amount must be greater than 0.")
+
+            return redirect('accounts')
+        else:
+            new_balance = current_balance
+
+    except Exception as e:
+        messages.error(request, f"Error fetching balance: {str(e)}")
+
+    return render(request, 'account.html', {'current_balance': new_balance})
+
+@csrf_exempt
+def submit_complaint(request):
+    if request.method == "POST":
+        try:
+            # Parse JSON request body
+            data = json.loads(request.body)
+
+            # Validate the data (you can add more validation here)
+            complainant_user_id = data.get('complainant_user_id')
+            defendant_user_id = data.get('defendant_user_id')
+            complaint_text = data.get('complaint_text')
+            status = "pending"  # Default status for new complaints
+
+            if not complainant_user_id or not defendant_user_id or not complaint_text:
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+
+            # Insert into Supabase
+            complaint_data = {
+                "complainant_user_id": complainant_user_id,
+                "defendant_user_id": defendant_user_id,
+                "complaint_text": complaint_text,
+                "status": status
+            }
+
+            # Insert data into the Supabase table
+            response = supabase.from_("complaints").insert([complaint_data]).execute()
+
+            if response.error:
+                return JsonResponse({"error": response.error.message}, status=500)
+
+            # Return success response
+            return JsonResponse({"message": "Complaint submitted successfully!"}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    else:
+        return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
+
+

@@ -77,7 +77,7 @@
                 <label for="current-password">Password:</label>
                 <input type="text" id="password" value="********" disabled>
             </div>
-            
+
             <div class="buttons">
                 <button class="edit-btn">Edit</button>
                 <button id="save-btn" style="display: none;">Save</button>
@@ -87,15 +87,24 @@
 
         <!-- ACCOUNT BALANCE CONTENT -->
         <div class="account-balance">
-            <h2>Account Balance</h2>
-            <div class="balance-field">
+            <!-- <h2>Account Balance</h2> -->
+            <!-- <div class="balance-field"> -->
+            <!-- <div class="balance-field" id="balance">$0.00</div>
+            <div id="balance">0.00</div>
+                <p>Your current balance is: <strong>${{ current_balance }}</strong></p>
+            </div> -->
+
+            <div class="account-balance">
+                <h2>Account Balance</h2>
+                <div class="balance-field" id="balance"></div>
                 <p>Your current balance is: <strong>${{ current_balance }}</strong></p>
             </div>
+
             <div class="amount-input">
                 <input type="number" id="amount" placeholder="Enter transfer amount" />
             </div>
-            <button class="deposit-btn" onclick="deposit()">Deposit</button>
-            <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
+            <button class="deposit-btn" id="deposit-btn">Deposit</button>
+            <button class="withdraw-btn" id="withdraw-btn">Withdraw</button>
             <p id="message"></p>
 
             <h2>Transaction History</h2>
@@ -171,117 +180,95 @@
     </div>
 
     <script>
-        // OPEN PROFILE
-        document.addEventListener("DOMContentLoaded", function() {
-            const profilePopup = document.getElementById('profile-popup');
-            const closePopupBtn = document.querySelector('.close');
-            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+            // OPEN PROFILE
+            document.addEventListener("DOMContentLoaded", function () {
+                const profilePopup = document.getElementById('profile-popup');
+                const closePopupBtn = document.querySelector('.close');
+                const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
 
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                profilePopup.style.display = 'block';
-            });
+                profileLink.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    profilePopup.style.display = 'block';
+                });
 
-            closePopupBtn.addEventListener('click', function() {
-                profilePopup.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === profilePopup) {
+                closePopupBtn.addEventListener('click', function () {
                     profilePopup.style.display = 'none';
-                }
-            });
-        });
-        
-        // EDIT, SAVE, CANCEL FUNCTIONALITY
-        document.addEventListener("DOMContentLoaded", function() {
-            const editBtn = document.querySelector('.edit-btn');
-            const saveBtn = document.getElementById('save-btn');
-            const cancelBtn = document.getElementById('cancel-btn');
-            const inputFields = document.querySelectorAll('.info-field input');
-            const balanceDisplay = document.getElementById('balance');
-            const transactionHistory = document.querySelector('.transaction-history tbody');
+                });
 
-            editBtn.addEventListener('click', () => {
-                inputFields.forEach(input => input.disabled = false);
-                editBtn.style.display = 'none';
-                saveBtn.style.display = 'inline';
-                cancelBtn.style.display = 'inline';
-            });
-
-            saveBtn.addEventListener('click', () => {
-                inputFields.forEach(input => input.disabled = true);
-                editBtn.style.display = 'inline';
-                saveBtn.style.display = 'none';
-                cancelBtn.style.display = 'none';
-            });
-
-            cancelBtn.addEventListener('click', () => {
-                inputFields.forEach(input => input.disabled = true);
-                editBtn.style.display = 'inline';
-                saveBtn.style.display = 'none';
-                cancelBtn.style.display = 'none';
-            });
-
-            // TRANSACTION HISTORY
-            function addTransaction(type, amount) {
-                const currentDate = new Date().toLocaleDateString();
-                const row = document.createElement('tr');
-
-                const dateCell = document.createElement('td');
-                dateCell.textContent = currentDate;
-
-                const typeCell = document.createElement('td');
-                typeCell.textContent = type;
-
-                const amountCell = document.createElement('td');
-                amountCell.textContent = (type === "Deposit" ? "+ " : "- ") + "$" + amount.toFixed(2);
-                amountCell.classList.add(type === "Deposit" ? "credit" : "debit");
-
-                row.appendChild(dateCell);
-                row.appendChild(typeCell);
-                row.appendChild(amountCell);
-
-                transactionHistory.insertBefore(row, transactionHistory.firstChild);
-            }
-
-            // DEPOSIT
-            window.deposit = function() {
-                const amountInput = document.getElementById('amount');
-                const amount = parseFloat(amountInput.value);
-                const currentBalance = parseFloat(balanceDisplay.innerText);
-
-                if (!isNaN(amount) && amount > 0) {
-                    const newBalance = currentBalance + amount;
-                    balanceDisplay.innerText = newBalance.toFixed(2);
-                    addTransaction("Deposit", amount);
-                    amountInput.value = '';
-                    showMessage('Deposit successful!');
-                } else {
-                    showMessage('Please enter a valid amount.');
-                }
-            };
-
-            // WITHDRAW
-            window.withdraw = function() {
-                const amountInput = document.getElementById('amount');
-                const amount = parseFloat(amountInput.value);
-                const currentBalance = parseFloat(balanceDisplay.innerText);
-
-                if (!isNaN(amount) && amount > 0) {
-                    if (amount <= currentBalance) {
-                        const newBalance = currentBalance - amount;
-                        balanceDisplay.innerText = newBalance.toFixed(2);
-                        addTransaction("Withdraw", amount);
-                        amountInput.value = '';
-                        showMessage('Withdrawal successful!');
-                    } else {
-                        showMessage('Insufficient balance.');
+                window.addEventListener('click', function (event) {
+                    if (event.target === profilePopup) {
+                        profilePopup.style.display = 'none';
                     }
-                } else {
-                    showMessage('Please enter a valid amount.');
+                });
+            });
+
+            // TRANSACTION FUNCTIONALITY
+            document.addEventListener('DOMContentLoaded', function () {
+                const depositButton = document.getElementById('deposit-btn');
+                const withdrawButton = document.getElementById('withdraw-btn');
+                const amountInput = document.getElementById('amount');
+                const balanceDisplay = document.getElementById('balance');
+                const transactionHistory = document.querySelector('.transaction-history tbody');
+
+                console.log(balanceDisplay);
+
+                if (!balanceDisplay) {
+                    alert("Balance display element not found. Check the HTML for an element with ID 'balance'.");
+                    return;
                 }
-            };
+
+                depositButton.addEventListener('click', function () {
+                    const amount = parseFloat(amountInput.value);
+                    if (!isNaN(amount) && amount > 0) {
+                        const newBalance = parseFloat(balanceDisplay.textContent) + amount;
+                        balanceDisplay.textContent = newBalance.toFixed(2);
+                        addTransaction('Deposit', amount);
+                        showMessage('Deposit successful!');
+                    }
+                    else {
+                        alert('Please enter a valid amount.');
+                    }
+                });
+
+                withdrawButton.addEventListener('click', function (){
+                    const amount = parseFloat (amountInput.value);
+                    if (!isNaN(amountInput) && amount > 0) {
+                        const newBalance = parseFloat(balanceDisplay.textContent) - amount;
+                        if (amount <= newBalance) {
+                            balanceDisplay.textContent = newBalance.toFixed(2);
+                            addTransaction('Withdraw', amount);
+                            showMessage('Withdrawal successful!');
+                        }
+                        else {
+                            alert('Insufficient funds.');
+                        }
+                    }
+                    else {
+                        alert('Please enter a valid amount.');
+                    }
+                });
+
+                function addTransaction(type, amount) {
+                    const currentDate = new Date().toLocaleDateString();
+                    const row = document.createElement('tr');
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = currentDate;
+
+                    const typeCell = document.createElement('td');
+                    typeCell.textContent = type;
+
+                    const amountCell = document.createElement('td');
+                    amountCell.textContent = (type === 'Deposit' ? '+ ' : '- ') + '$' + amount.toFixed(2);
+                    amountCell.classList.add(type === 'Deposit' ? 'credit' : 'debit');
+
+                    row.appendChild(dateCell);
+                    row.appendChild(typeCell);
+                    row.appendChild(amountCell);
+
+                    transactionHistory.insertBefore(row, transactionHistory.firstChild);
+                }
+            });
 
             // MESSAGE POPUPS
             function showMessage(messageText) {
@@ -296,8 +283,7 @@
                         message.style.display = 'none';
                     }, 500);
                 }, 3000);
-            }
-        });
+            };
     </script>
 </body>
 </html>

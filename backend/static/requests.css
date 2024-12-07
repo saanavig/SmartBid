@@ -388,9 +388,23 @@ body {
 
 .complaintpopup-content h3 {
     font-size: 1.5rem;
-    margin-top: 15px;
     text-align: center;
     color: #333;
+    margin-top: 15px;
+}
+
+.close-listing {
+    color: #161010;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.close-listing:hover {
+    color: rgb(69, 69, 69);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .complaintpopup-content label {

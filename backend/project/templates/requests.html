@@ -12,7 +12,7 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
         
         <!-- DROPDOWN FOR USER OPTIONS -->
@@ -91,87 +91,181 @@
     <!-- FILE NEW COMPLAINT POPUP -->
     <div id="complaint-popup" class="complaint-popup">
         <div class="complaintpopup-content">
+            <span class="close-listing" id="close-button">&times;</span>
             <h3>File a Complaint</h3>
-            <label for="complaint-name">Name:</label>
-            <input type="text" id="complaint-name" placeholder="Enter name" />
+            <form id="complaint-form">
 
-            <label for="complaint-issue">Issue:</label>
-            <select id="complaint-issue">
-                <option value="">Select an issue</option>
-                <option value="fraud">Fraud</option>
-                <option value="harassment">Harassment</option>
-                <option value="scam">Scam</option>
-                <option value="other">Other</option>
-            </select>
-
-            <label for="complaint-details">Additional Details:</label>
-            <textarea id="complaint-details" placeholder="Enter any additional details"></textarea>
-
-            <button onclick="closeComplaintPopup()">Submit</button>
-            <button onclick="closeComplaintPopup()">Cancel</button>
+        
+                <label for="defendantUserId">Defendant User ID:</label>
+                <input type="number" id="defendantUserId" name="defendantUserId" required />
+                <br>
+        
+                <label for="complaintText">Complaint Text:</label>
+                <textarea id="complaintText" name="complaintText" required></textarea>
+                <br>
+        
+                <button type="submit">Submit Complaint</button>
+            </form>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
     <script>
         // OPEN PROFILE
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tocrntktnrrrcaxtnvly.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E';
+
+        // Create the Supabase client
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('complaint-form').addEventListener('submit', handleSubmit);
+        });
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Collect form data with null checks
+            const defendantUserIdElement = document.getElementById('defendantUserId');
+            const complaintTextElement = document.getElementById('complaintText');
+
+            if (!defendantUserIdElement || !complaintTextElement) {
+                console.error('One or more form elements are missing.');
+                return; // Exit the function if any element is missing
+            }
+
+            const complaintData = {
+                defendant_user_id: defendantUserIdElement.value,
+                complaint_text: complaintTextElement.value,
+                status: 'pending', // Default status for new complaints
+            };
+
+            // Send data to Supabase
+            const { data, error } = await supabaseClient
+                .from('complaints')
+                .insert([complaintData]);
+
+            if (error) {
+                console.error('Error submitting complaint:', error.message);
+            } else {
+                console.log('Complaint added successfully:', data);
+                alert('Complaint submitted successfully!');
+            }
+        }
+        
         document.addEventListener("DOMContentLoaded", function() {
             const profilePopup = document.getElementById('profile-popup');
             const closePopupBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
-
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                profilePopup.style.display = 'block';
-            });
-
-            closePopupBtn.addEventListener('click', function() {
-                profilePopup.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === profilePopup) {
-                    profilePopup.style.display = 'none';
-                }
-            });
+    
+            // Ensure profileLink exists before adding the event listener
+            if (profileLink) {
+                profileLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (profilePopup) {
+                        profilePopup.style.display = 'block';
+                    }
+                });
+            }
+    
+            // Ensure closePopupBtn exists before adding the event listener
+            if (closePopupBtn) {
+                closePopupBtn.addEventListener('click', function() {
+                    if (profilePopup) {
+                        profilePopup.style.display = 'none';
+                    }
+                });
+            }
+    
+            // Close profile popup when clicking outside of it
+            if (profilePopup) {
+                window.addEventListener('click', function(event) {
+                    if (event.target === profilePopup) {
+                        profilePopup.style.display = 'none';
+                    }
+                });
+            }
         });
-
+    
         // POPUP FUNCTIONALITY
         function openPopup() {
-            document.getElementById('deactivate-popup').style.display = 'flex';
+            const deactivatePopup = document.getElementById('deactivate-popup');
+            if (deactivatePopup) {
+                deactivatePopup.style.display = 'flex';
+            }
         }
-
+    
         function closePopup() {
-            document.getElementById('deactivate-popup').style.display = 'none';
+            const deactivatePopup = document.getElementById('deactivate-popup');
+            if (deactivatePopup) {
+                deactivatePopup.style.display = 'none';
+            }
         }
-
+    
         function openPayFeePopup() {
-            document.getElementById('pay-fee-popup').style.display = 'flex';
+            const payFeePopup = document.getElementById('pay-fee-popup');
+            if (payFeePopup) {
+                payFeePopup.style.display = 'flex';
+            }
         }
-
+    
         function closePayFeePopup() {
-            document.getElementById('pay-fee-popup').style.display = 'none';
+            const payFeePopup = document.getElementById('pay-fee-popup');
+            if (payFeePopup) {
+                payFeePopup.style.display = 'none';
+            }
         }
-
+    
         function openComplaintPopup() {
-            document.getElementById('complaint-popup').style.display = 'flex';
+            const complaintPopup = document.getElementById('complaint-popup');
+            if (complaintPopup) {
+                complaintPopup.style.display = 'flex';
+            }
         }
+    
+        const closeButton = document.getElementById("close-button");
 
-        function closeComplaintPopup() {
-            document.getElementById('complaint-popup').style.display = 'none';
-        }
-
-        // COMPLAINT POPUP
-        document.getElementById("complaint-form").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            const name = document.getElementById("name").value;
-            const issue = document.getElementById("issue").value;
-            const details = document.getElementById("details").value;
-
-            alert(`Complaint filed!\nName: ${name}\nIssue: ${issue}\nDetails: ${details}`);
-
-            closeComplaintPopup();
+        closeButton.addEventListener("click", () => {
+            const listing = document.getElementById("complaint-popup"); 
+            listing.style.display = "none";
         });
+    
+
+        document.getElementById("complaint-form").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            alert("Form submitted!"); // Alert to confirm submission
+
+            const defendantUserId = document.getElementById("defendant_user_id").value;
+            const complaintText = document.getElementById("complaint-text").value;
+            try {
+                const { data, error } = await supabase
+                    .from('complaints')
+                    .insert([
+                        {
+                            defendant_user_id: defendantUserId,
+                            complaint_text: complaintText,
+                            status: 'pending'
+                        }
+                    ]);
+
+                if (error) {
+                    throw error; // Handle error
+                }
+
+                console.log("Complaint submitted successfully:", data);
+                alert("Complaint submitted successfully!");
+                closeComplaintPopup(); // Close the popup after submission
+            } catch (error) {
+                console.error("Error submitting complaint:", error);
+                alert("Error submitting complaint: " + error.message);
+            }
+        });
+
     </script>
 </body>
 </html>
+
+
