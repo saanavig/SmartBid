@@ -9,7 +9,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     role = models.CharField(
-        max_length=20,
+        max_length=50,
         default='visitor',
         choices=[('visitor', 'Visitor'), ('user', 'User'), ('super-user', 'Super User')]
     )

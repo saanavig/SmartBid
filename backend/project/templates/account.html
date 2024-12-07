@@ -96,7 +96,7 @@
 
             <div class="account-balance">
                 <h2>Account Balance</h2>
-                <div class="balance-field" id="balance"></div>
+                <div class="balance-field" id="balance">0.00</div>
                 <p>Your current balance is: <strong>${{ current_balance }}</strong></p>
             </div>
 
@@ -230,23 +230,26 @@
                     }
                 });
 
-                withdrawButton.addEventListener('click', function (){
-                    const amount = parseFloat (amountInput.value);
-                    if (!isNaN(amountInput) && amount > 0) {
-                        const newBalance = parseFloat(balanceDisplay.textContent) - amount;
-                        if (amount <= newBalance) {
-                            balanceDisplay.textContent = newBalance.toFixed(2);
-                            addTransaction('Withdraw', amount);
-                            showMessage('Withdrawal successful!');
-                        }
-                        else {
-                            alert('Insufficient funds.');
-                        }
+                withdrawButton.addEventListener('click', function() {
+                const amount = parseFloat(amountInput.value);
+
+                // Check if the entered amount is a valid number and greater than 0
+                if (!isNaN(amount) && amount > 0) {
+                    const currentBalance = parseFloat(balanceDisplay.textContent);
+
+                    if (amount <= currentBalance) {
+                        const newBalance = currentBalance - amount;
+                        balanceDisplay.textContent = newBalance.toFixed(2);  // Update balance display
+                        addTransaction('Withdraw', amount);  // Add transaction to history
+                        showMessage('Withdrawal successful!');  // Show success message
+                    } else {
+                        alert('Insufficient funds.');  // Alert if the amount exceeds current balance
                     }
-                    else {
-                        alert('Please enter a valid amount.');
-                    }
-                });
+                } else {
+                    alert('Please enter a valid amount.');  // Alert if the amount is invalid
+                }
+            });
+
 
                 function addTransaction(type, amount) {
                     const currentDate = new Date().toLocaleDateString();

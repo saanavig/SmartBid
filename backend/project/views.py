@@ -18,6 +18,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 import json
+import random
 
 
 load_dotenv()
@@ -30,31 +31,103 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # Custom Signup View
+# class CustomSignupView(View):
+#     def get(self, request):
+#         form = CustomSignupForm()
+#         return render(request, 'signup.html', {'form': form})
+
+#     def post(self, request):
+#         form = CustomSignupForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(request)  # This calls the overridden save method
+#             print(f"New user created: {user.username} ({user.id})")
+#             login(request, user)
+#             return redirect('profile')
+#         else:
+#             print(form.errors)  # Debug invalid form submissions
+#         return render(request, 'signup.html', {'form': form, 'errors': form.errors})
+
 class CustomSignupView(View):
     def get(self, request):
-        form = CustomSignupForm()
-        return render(request, 'signup.html', {'form': form})
+        # Generate a random arithmetic question
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        operators = ["+", "-", "*"]
+        operator = random.choice(operators)
 
-    # def post(self, request):
-    #     print(request.POST)
-    #     form = CustomSignupForm(request.POST)
-    #     if form.is_valid():
-    #         user = form.save(request)
-    #         login(request, user)
-    #         return redirect('profile')
-    #     else:
-    #         print(form.errors)
-    #     return render(request, 'signup.html', {'form': form, 'errors': form.errors})
+        # Calculate the correct answer
+        if operator == "+":
+            correct_answer = num1 + num2
+        elif operator == "-":
+            correct_answer = num1 - num2
+        else:
+            correct_answer = num1 * num2
+
+        question = f"What is {num1} {operator} {num2}?"
+
+        # Create the form and render the page
+        form = CustomSignupForm()
+        return render(request, 'signup.html', {
+            'form': form,
+            'arithmetic_question': question,
+        })
+
     def post(self, request):
         form = CustomSignupForm(request.POST)
-        if form.is_valid():
-            user = form.save(request)  # This calls the overridden save method
-            print(f"New user created: {user.username} ({user.id})")
-            login(request, user)
-            return redirect('profile')
+        arithmetic_answer = request.POST.get('arithmetic_answer')
+
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        operators = ["+", "-", "*"]
+        operator = random.choice(operators)
+
+        if operator == "+":
+            correct_answer = num1 + num2
+        elif operator == "-":
+            correct_answer = num1 - num2
         else:
-            print(form.errors)  # Debug invalid form submissions
-        return render(request, 'signup.html', {'form': form, 'errors': form.errors})
+            correct_answer = num1 * num2
+
+        # Check if the arithmetic answer is correct
+        if int(arithmetic_answer) != correct_answer:
+            return render(request, 'signup.html', {
+                'form': form,
+                'arithmetic_question': f"What is {num1} {operator} {num2}?",
+                'error': "Incorrect answer to the arithmetic question. Please try again."
+            })
+
+        # If form is valid, save the user and their data to Supabase
+        if form.is_valid():
+            user = form.save()  # This calls the overridden save method in your CustomSignupForm
+            print(f"New user created: {user.username} ({user.id})")
+
+            # Save user data in Supabase
+            supabase_client.table('Users').insert({
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'username': user.username,
+                'password': user.password,  # It's better to store hashed passwords, not plaintext
+                'arithmetic_question': f"What is {num1} {operator} {num2}?",
+                'correct_answer': correct_answer
+            }).execute()
+
+            # Log the user in after successful signup
+            login(request, user)
+
+            # Add a success message for approval waiting
+            messages.success(request, "Your application has been submitted. Please wait for the superuser to approve your application.")
+
+            # Redirect to the profile or a success page
+            return redirect('profile')  # Or any other success page URL
+        else:
+            # If the form is invalid, render the page with form errors
+            return render(request, 'signup.html', {
+                'form': form,
+                'arithmetic_question': f"What is {num1} {operator} {num2}?",
+                'errors': form.errors
+            })
+
 
 # class CustomLoginView(View):
 #     def get(self, request):
@@ -301,5 +374,3 @@ def submit_complaint(request):
 
     else:
         return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
-
-

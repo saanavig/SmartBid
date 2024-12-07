@@ -132,8 +132,8 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="security_question">Security Question: What is 5 + 3?</label>
-                            <input type="text" id="security_question" name="security_question" required value="{{ form.security_question.value }}">
+                            <label id="security-question-label"></label>
+                            <input type="number" id="security-answer" name="security_answer"required value="{{ form.security_question.value }}">
                             {% if form.security_question.errors %}
                                 <div class="errorlist">
                                     <ul>
@@ -185,6 +185,33 @@
                     popup.classList.toggle("show");
                 });
             }
+
+            const form = document.getElementById("signup-form");
+            const securityAnswer = document.getElementById("security-answer");
+            const securityLabel = document.getElementById("security-question-label");
+
+            // Generate random arithmetic question
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operators = ["+", "-", "*"];
+            const operator = operators[Math.floor(Math.random() * operators.length)];
+
+            // Calculate the correct answer
+            let correctAnswer;
+            switch (operator) {
+                case "+":
+                    correctAnswer = num1 + num2;
+                    break;
+                case "-":
+                    correctAnswer = num1 - num2;
+                    break;
+                case "*":
+                    correctAnswer = num1 * num2;
+                    break;
+            }
+
+            securityLabel.textContent = `Security Question: What is ${num1} ${operator} ${num2}?`;
+            securityQuestionInput.value = `${num1} ${operator} ${num2}`;
         });
     </script>
 
