@@ -37,8 +37,8 @@
                 <p>{{ user.first_name }} {{ user.last_name }}</p>
                 <p>- 3.6 (7 Ratings)</p>
             </div>
-            <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-            <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+            <p><strong>Date Joined:</strong> January 1, 2023</p>
+            <p><strong>Total Transactions:</strong> 25</p>
         </div>
     </div>
 </div>
@@ -51,7 +51,7 @@
 
         <!-- SEARCH BAR -->
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search for visitor...">
+            <input type="text" id="search-input" placeholder="Search for application...">
             <button id="search-button">Search</button>
         </div>
 
@@ -64,7 +64,6 @@
                     <th>Username</th>
                     <th>Submission Date</th>
                     <th>Arithmetic Question</th>
-                    <th>Correct Answer</th>
                     <th>User Answer</th>
                     <th>Actions</th>
                 </tr>
@@ -72,149 +71,19 @@
 
             <!-- APPLICATIONS ROW DATA -->
             <tbody id="applications-body">
+                {% for application in pendingApplications %}
                 <tr>
-                    <td>Sehr Abrar</td>
-                    <td>Fourpixels</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
+                    <td>{{ application.full_name }}</td>
+                    <td>{{ application.username }}</td>
+                    <td>{{ application.submission_date }}</td>
+                    <td>{{ application.arithmetic_question }}</td>
+                    <td>{{ application.user_answer }}</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Sehr Abrar')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Sehr Abrar')">Deny</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', '{{ application.full_name }}')">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', '{{ application.full_name }}')">Deny</button>
                     </td>
                 </tr>
-
-                <tr>
-                    <td>Debasree Sen</td>
-                    <td>Wallaweebs</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Debasree Sen.')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Debasree Sen')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Srewashi Mondal</td>
-                    <td>Srewashi</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Srewashi Mondal')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Srewashi Mondal')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Saanavi </td>
-                    <td>Saanavi</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Saanavi Goyal')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Saanavi G.')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Scam Temp</td>
-                    <td>Bot109937</td>
-                    <td>2024-11-20</td>
-                    <td>5 + 7</td>
-                    <td>12</td>
-                    <td>12</td>
-                    <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', 'Scam Temp')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', 'Scam Temp')">Deny</button>
-                    </td>
-                </tr>
-            </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

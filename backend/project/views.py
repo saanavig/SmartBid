@@ -76,61 +76,60 @@ class CustomSignupView(View):
         })
 
     def post(self, request):
+        supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
+
         form = CustomSignupForm(request.POST)
         arithmetic_answer = request.POST.get('arithmetic_answer')
+        security_question = request.POST.get('security_question')
 
-        num1 = random.randint(1, 10)
-        num2 = random.randint(1, 10)
-        operators = ["+", "-", "*"]
-        operator = random.choice(operators)
+        # Validate the arithmetic answer
+        try:
+            num1, operator, num2 = security_question.split()
+            num1, num2 = int(num1), int(num2)
+            correct_answer = eval(f"{num1} {operator} {num2}")
+        except Exception:
+            return render(request, 'signup.html', {
+                'form': form,
+                'arithmetic_question': security_question,
+                'error': "Invalid arithmetic question. Please try again."
+            })
 
-        if operator == "+":
-            correct_answer = num1 + num2
-        elif operator == "-":
-            correct_answer = num1 - num2
-        else:
-            correct_answer = num1 * num2
-
-        # Check if the arithmetic answer is correct
         if int(arithmetic_answer) != correct_answer:
             return render(request, 'signup.html', {
                 'form': form,
-                'arithmetic_question': f"What is {num1} {operator} {num2}?",
+                'arithmetic_question': security_question,
                 'error': "Incorrect answer to the arithmetic question. Please try again."
             })
 
         # If form is valid, save the user and their data to Supabase
         if form.is_valid():
-            user = form.save()  # This calls the overridden save method in your CustomSignupForm
+            user = form.save(request=request)  # Pass the request argument here
             print(f"New user created: {user.username} ({user.id})")
 
             # Save user data in Supabase
-            create_client.table('Users').insert({
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'username': user.username,
-                'password': user.password,  # It's better to store hashed passwords, not plaintext
-                'arithmetic_question': f"What is {num1} {operator} {num2}?",
-                'correct_answer': correct_answer
+            response = supabase.table('user_applications').insert({
+                'id': user.id,
+                'arithmetic_question': security_question,
+                'answer': correct_answer
             }).execute()
+
+            print("Supabase insert response:", response)
 
             # Log the user in after successful signup
             login(request, user)
 
-            # Add a success message for approval waiting
+            # Add a success message
             messages.success(request, "Your application has been submitted. Please wait for the superuser to approve your application.")
 
-            # Redirect to the profile or a success page
-            return redirect('profile')  # Or any other success page URL
+            # Redirect to the profile or success page
+            return redirect('profile')
         else:
-            # If the form is invalid, render the page with form errors
+            # If the form is invalid, render the page with errors
             return render(request, 'signup.html', {
                 'form': form,
-                'arithmetic_question': f"What is {num1} {operator} {num2}?",
+                'arithmetic_question': security_question,
                 'errors': form.errors
             })
-
 
 # class CustomLoginView(View):
 #     def get(self, request):
@@ -169,7 +168,7 @@ def homepage(request):
     return render(request, 'homepage.html')
 
 # Profile View (Login Required)
-@login_required
+# @login_required
 # def profile(request):
 #     return render(request, 'profile.html', {'user': request.user})
 @login_required
@@ -323,7 +322,31 @@ def adminPage(request):
 
 @superuser_access
 def applications(request):
-    return render(request, 'applications.html')
+    # Fetch listings grouped by category
+    try:
+        pendingApplications = supabase.table('user_applications').select('*').execute()
+
+        # Prepare the context with the required fields
+        applications_data = []
+        for application in pendingApplications.data:
+            applications_data.append({
+                'full_name': f"{application['first_name']} {application['last_name']}",
+                'username': application['username'],
+                'submission_date': application['application_date'],
+                'arithmetic_question': application['arithmetic_question'],
+                'user_answer': application['answer'],
+            })
+
+        context = {
+            'pendingApplications': applications_data
+        }
+
+        return render(request, 'applications.html', context)
+
+    except Exception as e:
+        print(f"Error fetching from Supabase: {str(e)}")
+        return render(request, 'applications.html', {'error': 'Unable to load listings'})
+
 
 @superuser_access
 def complaints(request):

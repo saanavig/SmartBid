@@ -35,7 +35,7 @@
                 <div class="signup-container">
                     <h2>Create a User</h2>
                     <!-- Form -->
-                    <form action="{% url 'signup' %}" method="POST">
+                    <form id="signup-form" method="POST" action="{% url 'signup' %}">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="first_name">First Name</label>
@@ -133,18 +133,16 @@
                         </div>
                         <div class="form-group">
                             <label id="security-question-label"></label>
-                            <input type="number" id="security-answer" name="security_answer"required value="{{ form.security_question.value }}">
-                            {% if form.security_question.errors %}
+                            <input type="number" id="security-answer" name="arithmetic_answer" required>
+                            {% if form.arithmetic_answer.errors %}
                                 <div class="errorlist">
                                     <ul>
-                                        {% for error in form.security_question.errors %}
+                                        {% for error in form.arithmetic_answer.errors %}
                                             <li>{{ error }}</li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                             {% endif %}
-                        </div>
-                        <div class="form-group">
                             <button type="submit">Sign Up</button>
                         </div>
                     </form>
@@ -159,60 +157,39 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Select the username and password info icons
-            const usernameInfoIcon = document.querySelector(".username-info-icon");
-            const passwordInfoIcon = document.querySelector(".password-info-icon");
+        const form = document.getElementById("signup-form");
+        const securityAnswer = document.getElementById("security-answer");
+        const securityLabel = document.getElementById("security-question-label");
+        const securityQuestionInput = document.createElement("input");
 
-            // Add click event listener for username info icon
-            if (usernameInfoIcon) {
-                usernameInfoIcon.addEventListener("click", () => {
-                    // Find the corresponding popup
-                    const popup = document.getElementById("username-info");
+        // Create a hidden input to store the question
+        securityQuestionInput.type = "hidden";
+        securityQuestionInput.name = "security_question";
+        form.appendChild(securityQuestionInput);
 
-                    // Toggle the 'show' class to display/hide the popup
-                    popup.classList.toggle("show");
-                });
-            }
+        // Generate random arithmetic question
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        const operators = ["+", "-", "*"];
+        const operator = operators[Math.floor(Math.random() * operators.length)];
 
-            // Add click event listener for password info icon
-            if (passwordInfoIcon) {
-                passwordInfoIcon.addEventListener("click", () => {
-                    // Find the corresponding popup
-                    const popup = document.getElementById("password-info");
+        // Calculate the correct answer
+        let correctAnswer;
+        switch (operator) {
+            case "+":
+                correctAnswer = num1 + num2;
+                break;
+            case "-":
+                correctAnswer = num1 - num2;
+                break;
+            case "*":
+                correctAnswer = num1 * num2;
+                break;
+        }
 
-                    // Toggle the 'show' class to display/hide the popup
-                    popup.classList.toggle("show");
-                });
-            }
-
-            const form = document.getElementById("signup-form");
-            const securityAnswer = document.getElementById("security-answer");
-            const securityLabel = document.getElementById("security-question-label");
-
-            // Generate random arithmetic question
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operators = ["+", "-", "*"];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
-
-            // Calculate the correct answer
-            let correctAnswer;
-            switch (operator) {
-                case "+":
-                    correctAnswer = num1 + num2;
-                    break;
-                case "-":
-                    correctAnswer = num1 - num2;
-                    break;
-                case "*":
-                    correctAnswer = num1 * num2;
-                    break;
-            }
-
-            securityLabel.textContent = `Security Question: What is ${num1} ${operator} ${num2}?`;
-            securityQuestionInput.value = `${num1} ${operator} ${num2}`;
-        });
+        // Update the label and hidden input with the question
+        securityLabel.textContent = `Security Question: What is ${num1} ${operator} ${num2}?`;
+        securityQuestionInput.value = `${num1} ${operator} ${num2}`;
     </script>
 
 </body>
