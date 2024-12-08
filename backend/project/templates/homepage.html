@@ -1,13 +1,16 @@
 <!--This is the page where visitors and users can view all listings without loggin in-->
-
+<!-- comment-->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartBid Home</title>
-    <link rel="stylesheet" href="../../../static/web.css">
+    <link rel="stylesheet" href="{% static 'web.css' %}">
 </head>
+
 <body>
     <!-- Navbar -->
     <div class="navbar">
@@ -35,7 +38,7 @@
 
         <button id="search-button">Search</button>
     </div>
-    
+
 
     <!-- Filter Popup 
     <div id="filter-popup" class="popup">
@@ -67,7 +70,11 @@
             <div class="item-card">
                 <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
                     <div class="item-image">
+                        {% if item.image_url %}
                         <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/200" alt="No image available">
+                        {% endif %}
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
@@ -83,7 +90,6 @@
     </div>
     {% endif %}
 
-
     {% if school_essentials %}
     <div class="category-section">
         <h1>School Essentials</h1>
@@ -91,14 +97,19 @@
             {% for item in school_essentials %}
             <div class="item-card">
                 <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
-                <div class="item-image">
-                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
-                </div>
-                <div class="item-info">
-                    <p class="item-name">{{ item.title }}</p>
-                    <p class="item-price">${{ item.price }}</p>
-                    <p class="item-time">{{ item.availability }}</p>
-                </div>
+                    <div class="item-image">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/200" alt="No image available">
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-price">${{ item.price }}</p>
+                        <p class="item-time">{{ item.availability }}</p>
+                    </div>
+                </a>
             </div>
             {% empty %}
             <p>No school essentials listings available</p>
@@ -114,14 +125,19 @@
             {% for item in fashion %}
             <div class="item-card">
                 <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
-                <div class="item-image">
-                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
-                </div>
-                <div class="item-info">
-                    <p class="item-name">{{ item.title }}</p>
-                    <p class="item-price">${{ item.price }}</p>
-                    <p class="item-time">{{ item.availability }}</p>
-                </div>
+                    <div class="item-image">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/200" alt="No image available">
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-price">${{ item.price }}</p>
+                        <p class="item-time">{{ item.availability }}</p>
+                    </div>
+                </a>
             </div>
             {% empty %}
             <p>No fashion listings available</p>
@@ -137,14 +153,19 @@
             {% for item in accessories %}
             <div class="item-card">
                 <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
-                <div class="item-image">
-                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
-                </div>
-                <div class="item-info">
-                    <p class="item-name">{{ item.title }}</p>
-                    <p class="item-price">${{ item.price }}</p>
-                    <p class="item-time">{{ item.availability }}</p>
-                </div>
+                    <div class="item-image">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/200" alt="No image available">
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-price">${{ item.price }}</p>
+                        <p class="item-time">{{ item.availability }}</p>
+                    </div>
+                </a>
             </div>
             {% empty %}
             <p>No accessories listings available</p>
@@ -160,14 +181,19 @@
             {% for item in home_kitchen %}
             <div class="item-card">
                 <a href="{% url 'listing' item.id %}" style="text-decoration: none; color: inherit;">
-                <div class="item-image">
-                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
-                </div>
-                <div class="item-info">
-                    <p class="item-name">{{ item.title }}</p>
-                    <p class="item-price">${{ item.price }}</p>
-                    <p class="item-time">{{ item.availability }}</p>
-                </div>
+                    <div class="item-image">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/200" alt="No image available">
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{ item.title }}</p>
+                        <p class="item-price">${{ item.price }}</p>
+                        <p class="item-time">{{ item.availability }}</p>
+                    </div>
+                </a>
             </div>
             {% empty %}
             <p>No home & kitchen listings available</p>
@@ -196,60 +222,61 @@
             noResultsMessage.style.display = 'none';
             document.querySelector('.search-bar').after(noResultsMessage);
 
-        searchButton.addEventListener('click', function () {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const selectedCategory = categoryDropdown.value.toLowerCase();
-            let resultsFound = false;
+            searchButton.addEventListener('click', function () {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const selectedCategory = categoryDropdown.value.toLowerCase();
+                let resultsFound = false;
 
-            // Hide all sections, item cards, and reset visibility for labels
-            categorySections.forEach(section => {
-                section.style.display = 'none';
-                const header = section.querySelector('h1');
-                if (header) header.style.display = 'none'; // Hide the category header
-            });
+                // Hide all sections, item cards, and reset visibility for labels
+                categorySections.forEach(section => {
+                    section.style.display = 'none';
+                    const header = section.querySelector('h1');
+                    if (header) header.style.display = 'none'; // Hide the category header
+                });
 
-            itemCards.forEach(card => {
-                card.style.display = 'none';
-            });
+                itemCards.forEach(card => {
+                    card.style.display = 'none';
+                });
 
-            resultsLabel.style.display = 'none';
-            noResultsMessage.style.display = 'none';
+                resultsLabel.style.display = 'none';
+                noResultsMessage.style.display = 'none';
 
-            // Search and filter item cards
-            itemCards.forEach(card => {
-                const itemName = card.querySelector('.item-name').textContent.toLowerCase();
-                const categorySection = card.closest('.category-section');
-                const categoryHeader = categorySection.querySelector('h1');
+                // Search and filter item cards
+                itemCards.forEach(card => {
+                    const itemName = card.querySelector('.item-name').textContent.toLowerCase();
+                    const categorySection = card.closest('.category-section');
+                    const categoryHeader = categorySection.querySelector('h1');
 
-                const isSearchMatch = itemName.includes(searchTerm);
-                const isCategoryMatch = selectedCategory === 'all' || categoryHeader.textContent.toLowerCase().includes(selectedCategory);
+                    const isSearchMatch = itemName.includes(searchTerm);
+                    const isCategoryMatch = selectedCategory === 'all' || categoryHeader.textContent.toLowerCase().includes(selectedCategory);
 
-                if (isSearchMatch && isCategoryMatch) {
-                    card.style.display = 'block'; // Show the matching card
-                    categorySection.style.display = 'block'; // Show the category section
-                    resultsFound = true;
+                    if (isSearchMatch && isCategoryMatch) {
+                        card.style.display = 'block'; // Show the matching card
+                        categorySection.style.display = 'block'; // Show the category section
+                        resultsFound = true;
+                    }
+                });
+
+                // Show the "Results" header or "No Results Found" message
+                if (resultsFound) {
+                    resultsLabel.style.display = 'block';
+                } else {
+                    noResultsMessage.style.display = 'block';
                 }
             });
 
-            // Show the "Results" header or "No Results Found" message
-            if (resultsFound) {
-                resultsLabel.style.display = 'block';
-            } else {
-                noResultsMessage.style.display = 'block';
-            }
-        });
+            const maxLength = 15; // Set the maximum length for item names
+            const itemNames = document.querySelectorAll('.item-name');
 
-        const maxLength = 15; // Set the maximum length for item names
-        const itemNames = document.querySelectorAll('.item-name');
-
-        itemNames.forEach(itemName => {
-            const fullText = itemName.textContent.trim();
-            if (fullText.length > maxLength) {
-                itemName.textContent = fullText.slice(0, maxLength) + '...';
-                itemName.setAttribute('title', fullText); // Add a tooltip with the full name
-            }
-        });
+            itemNames.forEach(itemName => {
+                const fullText = itemName.textContent.trim();
+                if (fullText.length > maxLength) {
+                    itemName.textContent = fullText.slice(0, maxLength) + '...';
+                    itemName.setAttribute('title', fullText); // Add a tooltip with the full name
+                }
+            });
         });
     </script>
 </body>
+
 </html>

@@ -251,37 +251,59 @@ def users(request):
     return render(request, 'users.html')
 
 def homepage(request):
-    # Fetch listings grouped by category
-    try:
-        electronics = supabase.table('listings').select('*').eq('category', 'Electronics').execute()
-        school_essentials = supabase.table('listings').select('*').eq('category', 'School Essentials').execute()
-        fashion = supabase.table('listings').select('*').eq('category', 'Fashion & Apparel').execute()
-        accessories = supabase.table('listings').select('*').eq('category', 'Accessories & Gadgets').execute()
+        # Fetch all listings by category, excluding sold items
+        electronics = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Electronics').neq('availability', 'sold').execute()
+        school_essentials = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'School Essentials').neq('availability', 'sold').execute()
+        fashion = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Fashion & Apparel').neq('availability', 'sold').execute()
+        accessories = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Accessories & Gadgets').neq('availability', 'sold').execute()
+
+        # Fetch all images
+        images = supabase.table('listing_images').select('*').execute()
+
+        # Create mapping of listing_id to first image URL
+        listing_images = {}
+        for image in images.data:
+            listing_id = image['listing_id']
+            if listing_id not in listing_images:  # Only take the first image for each listing
+                listing_images[listing_id] = image['image_url']
+
+        # Function to add image URLs to listings
+        def add_images_to_listings(listings):
+            processed = []
+            for listing in listings:
+                listing_copy = listing.copy()
+                listing_copy['image_url'] = listing_images.get(listing['id'])
+                processed.append(listing_copy)
+            return processed
 
         context = {
-            'electronics': electronics.data,
-            'school_essentials': school_essentials.data,
-            'fashion': fashion.data,
-            'accessories': accessories.data
+            'electronics': add_images_to_listings(electronics.data),
+            'school_essentials': add_images_to_listings(school_essentials.data),
+            'fashion': add_images_to_listings(fashion.data),
+            'accessories': add_images_to_listings(accessories.data),
         }
 
         return render(request, 'homepage.html', context)
 
-    except Exception as e:
-        print(f"Error fetching from Supabase: {str(e)}")
-        return render(request, 'homepage.html', {'error': 'Unable to load listings'})
+    # except Exception as e:
+    #     print(f"Error: {str(e)}")
+    #     return render(request, 'homepage.html', {'error': 'Unable to load listings'})
 
 # visit listings
 def listing(request, id):
-    try:
-        # Fetch the specific listing
-        result = supabase.table('listings').select('*').eq('id', id).execute()
-        listing = result.data[0] if result.data else None
 
-        return render(request, 'listing.html', {'listing': listing})
-    except Exception as e:
-        print(f"Error fetching listing from Supabase: {str(e)}")
-        return render(request, 'listing.html', {'error': 'Unable to load listing'})
+    listing = supabase.table('listings').select('*').eq('id', id).execute()
+    images = supabase.table('listing_images').select('*').eq('listing_id', id).execute()
+    # Debug print to see what data we're getting
+    print("Listing data:", listing.data)
+    print("Images data:", images.data)
+
+    context = {
+        'listing': listing.data[0],  # Pass the first item from listing.data
+        'images': images.data
+    }
+    return render(request, 'listing.html', context)
+
 @login_required
 def manage_funds(request):
     user_email = request.user.email

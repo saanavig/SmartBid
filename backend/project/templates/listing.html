@@ -1,11 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Details</title>
-    <link rel="stylesheet" href="../../../static/listing.css">
+    <link rel="stylesheet" href="{% static 'listing.css' %}">
 </head>
 
 <body>
@@ -13,7 +15,7 @@
     <div id='overlay'>
         <div class="navbar">
             <div class="logo">
-                <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
+                <a href="{% url 'homepage' %}" style="text-decoration: none; color: inherit; display: inline-block;">
                     <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
                 </a>
             </div>
@@ -23,10 +25,8 @@
                 <a class="login-btn">You</a>
                 <div class="dropdown-content">
                     <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'adminPage' %}">Admin</a>
                     <a href="{% url 'profile' %}">Profile</a>
                     <a href="{% url 'logout' %}">Sign Out</a>
-                    <a href="profile.html">Profile Popup</a>
                 </div>
             </div>
         </div>
@@ -37,14 +37,12 @@
             <div class="left-section">
                 <div class="image-carousel">
                     <div class="thumbnail-container">
-                        <img src="images/octopus mood.jpg" alt="Thumbnail 1" onclick="changeImage(this)">
-                        <img src="images/spiral notebooks.jpg" alt="Thumbnail 2" onclick="changeImage(this)">
-                        <img src="images/jade gua sha.jpg" alt="Thumbnail 3" onclick="changeImage(this)">
-                        <img src="images/cucumber slicer.jpg" alt="Thumbnail 4" onclick="changeImage(this)">
-                        <img src="images/crossbody bag.jpg" alt="Thumbnail 5" onclick="changeImage(this)">
+                        {% for image in images %}
+                            <img src="{{ image.image_url }}" alt="Thumbnail {{ forloop.counter }}" onclick="changeImage(this)">
+                        {% endfor %}
                     </div>
                     <div class="large-image" id="displayed-image">
-                        <img src="images/iphone 15.webp" alt="Large Display">
+                        <img src="{{ images.0.image_url }}" alt="Large Display">
                     </div>
                 </div>
             </div>
@@ -74,7 +72,8 @@
                     <h2 id="bid-header">Bid Placed Successfully!</h2>
                     <div class="row">
                         <p>
-                            <a href="viewbids.html" class="view-bids-link">View Bids </a>to get your bidding status on this item and check your notifications for updates!
+                            <a href="{% url 'viewbids' %}" class="view-bids-link">View Bids </a>to get your bidding
+                            status on this item and check your notifications for updates!
                         </p>
                     </div>
                 </div>
@@ -99,13 +98,12 @@
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
-                <h2>iPhone 15 Pro Max New</h2>
-                <h3>US $99.99</h3>
-                <p><strong>Closes:</strong> 18d 10h (MM/DD/YYYY)</p>
-                <p><strong>Category:</strong> Category Name</p>
+                <h2>{{ listing.title }}</h2>
+                <h3>US ${{ listing.price }}</h3>
+                <p><strong>Created At:</strong> {{ listing.created_at }}</p>
+                <p><strong>Category:</strong> {{ listing.category }}</p>
                 <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                   et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                <p>{{ listing.description }}</p>
                 <button class="bid-button" id="bid-button">Start Bidding</button>
             </div>
 
@@ -134,8 +132,8 @@
                 <div class="comment-buttons">
                     <button class="cancel-button" onclick="clearComment()">Cancel</button>
                     <button class="comment-button" onclick="addComment()">Comment</button>
-                </div>   
-            </div>     
+                </div>
+            </div>
 
             <div class="align-bottom">
                 <!-- COMMENT DISPLAYS SECTION -->
@@ -202,192 +200,193 @@
                             <p>$550.00</p>
                         </div>
                         <div class="bid-actions">
-                        <button class="accept-button" id="accept-button">Accept</button>
-                        <button class="decline-button" id="decline-button">Decline</button>
+                            <button class="accept-button" id="accept-button">Accept</button>
+                            <button class="decline-button" id="decline-button">Decline</button>
                         </div>
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
 
-    <script>
-        const startBidButton = document.getElementById('bid-button');
-        const startBidPopup = document.getElementById('bid-popup');
-        const makeBidButton = document.getElementById('make-bid-button');
-        const closeButton = document.getElementById('close-button');
+        <script>
+            const startBidButton = document.getElementById('bid-button');
+            const startBidPopup = document.getElementById('bid-popup');
+            const makeBidButton = document.getElementById('make-bid-button');
+            const closeButton = document.getElementById('close-button');
 
-        // Valid bid check
-        const bidAmount = document.getElementById('amount');
-        const highestAmount = document.getElementById('highest-amount');
-        const invalidMessage = document.getElementById('invalid');
+            // Valid bid check
+            const bidAmount = document.getElementById('amount');
+            const highestAmount = document.getElementById('highest-amount');
+            const invalidMessage = document.getElementById('invalid');
 
-        // Confirmation
-        const confirmationPopup = document.getElementById('confirmation-popup');
-        const closeConfirmationButton = document.getElementById('close-confirmation-button');
+            // Confirmation
+            const confirmationPopup = document.getElementById('confirmation-popup');
+            const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
-        // Rating
-        const rateButton = document.getElementById('rate-button');
-        const ratePopup = document.getElementById('rate-popup');
-        const closeRatingButton = document.getElementById('close-rating-button');
-        let currentRating = 0;
+            // Rating
+            const rateButton = document.getElementById('rate-button');
+            const ratePopup = document.getElementById('rate-popup');
+            const closeRatingButton = document.getElementById('close-rating-button');
+            let currentRating = 0;
 
-        startBidButton.addEventListener('click', () => {
-            startBidPopup.style.display = 'block';
-            invalidMessage.innerText = ''; // Clear error messages
-        });
+            startBidButton.addEventListener('click', () => {
+                startBidPopup.style.display = 'block';
+                invalidMessage.innerText = ''; // Clear error messages
+            });
 
-        closeButton.addEventListener('click', () => {
-            startBidPopup.style.display = 'none';
-        });
+            closeButton.addEventListener('click', () => {
+                startBidPopup.style.display = 'none';
+            });
 
-        closeConfirmationButton.addEventListener('click', () => {
-            confirmationPopup.style.display = 'none';
-            ratePopup.style.display = 'block';
-        });
+            closeConfirmationButton.addEventListener('click', () => {
+                confirmationPopup.style.display = 'none';
+                ratePopup.style.display = 'block';
+            });
 
-        closeRatingButton.addEventListener('click', () => {
-            ratePopup.style.display = 'none';
-        });
+            closeRatingButton.addEventListener('click', () => {
+                ratePopup.style.display = 'none';
+            });
 
-        makeBidButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent form default behavior
+            makeBidButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent form default behavior
 
-            const amount = parseFloat(bidAmount.value);
-            const currentHighest = parseFloat(highestAmount.innerText);
+                const amount = parseFloat(bidAmount.value);
+                const currentHighest = parseFloat(highestAmount.innerText);
 
-            if (!isNaN(amount) && amount > currentHighest) {
-                highestAmount.innerText = amount.toFixed(2); // Update the highest bid
+                if (!isNaN(amount) && amount > currentHighest) {
+                    highestAmount.innerText = amount.toFixed(2); // Update the highest bid
 
-                bidAmount.value = '';
-                startBidPopup.style.display = 'none'
-                confirmationPopup.style.display = 'block';
-            } else {
-                alert('Insufficient funds or bid is not greater than the current highest bid.');
-            }
-        });
-
-        function setRating(rating) {
-            currentRating = rating;
-
-            const stars = document.querySelectorAll("#star-rating .star");
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add("selected");
+                    bidAmount.value = '';
+                    startBidPopup.style.display = 'none'
+                    confirmationPopup.style.display = 'block';
                 } else {
-                    star.classList.remove("selected");
+                    alert('Insufficient funds or bid is not greater than the current highest bid.');
                 }
             });
 
-            //console.log(`Rating: ${rating}`); // Check it works
-        }
+            function setRating(rating) {
+                currentRating = rating;
 
-        rateButton.addEventListener('click', (event) => {
-            event.preventDefault();
+                const stars = document.querySelectorAll("#star-rating .star");
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("selected");
+                    } else {
+                        star.classList.remove("selected");
+                    }
+                });
 
-            ratePopup.style.display = 'none';
-            startBidButton.disabled = true; // disabled button for now once bid already made
-            startBidButton.style.background = 'grey';
+                //console.log(`Rating: ${rating}`); // Check it works
+            }
 
-            // Process rating logic (send to database) NOT DONE YET
-            // {currentRating}/5
-        });
+            rateButton.addEventListener('click', (event) => {
+                event.preventDefault();
 
-        function changeImage(thumbnail) {
-            // Get the larger image element
-            const largeImage = document.querySelector("#displayed-image img");
+                ratePopup.style.display = 'none';
+                startBidButton.disabled = true; // disabled button for now once bid already made
+                startBidButton.style.background = 'grey';
 
-            // Update the src of the larger image
-            largeImage.src = thumbnail.src;
-
-            // Remove the active class from all thumbnails
-            document.querySelectorAll(".thumbnail-container img").forEach(img => {
-                img.classList.remove("active");
+                // Process rating logic (send to database) NOT DONE YET
+                // {currentRating}/5
             });
 
-            // Add the active class to the clicked thumbnail
-            thumbnail.classList.add("active");
-        }
+            function changeImage(thumbnail) {
+                // Get the larger image element
+                const largeImage = document.querySelector("#displayed-image img");
 
-        function addComment() {
-            const commentInput = document.querySelector(".comment-input input[type='text']");
-            const commentsContainer = document.querySelector(".comments");
-            const commentText = commentInput.value.trim();
+                // Update the src of the larger image
+                largeImage.src = thumbnail.src;
 
-            if (commentText) {
-                // Create a new comment div
-                const newComment = document.createElement("div");
-                newComment.classList.add("comment");
+                // Remove the active class from all thumbnails
+                document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                    img.classList.remove("active");
+                });
 
-                // Add author and timestamp
-                const authorPara = document.createElement("p");
-                authorPara.innerHTML = `<strong>Visitor</strong>`;
+                // Add the active class to the clicked thumbnail
+                thumbnail.classList.add("active");
+            }
 
-                // Add comment text
-                const textPara = document.createElement("p");
-                textPara.textContent = commentText;
+            function addComment() {
+                const commentInput = document.querySelector(".comment-input input[type='text']");
+                const commentsContainer = document.querySelector(".comments");
+                const commentText = commentInput.value.trim();
 
-                // Append all parts to the new comment div
-                newComment.appendChild(authorPara);
-                newComment.appendChild(textPara);
+                if (commentText) {
+                    // Create a new comment div
+                    const newComment = document.createElement("div");
+                    newComment.classList.add("comment");
 
-                // Insert the new comment at the top of the comments container
-                commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+                    // Add author and timestamp
+                    const authorPara = document.createElement("p");
+                    authorPara.innerHTML = `<strong>Visitor</strong>`;
 
-                // Store the last added comment for undo
-                lastComment = newComment;
+                    // Add comment text
+                    const textPara = document.createElement("p");
+                    textPara.textContent = commentText;
+
+                    // Append all parts to the new comment div
+                    newComment.appendChild(authorPara);
+                    newComment.appendChild(textPara);
+
+                    // Insert the new comment at the top of the comments container
+                    commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+
+                    // Store the last added comment for undo
+                    lastComment = newComment;
+
+                    // Clear the input field
+                    commentInput.value = "";
+                } else {
+                    alert("Please enter a comment.");
+                }
+            }
+
+            function clearComment() {
+                const commentInput = document.querySelector(".comment-input input[type='text']");
+                const commentsContainer = document.querySelector(".comments");
 
                 // Clear the input field
                 commentInput.value = "";
-            } else {
-                alert("Please enter a comment.");
             }
-        }
 
-        function clearComment() {
-            const commentInput = document.querySelector(".comment-input input[type='text']");
-            const commentsContainer = document.querySelector(".comments");
+            // Add event listeners for Accept and Decline buttons
+            document.querySelectorAll(".accept-button").forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
 
-            // Clear the input field
-            commentInput.value = "";
-        }  
+                    // Open the Rate Buyer popup
+                    ratePopup.style.display = 'block';
 
-        // Add event listeners for Accept and Decline buttons
-        document.querySelectorAll(".accept-button").forEach((button) => {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                
-                // Open the Rate Buyer popup
-                ratePopup.style.display = 'block';
+                    // Store reference to the bid card container and header
+                    const bidCardContainer = document.querySelector(".current-bids");
+                    const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
 
-                // Store reference to the bid card container and header
-                const bidCardContainer = document.querySelector(".current-bids");
-                const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
+                    // When the user rates the buyer, remove all the bid cards and update the header
+                    rateButton.addEventListener('click', (rateEvent) => {
+                        rateEvent.preventDefault();
+                        // Remove all bid cards
+                        const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
+                        allBidCards.forEach(card => card.remove());
 
-                // When the user rates the buyer, remove all the bid cards and update the header
-                rateButton.addEventListener('click', (rateEvent) => {
-                    rateEvent.preventDefault();
-                    // Remove all bid cards
-                    const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
-                    allBidCards.forEach(card => card.remove());
+                        // Change the header text to "Bid Completed"
+                        currentBidsHeader.textContent = "Bid Completed"; // Update the header text
 
-                    // Change the header text to "Bid Completed"
-                    currentBidsHeader.textContent = "Bid Completed"; // Update the header text
-
-                    // Close the Rate Buyer popup
-                    ratePopup.style.display = 'none';
+                        // Close the Rate Buyer popup
+                        ratePopup.style.display = 'none';
+                    });
                 });
             });
-        });
 
-        // Add event listener for "Decline" button
-        document.querySelectorAll(".decline-button").forEach((button) => {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
+            // Add event listener for "Decline" button
+            document.querySelectorAll(".decline-button").forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
 
-                const bidCard = button.closest(".bid-card"); // Get the parent bid card
-                bidCard.style.display = 'none'; // Hide the declined bid
+                    const bidCard = button.closest(".bid-card"); // Get the parent bid card
+                    bidCard.style.display = 'none'; // Hide the declined bid
+                });
             });
-        });
-    </script>
+        </script>
 </body>
+
 </html>
