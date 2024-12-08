@@ -238,8 +238,79 @@ def dashboard(request):
 # Dashboard's View Bids
 @login_required
 def viewbids(request):
-    return render(request, 'viewbids.html')
+    if request.method == 'POST':
+        try:
+            # Get form data
+            listing_data = {
+                'title': request.POST.get('title'),
+                'description': request.POST.get('description'),
+                'price': float(request.POST.get('price')),
+                'category': request.POST.get('category'),
+                'availability': request.POST.get('availability'),
+                'deadline': request.POST.get('deadline') + 'T24:00:00',
+                'user_id': request.user.id,
+                'highest_bid': 0,
+            }
 
+            # Insert listing into Supabase
+            listing_response = supabase.table('listings').insert(listing_data).execute()
+            listing_id = listing_response.data[0]['id']
+
+            # Handle multiple image uploads
+            images = request.FILES.getlist('images')
+
+            for image in images:
+                try:
+                    file_path = f"{request.user.id}/{listing_id}/{image.name}"
+                    file_content = image.read()
+
+                    print(f"Attempting to upload {file_path}")
+
+                    # Upload to Supabase storage
+                    upload_response = supabase.storage \
+                        .from_('images') \
+                        .upload(
+                            path=file_path,
+                            file=file_content,
+                            file_options={"contentType": image.content_type}
+                        )
+                    print("Upload response:", upload_response)
+
+                    # Get public URL
+                    image_url = supabase.storage.from_('images').get_public_url(file_path)
+
+                    # Create image record
+                    image_data = {
+                        'listing_id': listing_id,
+                        'image_url': image_url
+                    }
+
+                    # Insert with explicit error handling
+                    try:
+                        image_response = supabase.table('listing_images') \
+                            .insert(image_data) \
+                            .execute()
+                        print("Successfully created image record:", image_response.data)
+                    except Exception as db_error:
+                        print(f"Database error: {str(db_error)}")
+                        print(f"Error type: {type(db_error)}")
+                        import traceback
+                        print(traceback.format_exc())
+
+                except Exception as e:
+                    print(f"Error in image upload process: {str(e)}")
+                    import traceback
+                    print(traceback.format_exc())
+
+            return redirect('viewbids')
+
+        except Exception as e:
+            print(f"Error in listing creation: {str(e)}")
+            return render(request, 'viewbids.html', {'error': 'Failed to create listing'})
+
+    # Get all listings for display
+    listings = supabase.table('listings').select('*').eq('user_id', request.user.id).execute()
+    return render(request, 'viewbids.html', {'all_listings': listings.data})
 # Dashboard's Requests
 @login_required
 def requests(request):

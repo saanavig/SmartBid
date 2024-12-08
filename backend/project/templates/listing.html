@@ -182,34 +182,6 @@
             const highestAmount = document.getElementById('highest-amount');
             const invalidMessage = document.getElementById('invalid');
 
-            // Confirmation
-            async function placeBid(listingId, bidAmount) {
-                try {
-                    const response = await fetch(`/place_bid/${listingId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken') // If using CSRF protection
-                        },
-                        body: JSON.stringify({
-                            bid_amount: bidAmount
-                        })
-                    });
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Update UI with new bid
-                        document.getElementById('highestBid').textContent = data.new_highest_bid;
-                        alert('Bid placed successfully!');
-                    } else {
-                        throw new Error(data.message || 'Failed to place bid');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert(error.message);
-                }
-            }
-
             const confirmationPopup = document.getElementById('confirmation-popup');
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
@@ -237,161 +209,151 @@
                 ratePopup.style.display = 'none';
             });
 
-            async function placeBid(event)
-            {
-                event.preventDefault();
+        async function placeBid(event) {
+            event.preventDefault();
+            console.log("Place Bid triggered");
 
-                const amount = parseFloat(bidAmount.value);
-                const listingId = {{ listing.id }};
-                const currentHighest = parseFloat(highestAmount.innerText);
+            const amount = parseFloat(bidAmount.value);
+            const listingId = {{ listing.id }};
+            const currentHighest = parseFloat(highestAmount.innerText);
 
-                console.log("Bid Amount:", amount);
-                console.log("Listing ID:", listingId);
-                console.log("Current Highest Bid:", currentHighest);
+            console.log("Amount:", amount);
+            console.log("Listing ID:", listingId);
+            console.log("Current Highest:", currentHighest);
 
-                if (!isNaN(amount) && amount > currentHighest) {
-                    try {
-                        const response = await fetch(`/place_bid/${listingId}/`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': getCookie('csrftoken'),
-                            },
-                            body: JSON.stringify({
-                                bid_amount: amount,
-                                listing_id: listingId
-                            })
-                        });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        const data = await response.json();
-                        if (data.status === 'success')
-                        {
-                            highestAmount.innerText = data.new_highest_bid.toFixed(2);
-                            confirmationPopup.style.display = 'block';
-                            startBidPopup.style.display = 'none';
-                            bidAmount.value = '';
-                        }
-                        else
-                        {
-                            invalidMessage.innerText = data.message || 'Failed to place bid';
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        invalidMessage.innerText = error.message;
-                    }
-                } else {
-                    invalidMessage.innerText = 'Bid must be higher than current highest bid';
-                }
-            }
-            makeBidButton.addEventListener('click', placeBid);
-
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            makeBidButton.addEventListener('click', placeBid);
-
-            function setRating(rating) {
-                currentRating = rating;
-
-                const stars = document.querySelectorAll("#star-rating .star");
-                stars.forEach((star, index) => {
-                    if (index < rating) {
-                        star.classList.add("selected");
-                    } else {
-                        star.classList.remove("selected");
-                    }
-                });
-
-                //console.log(`Rating: ${rating}`); // Check it works
-            }
-
-            rateButton.addEventListener('click', (event) => {
-                event.preventDefault();
-
-                ratePopup.style.display = 'none';
-                startBidButton.disabled = true; // disabled button for now once bid already made
-                startBidButton.style.background = 'grey';
-
-                // Process rating logic (send to database) NOT DONE YET
-                // {currentRating}/5
-            });
-
-            function changeImage(thumbnail) {
-                // Get the larger image element
-                const largeImage = document.querySelector("#displayed-image img");
-
-                // Update the src of the larger image
-                largeImage.src = thumbnail.src;
-
-                // Remove the active class from all thumbnails
-                document.querySelectorAll(".thumbnail-container img").forEach(img => {
-                    img.classList.remove("active");
-                });
-
-                // Add the active class to the clicked thumbnail
-                thumbnail.classList.add("active");
-            }
-
-            function clearComment() {
-                const commentInput = document.querySelector(".comment-input input[type='text']");
-                const commentsContainer = document.querySelector(".comments");
-
-                // Clear the input field
-                commentInput.value = "";
-            }
-
-            // Add event listeners for Accept and Decline buttons
-            document.querySelectorAll(".accept-button").forEach((button) => {
-                button.addEventListener("click", (event) => {
-                    event.preventDefault();
-
-                    // Open the Rate Buyer popup
-                    ratePopup.style.display = 'block';
-
-                    // Store reference to the bid card container and header
-                    const bidCardContainer = document.querySelector(".current-bids");
-                    const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
-
-                    // When the user rates the buyer, remove all the bid cards and update the header
-                    rateButton.addEventListener('click', (rateEvent) => {
-                        rateEvent.preventDefault();
-                        // Remove all bid cards
-                        const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
-                        allBidCards.forEach(card => card.remove());
-
-                        // Change the header text to "Bid Completed"
-                        currentBidsHeader.textContent = "Bid Completed"; // Update the header text
-
-                        // Close the Rate Buyer popup
-                        ratePopup.style.display = 'none';
+            if (!isNaN(amount) && amount > currentHighest) {
+                try {
+                    const response = await fetch(`/place_bid/${listingId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ bid_amount: amount })
                     });
-                });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        highestAmount.innerText = amount.toFixed(2);
+                        startBidPopup.style.display = 'none';
+                        confirmationPopup.style.display = 'block';
+                    }
+                    else {
+                        invalidMessage.innerText = data.message;
+                    }
+                } catch (error) {
+                    console.error('Error placing bid:', error);
+                    invalidMessage.innerText = 'An unexpected error occurred.';
+                }
+            } else {
+                invalidMessage.innerText = 'Please enter a valid bid higher than the current amount.';
+            }
+        }
+
+        makeBidButton.addEventListener('click', placeBid);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+
+            const stars = document.querySelectorAll("#star-rating .star");
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add("selected");
+                } else {
+                    star.classList.remove("selected");
+                }
             });
 
-            // Add event listener for "Decline" button
-            document.querySelectorAll(".decline-button").forEach((button) => {
-                button.addEventListener("click", (event) => {
-                    event.preventDefault();
+            //console.log(`Rating: ${rating}`); // Check it works
+        }
 
-                    const bidCard = button.closest(".bid-card"); // Get the parent bid card
-                    bidCard.style.display = 'none'; // Hide the declined bid
+        rateButton.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            ratePopup.style.display = 'none';
+            startBidButton.disabled = true; // disabled button for now once bid already made
+            startBidButton.style.background = 'grey';
+
+            // Process rating logic (send to database) NOT DONE YET
+            // {currentRating}/5
+        });
+
+        function changeImage(thumbnail) {
+            // Get the larger image element
+            const largeImage = document.querySelector("#displayed-image img");
+
+            // Update the src of the larger image
+            largeImage.src = thumbnail.src;
+
+            // Remove the active class from all thumbnails
+            document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                img.classList.remove("active");
+            });
+
+            // Add the active class to the clicked thumbnail
+            thumbnail.classList.add("active");
+        }
+
+        function clearComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+
+            // Clear the input field
+            commentInput.value = "";
+        }
+
+        // Add event listeners for Accept and Decline buttons
+        document.querySelectorAll(".accept-button").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                // Open the Rate Buyer popup
+                ratePopup.style.display = 'block';
+
+                // Store reference to the bid card container and header
+                const bidCardContainer = document.querySelector(".current-bids");
+                const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
+
+                // When the user rates the buyer, remove all the bid cards and update the header
+                rateButton.addEventListener('click', (rateEvent) => {
+                    rateEvent.preventDefault();
+                    // Remove all bid cards
+                    const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
+                    allBidCards.forEach(card => card.remove());
+
+                    // Change the header text to "Bid Completed"
+                    currentBidsHeader.textContent = "Bid Completed"; // Update the header text
+
+                    // Close the Rate Buyer popup
+                    ratePopup.style.display = 'none';
                 });
             });
-        </script>
+        });
+
+        // Add event listener for "Decline" button
+        document.querySelectorAll(".decline-button").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                const bidCard = button.closest(".bid-card"); // Get the parent bid card
+                bidCard.style.display = 'none'; // Hide the declined bid
+            });
+        });
+    </script>
 </body>
 
 </html>
