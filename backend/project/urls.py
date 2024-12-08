@@ -47,6 +47,8 @@ urlpatterns = [
     path('listing/<int:id>/', views.listing, name='listing'),
     path('submit_complaint/', views.submit_complaint, name='submit_complaint'),
     path('dashboard/accounts/manage_funds/', views.manage_funds, name='manage_funds'),
+    path('deposit/', views.deposit_money, name='deposit_money'),
+    path('withdraw/', views.withdraw_money, name='withdraw_money'),
 ]
 
 

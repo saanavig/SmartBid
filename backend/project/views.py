@@ -102,7 +102,7 @@ class CustomSignupView(View):
             print(f"New user created: {user.username} ({user.id})")
 
             # Save user data in Supabase
-            supabase_client.table('Users').insert({
+            create_client.table('Users').insert({
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
@@ -336,6 +336,56 @@ def manage_funds(request):
 
     return render(request, 'account.html', {'current_balance': new_balance})
 
+
+@csrf_exempt
+@login_required
+def deposit_money(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            amount = float(data.get('amount', 0))
+
+            if amount <= 0:
+                return JsonResponse({'error': 'Invalid amount'}, status=400)
+
+            # Get current user's balance
+            user_data = supabase.table('users').select('balance').eq('id', request.user.id).execute()
+            current_balance = float(user_data.data[0]['balance']) if user_data.data else 0
+            # Update balance
+            new_balance = current_balance + amount
+            supabase.table('users').update({'balance': new_balance}).eq('id', request.user.id).execute()
+
+            return JsonResponse({'success': True, 'new_balance': new_balance})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@login_required
+def withdraw_money(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            amount = float(data.get('amount', 0))
+
+            if amount <= 0:
+                return JsonResponse({'error': 'Invalid amount'}, status=400)
+            # Get current user's balance
+            user_data = supabase.table('users').select('balance').eq('id', request.user.id).execute()
+            current_balance = float(user_data.data[0]['balance']) if user_data.data else 0
+            if amount > current_balance:
+                return JsonResponse({'error': 'Insufficient funds'}, status=400)
+            # Update balance
+            new_balance = current_balance - amount
+            supabase.table('users').update({'balance': new_balance}).eq('id', request.user.id).execute()
+
+            return JsonResponse({'success': True, 'new_balance': new_balance})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 @csrf_exempt
 def submit_complaint(request):
     if request.method == "POST":

@@ -96,8 +96,9 @@
 
             <div class="account-balance">
                 <h2>Account Balance</h2>
-                <div class="balance-field" id="balance">0.00</div>
-                <p>Your current balance is: <strong>${{ current_balance }}</strong></p>
+                <p>Your current balance is: </p>
+                <div class="balance-field" id="balance"> {{ current_balance }} </div>
+                {% comment %} <p>Your current balance is: <strong>${{ current_balance }}</strong></p> {% endcomment %}
             </div>
 
             <div class="amount-input">
@@ -217,38 +218,62 @@
                     return;
                 }
 
-                depositButton.addEventListener('click', function () {
+                depositButton.addEventListener('click', async function () {
                     const amount = parseFloat(amountInput.value);
                     if (!isNaN(amount) && amount > 0) {
-                        const newBalance = parseFloat(balanceDisplay.textContent) + amount;
-                        balanceDisplay.textContent = newBalance.toFixed(2);
-                        addTransaction('Deposit', amount);
-                        showMessage('Deposit successful!');
-                    }
-                    else {
+                        try {
+                            const response = await fetch('/deposit/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ amount: amount })
+                            });
+                            const data = await response.json();
+
+                            if (data.success) {
+                                balanceDisplay.textContent = data.new_balance.toFixed(2);
+                                addTransaction('Deposit', amount);
+                                showMessage('Deposit successful!');
+                                amountInput.value = '';
+                            } else {
+                                alert(data.error || 'Deposit failed');
+                            }
+                        } catch (error) {
+                            alert('Error processing deposit');
+                        }
+                    } else {
                         alert('Please enter a valid amount.');
                     }
                 });
 
-                withdrawButton.addEventListener('click', function() {
-                const amount = parseFloat(amountInput.value);
-
-                // Check if the entered amount is a valid number and greater than 0
-                if (!isNaN(amount) && amount > 0) {
-                    const currentBalance = parseFloat(balanceDisplay.textContent);
-
-                    if (amount <= currentBalance) {
-                        const newBalance = currentBalance - amount;
-                        balanceDisplay.textContent = newBalance.toFixed(2);  // Update balance display
-                        addTransaction('Withdraw', amount);  // Add transaction to history
-                        showMessage('Withdrawal successful!');  // Show success message
+                withdrawButton.addEventListener('click', async function() {
+                    const amount = parseFloat(amountInput.value);
+                    if (!isNaN(amount) && amount > 0) {
+                        try {
+                            const response = await fetch('/withdraw/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ amount: amount })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                balanceDisplay.textContent = data.new_balance.toFixed(2);
+                                addTransaction('Withdraw', amount);
+                                showMessage('Withdrawal successful!');
+                                amountInput.value = '';
+                            } else {
+                                alert(data.error || 'Withdrawal failed');
+                            }
+                        } catch (error) {
+                            alert('Error processing withdrawal');
+                        }
                     } else {
-                        alert('Insufficient funds.');  // Alert if the amount exceeds current balance
+                        alert('Please enter a valid amount.');
                     }
-                } else {
-                    alert('Please enter a valid amount.');  // Alert if the amount is invalid
-                }
-            });
+                });
 
 
                 function addTransaction(type, amount) {
