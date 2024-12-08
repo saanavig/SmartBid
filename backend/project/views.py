@@ -319,14 +319,6 @@ def listing(request, id):
     print("Images data:", images.data)
     print("Comments data:", comments.data)
 
-
-    context = {
-        'listing': listing.data[0],  # Pass the first item from listing.data
-        'images': images.data
-    }
-
-    return render(request, 'listing.html', context)
-
     # Process comments data to match your template's expected format
     formatted_comments = []
     for comment in comments.data:
@@ -338,10 +330,41 @@ def listing(request, id):
             'comment': comment['comment']
         })
 
+    bids = supabase.table('bids')\
+    .select(
+        'id',
+        'amount',
+        'status',
+        'created_at',
+        'bidder:users!user_id(first_name,last_name)'
+    )\
+    .eq('listing_id', id)\
+    .order('amount', desc=True)\
+    .execute()
+
+    #Format bids for template
+    formatted_bids = []
+    for bid in bids.data:
+        formatted_bids.append({
+            'id': bid['id'],
+            'user': {
+                'first_name': bid['bidder']['first_name'],
+                'last_name': bid['bidder']['last_name']
+            },
+            'amount': bid['amount'],
+            'status': bid['status']
+        })
+
+    #debugging statements
+    print("Listing data:", listing.data)
+    print("Images data:", images.data)
+    print("Comments data:", comments.data)
+
     context = {
         'listing': listing.data[0],
         'images': images.data,
         'comments': formatted_comments,
+        'bids': formatted_bids,
         # Add user context conditionally
         'user': {
             'first_name': request.user.first_name,
@@ -352,6 +375,7 @@ def listing(request, id):
         }
     }
     return render(request, 'listing.html', context)
+
 
 @login_required
 def manage_funds(request):

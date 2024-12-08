@@ -151,56 +151,22 @@
 
                 <div class="current-bids">
                     <h2>Current Bids</h2>
-                    <div class="bid-card">
-                        <div class="bid-info">
-                            <p><strong>John Doe</strong></p>
-                            <p>$550.00</p>
-                        </div>
-                        <div class="bid-actions">
-                            <button class="accept-button" id="accept-button">Accept</button>
-                            <button class="decline-button" id="decline-button">Decline</button>
-                        </div>
-                    </div>
-                    <div class="bid-card">
-                        <div class="bid-info">
-                            <p><strong>Jane Smith</strong></p>
-                            <p>$525.00</p>
-                        </div>
-                        <div class="bid-actions">
-                            <button class="accept-button" id="accept-button">Accept</button>
-                            <button class="decline-button" id="decline-button">Decline</button>
-                        </div>
-                    </div>
-                    <div class="bid-card">
-                        <div class="bid-info">
-                            <p><strong>John Doe</strong></p>
-                            <p>$550.00</p>
-                        </div>
-                        <div class="bid-actions">
-                            <button class="accept-button" id="accept-button">Accept</button>
-                            <button class="decline-button" id="decline-button">Decline</button>
-                        </div>
-                    </div>
-                    <div class="bid-card">
-                        <div class="bid-info">
-                            <p><strong>John Doe</strong></p>
-                            <p>$550.00</p>
-                        </div>
-                        <div class="bid-actions">
-                            <button class="accept-button" id="accept-button">Accept</button>
-                            <button class="decline-button" id="decline-button">Decline</button>
-                        </div>
-                    </div>
-                    <div class="bid-card">
-                        <div class="bid-info">
-                            <p><strong>John Doe</strong></p>
-                            <p>$550.00</p>
-                        </div>
-                        <div class="bid-actions">
-                            <button class="accept-button" id="accept-button">Accept</button>
-                            <button class="decline-button" id="decline-button">Decline</button>
-                        </div>
-                    </div>
+                    {% if bids %}
+                        {% for bid in bids %}
+                            <div class="bid-card">
+                                <div class="bid-info">
+                                    <p><strong>{{ bid.user.first_name }} {{ bid.user.last_name }}</strong></p>
+                                    <p>${{ bid.amount }}</p>
+                                </div>
+                                <div class="bid-actions">
+                                    <button class="accept-button" id="accept-button">Accept</button>
+                                    <button class="decline-button" id="decline-button">Decline</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-bids">No bids yet.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -242,31 +208,8 @@
                     console.error('Error:', error);
                     alert(error.message);
                 }
-            }            async function placeBid(listingId, bidAmount) {
-                try {
-                    const response = await fetch(`/place_bid/${listingId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken') // If using CSRF protection
-                        },
-                        body: JSON.stringify({
-                            bid_amount: bidAmount
-                        })
-                    });
-                    const data = await response.json();
-                    if (response.ok) {
-                        // Update UI with new bid
-                        document.getElementById('highestBid').textContent = data.new_highest_bid;
-                        alert('Bid placed successfully!');
-                    } else {
-                        throw new Error(data.message || 'Failed to place bid');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert(error.message);
-                }
             }
+
             const confirmationPopup = document.getElementById('confirmation-popup');
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
