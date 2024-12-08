@@ -1,20 +1,24 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Bids</title>
-    <link rel="stylesheet" href="../../../static/viewbids.css">
+    <link rel="stylesheet" href="../../static/viewbids.css">
 </head>
+
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
-        
+
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -22,7 +26,7 @@
                 <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="{% url 'adminPage' %}">Admin</a>
                 <a href="{% url 'profile' %}">Profile</a>
-                <a href="{% url 'logout' %}">Sign Out</a>
+                <a href="signout.html">Sign Out</a>
                 <a href="profile.html">Profile Popup</a>
             </div>
         </div>
@@ -33,12 +37,12 @@
                 <span class="close">&times;</span>
                 <h1>My Profile</h1>
                 <div class="profile-popup-info">
-                    <div class ="align-profile">
+                    <div class="align-profile">
                         <p>{{ user.first_name }} {{ user.last_name }}</p>
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> 25</p>
+                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
                 </div>
             </div>
         </div>
@@ -57,38 +61,40 @@
         </div>
 
         <!-- CREATE LISTING FORM -->
-        <form id="listing-popup" class="popup">
+        <form id="listing-popup" class="popup" action="{% url 'viewbids' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="popup-content">
                 <span class="close-listing">&times;</span>
                 <h2 style="margin-top: 40px; margin-bottom: 20px">Create Listing</h2>
                 <div class="title">
-                    <input type="text" placeholder="Title" required>
+                    <input type="text" name="title" placeholder="Title" required>
                 </div>
                 <div class="description">
-                    <textarea placeholder="Enter a detailed description of the item..." rows="5" required></textarea>
+                    <textarea name="description" placeholder="Enter a detailed description of the item..." rows="5" required></textarea>
                 </div>
                 <div class="deadline">
-                    <input type="date" placeholder="Deadline" min="2024-11-09" required>
+                    <input type="date" name="deadline" placeholder="Deadline" min="2024-11-09" required>
                 </div>
                 <div class="filter-option">
-                    <select id="categories" placeholder="Category" required>
+                    <select name="category" id="categories" required>
                         <option value="" disabled selected>Category</option>
-                        <option value="category1">Electronics</option>
-                        <option value="category2">Clothing</option>
-                        <option value="category3">Supplies</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="School Essentials">School Essentials</option>
+                        <option value="Fashion & Apparel">Fashion & Apparel</option>
+                        <option value="Accessories & Gadgets">Accessories & Gadgets</option>
                     </select>
                 </div>
                 <div class="filter-option">
-                    <input type="number" id="max-price" placeholder="Starting Bid Amount" min="0" required>
+                    <input type="number" name="price" placeholder="Starting Bid Amount" min="0" required>
                 </div>
-        
+
                 <div class="file-container">
                     <p class="upload-header">Upload Files</p>
                     <p style="font-size: 12px;">Supported Formats: PNG, JPEG</p>
                     <div class="upload-text">
                         <p>Drag and drop your files</p>
                         <p style="margin-bottom: 10px;">or</p>
-                        <input type="file" id="upload-button" accept=".png, .jpeg" multiple required />
+                        <input type="file" name="images" id="upload-button" accept=".png, .jpeg, .jpg" multiple required />
                         <label for="upload-button">Browse Files</label>
                     </div>
                     <div id="image-preview" class="image-preview"></div>
@@ -96,7 +102,7 @@
                 <button type="submit" id="apply-filters" style="margin-top: 15px;">Create Listing</button>
             </div>
         </form>
-        
+
         <!-- BID ITEMS -->
         <div class="listings-container">
             <!-- FILTER BUTTONS -->
@@ -108,6 +114,25 @@
                 <button id="buying-button" data-filter="Buying">Buying</button>
             </div>
 
+            <div class="listing-area">
+                {% for listing in all_listings %}
+                <div class="item-card Completed">
+                    <div class="item-image">
+                        <img src="{% static 'images/pink fujifilm.png' %}" alt="Item Image">
+                    </div>
+                    <div class="item-info">
+                        <p class="item-name">{{listing.title}}</p>
+                        <p class="item-price">{{listing.price}}</p>
+                        <p class="item-time">{{ listing.created_at|date:"M d, Y H:i" }}</p>
+                        <p class="item-account">{{user.username}} - 4.2 (10 Ratings)</p>
+                        <p class="item-status">{{listing.availability}}</p> 
+                        <p class="item-completion-status">Completed</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>     
+        </div>
+        <!--
             <div class="listing-area">
                 <div class="item-card Completed">
                     <div class="item-image">
@@ -167,144 +192,164 @@
             </div>
         </div>
     </div>
+-->
+        <script>
+            // OPEN PROFILE
+            document.addEventListener("DOMContentLoaded", function () {
+                const profilePopup = document.getElementById('profile-popup');
+                const closePopupBtn = document.querySelector('.close');
+                const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
 
-    <script>
-        // OPEN PROFILE
-        document.addEventListener("DOMContentLoaded", function() {
-            const profilePopup = document.getElementById('profile-popup');
-            const closePopupBtn = document.querySelector('.close');
-            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+                profileLink.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    profilePopup.style.display = 'block';
+                });
 
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                profilePopup.style.display = 'block';
-            });
-
-            closePopupBtn.addEventListener('click', function() {
-                profilePopup.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === profilePopup) {
+                closePopupBtn.addEventListener('click', function () {
                     profilePopup.style.display = 'none';
-                }
-            });
-        });
+                });
 
-        // SEARCH
-        document.addEventListener("DOMContentLoaded", function() {
-            const searchButton = document.getElementById("search-button");
-            const searchInput = document.querySelector("input[type='text']");
-            const filterButtons = document.querySelectorAll('.button-container button');
-            const bidItems = document.querySelectorAll('.item-card');
-
-            let searchTerm = '';
-            let activeFilters = [];
-
-            // APPLY FILTERS
-            function applyFilters() {
-                bidItems.forEach(item => {
-                    const itemName = item.querySelector('.item-name').textContent.toLowerCase();
-                    const itemPrice = item.querySelector('.item-price').textContent.toLowerCase();
-                    const itemStatus = item.querySelector('.item-status').textContent;
-                    const itemCompletionStatus = item.querySelector('.item-completion-status').textContent;
-
-                    const matchesSearch = itemName.includes(searchTerm) || itemPrice.includes(searchTerm);
-
-                    const matchesFilters = activeFilters.every(filter => {
-                        if (filter === 'All') return true;
-                        return itemStatus === filter || itemCompletionStatus === filter;
-                    });
-
-                    if (matchesSearch && matchesFilters) {
-                        item.classList.remove('hidden');
-                    } else {
-                        item.classList.add('hidden');
+                window.addEventListener('click', function (event) {
+                    if (event.target === profilePopup) {
+                        profilePopup.style.display = 'none';
                     }
                 });
-            }
-
-            searchButton.addEventListener('click', () => {
-                searchTerm = searchInput.value.toLowerCase();
-                applyFilters();
             });
 
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const filterStatus = button.getAttribute('data-filter');
+            // SEARCH
+            document.addEventListener("DOMContentLoaded", function () {
+                const searchButton = document.getElementById("search-button");
+                const searchInput = document.querySelector("input[type='text']");
+                const filterButtons = document.querySelectorAll('.button-container button');
+                const bidItems = document.querySelectorAll('.item-card');
 
-                    button.classList.toggle('active-filter');
-                    
-                    if (button.classList.contains('active-filter')) {
-                        if (activeFilters.includes('All')) {
-                            activeFilters = activeFilters.filter(filter => filter !== 'All');
-                            document.getElementById('all-button').classList.remove('active-filter');
+                let searchTerm = '';
+                let activeFilters = [];
+
+                // APPLY FILTERS
+                function applyFilters() {
+                    bidItems.forEach(item => {
+                        const itemName = item.querySelector('.item-name').textContent.toLowerCase();
+                        const itemPrice = item.querySelector('.item-price').textContent.toLowerCase();
+                        const itemStatus = item.querySelector('.item-status').textContent;
+                        const itemCompletionStatus = item.querySelector('.item-completion-status').textContent;
+
+                        const matchesSearch = itemName.includes(searchTerm) || itemPrice.includes(searchTerm);
+
+                        const matchesFilters = activeFilters.every(filter => {
+                            if (filter === 'All') return true;
+                            return itemStatus === filter || itemCompletionStatus === filter;
+                        });
+
+                        if (matchesSearch && matchesFilters) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
+                }
+
+                searchButton.addEventListener('click', () => {
+                    searchTerm = searchInput.value.toLowerCase();
+                    applyFilters();
+                });
+
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const filterStatus = button.getAttribute('data-filter');
+
+                        button.classList.toggle('active-filter');
+
+                        if (button.classList.contains('active-filter')) {
+                            if (activeFilters.includes('All')) {
+                                activeFilters = activeFilters.filter(filter => filter !== 'All');
+                                document.getElementById('all-button').classList.remove('active-filter');
+                            }
+
+                            if (!activeFilters.includes(filterStatus)) {
+                                activeFilters.push(filterStatus);
+                            }
+                        } else {
+                            activeFilters = activeFilters.filter(filter => filter !== filterStatus);
                         }
 
-                        if (!activeFilters.includes(filterStatus)) {
-                            activeFilters.push(filterStatus);
-                        }
-                    } else {
-                        activeFilters = activeFilters.filter(filter => filter !== filterStatus);
-                    }
+                        applyFilters();
+                    });
+                });
 
+                const allButton = document.getElementById('all-button');
+                allButton.addEventListener('click', () => {
+                    activeFilters = ['All'];
+                    filterButtons.forEach(button => button.classList.remove('active-filter'));
+                    allButton.classList.add('active-filter');
                     applyFilters();
                 });
             });
 
-            const allButton = document.getElementById('all-button');
-            allButton.addEventListener('click', () => {
-                activeFilters = ['All'];
-                filterButtons.forEach(button => button.classList.remove('active-filter'));
-                allButton.classList.add('active-filter');
-                applyFilters();
-            });
-        });
-
-        // UPLOADING IMAGES
-        const uploadButton = document.getElementById('upload-button');
-        const fileChosen = document.getElementById('file-chosen');
-
-        const listingButton = document.getElementById('listing-button');
-        const listingPopup = document.getElementById('listing-popup');
-        const closeListing = document.querySelector('.close-listing');
-
-        listingButton.addEventListener('click', () => {
-            listingPopup.style.display = 'block';
-        });
-
-        closeListing.addEventListener('click', () => {
-            listingPopup.style.display = 'none';
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
+            // UPLOADING IMAGES
             const uploadButton = document.getElementById('upload-button');
-            const imagePreview = document.getElementById('image-preview');
-            
-            let imageCount = 0;
+            const fileChosen = document.getElementById('file-chosen');
 
-            uploadButton.addEventListener('change', function(event) {
-                const files = event.target.files;
-                imageCount = files.length > 5 ? 5 : files.length;
+            const listingButton = document.getElementById('listing-button');
+            const listingPopup = document.getElementById('listing-popup');
+            const closeListing = document.querySelector('.close-listing');
 
-                for (let i = 0; i < imageCount; i++) {
-                    const file = files[i];
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const imgElement = document.createElement('img');
-                        imgElement.src = e.target.result;
-
-                        const pElement = document.createElement('p');
-
-                        const divElement = document.createElement('div');
-                        divElement.appendChild(imgElement);
-                        divElement.appendChild(pElement);
-                        imagePreview.appendChild(divElement);
-                    };
-                    reader.readAsDataURL(file);
-                }
+            listingButton.addEventListener('click', () => {
+                listingPopup.style.display = 'block';
             });
-        });
-    </script>
+
+            closeListing.addEventListener('click', () => {
+                listingPopup.style.display = 'none';
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const uploadButton = document.getElementById('upload-button');
+                const imagePreview = document.getElementById('image-preview');
+
+                let imageCount = 0;
+
+                uploadButton.addEventListener('change', function (event) {
+                    const files = event.target.files;
+                    imageCount = files.length > 5 ? 5 : files.length;
+
+                    for (let i = 0; i < imageCount; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = e.target.result;
+
+                            const pElement = document.createElement('p');
+
+                            const divElement = document.createElement('div');
+                            divElement.appendChild(imgElement);
+                            divElement.appendChild(pElement);
+                            imagePreview.appendChild(divElement);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        </script>
+        <p>Your User ID: {{ user.id }}</p>
+
+        <!-- Add this to debug your listings -->
+        <div style="margin: 20px;">
+            <h3>Debug Info:</h3>
+            <p>User ID: {{ user.id }}</p>
+            <h4>Your Listings:</h4>
+            {% for listing in all_listings %}
+                <div style="margin: 10px 0;">
+                    <p>ID: {{ listing.id }}</p>
+                    <p>Title: {{ listing.title }}</p>
+                    <p>Price: {{ listing.price }}</p>
+                    <p>Category: {{ listing.category }}</p>
+                    <p>Created At: {{ listing.created_at }}</p>
+                </div>
+            {% empty %}
+                <p>No listings found</p>
+            {% endfor %}
+        </div>
 </body>
+
 </html>

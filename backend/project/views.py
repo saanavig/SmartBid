@@ -19,6 +19,7 @@ from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import random
+import datetime
 from dashboard.models import Listing, Bid, User, Comment
 
 
@@ -171,10 +172,19 @@ def homepage(request):
 @login_required
 # def profile(request):
 #     return render(request, 'profile.html', {'user': request.user})
+@login_required
 def profile(request):
     print(f"Logged in user: {request.user.username} ({request.user.id})")
-    return render(request, 'profile.html', {'user': request.user})
+    user_id = request.user.id  # Get the current user's ID
+    response = supabase.table('transactions').select('buyer_id, seller_id').eq('buyer_id', user_id).or_('seller_id.eq.' + str(user_id)).execute()
+    total_transactions = len(response.data)  # Count the number of transactions
 
+    # Combine context into a single dictionary
+    context = {
+        'user': request.user,
+        'total_transactions': total_transactions
+    }
+    return render(request, 'profile.html', context)
 # Dashboard View
 # @login_required
 # def dashboard(request):
@@ -308,6 +318,14 @@ def listing(request, id):
     print("Listing data:", listing.data)
     print("Images data:", images.data)
     print("Comments data:", comments.data)
+
+
+    context = {
+        'listing': listing.data[0],  # Pass the first item from listing.data
+        'images': images.data
+    }
+
+    return render(request, 'listing.html', context)
 
     # Process comments data to match your template's expected format
     formatted_comments = []
@@ -497,41 +515,56 @@ def submit_complaint(request):
 
 #     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 @csrf_exempt
+@login_required
 def place_bid(request, listing_id):
     if request.method == 'POST':
         try:
-            # Get listing from Supabase
-            listing_data = supabase.table('listings').select('*').eq('id', listing_id).execute()
-
-            if not listing_data.data:
-                return JsonResponse({'status': 'error', 'message': 'Listing not found'}, status=404)
-
-            listing = listing_data.data[0]
-            current_highest_bid = float(listing.get('highest_bid', 0))
-
             data = json.loads(request.body)
             bid_amount = float(data.get('bid_amount', 0))
 
+            # Validate bid amount
+            if bid_amount <= 0:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid bid amount'
+                }, status=400)
+
+            # Get current listing
+            listing = supabase.table('listings').select('*').eq('id', listing_id).execute()
+
+            if not listing.data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Listing not found'
+                }, status=404)
+
+            current_highest_bid = float(listing.data[0].get('highest_bid', 0))
+
+            # Check if bid is higher than current highest
             if bid_amount <= current_highest_bid:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Bid must be higher than current highest bid'
                 }, status=400)
 
-            supabase.table('listings').update({
-                'highest_bid': bid_amount
-            }).eq('id', listing_id).execute()
-
+            # Record bid in bids table (creating a new bid record)
             supabase.table('bids').insert({
                 'listing_id': listing_id,
-                'user_id': request.user.id,
+                'user_email': request.user.email,
                 'amount': bid_amount,
-                'created_at': 'now()'
+                'created_at': datetime.now().isoformat()
             }).execute()
+
+            # Update listing with new highest bid and highest bidder
+            supabase.table('listings').update({
+                'highest_bid': bid_amount,
+                'highest_bidder': request.user.email
+            }).eq('id', listing_id).execute()
 
             return JsonResponse({
                 'status': 'success',
-                'new_highest_bid': bid_amount
+                'new_highest_bid': bid_amount,
+                'message': 'Bid placed successfully'
             })
 
         except json.JSONDecodeError:
@@ -539,7 +572,6 @@ def place_bid(request, listing_id):
                 'status': 'error',
                 'message': 'Invalid JSON data'
             }, status=400)
-
         except Exception as e:
             return JsonResponse({
                 'status': 'error',
@@ -550,6 +582,7 @@ def place_bid(request, listing_id):
         'status': 'error',
         'message': 'Invalid request method'
     }, status=405)
+
 
 def fetch_comments(request, listing_id):
     comments = Comment.objects.filter(listing_id=listing_id).order_by('-created_at')

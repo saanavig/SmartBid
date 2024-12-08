@@ -47,7 +47,7 @@
             <!-- Add more profile information as needed -->
 
             <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                <p><strong>Total Transactions:</strong> 25</p>
+            <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
             </div>
         </div>
     </div>
