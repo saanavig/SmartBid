@@ -24,6 +24,7 @@ from .views import homepage, profile, CustomSignupView, CustomLoginView
 from . import views
 from django.contrib.auth.views import LogoutView
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
@@ -49,6 +50,9 @@ urlpatterns = [
     path('dashboard/accounts/manage_funds/', views.manage_funds, name='manage_funds'),
     path('deposit/', views.deposit_money, name='deposit_money'),
     path('withdraw/', views.withdraw_money, name='withdraw_money'),
+    path('place_bid/<int:listing_id>/', views.place_bid, name='place_bid'),
+    path('fetch_comments/<int:listing_id>/', views.fetch_comments, name='fetch_comments'),
+    path('create_comment/<int:listing_id>/', views.create_comment, name='create_comment'),
 ]
 
 

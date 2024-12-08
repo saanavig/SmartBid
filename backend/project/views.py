@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from .forms import CustomSignupForm
@@ -19,6 +19,8 @@ from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import random
+from dashboard.models import Listing, Bid, User, Comment
+
 
 
 load_dotenv()
@@ -291,16 +293,45 @@ def homepage(request):
 
 # visit listings
 def listing(request, id):
-
+    # Fetch listing and images from Supabase
     listing = supabase.table('listings').select('*').eq('id', id).execute()
     images = supabase.table('listing_images').select('*').eq('listing_id', id).execute()
-    # Debug print to see what data we're getting
+
+    # Fetch comments from Supabase
+    comments = supabase.table('comments').select(
+        'comment',
+        'created_at',
+        'commenter:users(first_name,last_name)'  # Join with users table
+    ).eq('listing_id', id).order('created_at', desc=True).execute()
+
+    # Debug prints
     print("Listing data:", listing.data)
     print("Images data:", images.data)
+    print("Comments data:", comments.data)
+
+    # Process comments data to match your template's expected format
+    formatted_comments = []
+    for comment in comments.data:
+        formatted_comments.append({
+            'user': {
+                'first_name': comment['commenter']['first_name'] if comment['commenter'] else 'Visitor',
+                'last_name': comment['commenter']['last_name'] if comment['commenter'] else ''
+            },
+            'comment': comment['comment']
+        })
 
     context = {
-        'listing': listing.data[0],  # Pass the first item from listing.data
-        'images': images.data
+        'listing': listing.data[0],
+        'images': images.data,
+        'comments': formatted_comments,
+        # Add user context conditionally
+        'user': {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name
+        } if request.user.is_authenticated else {
+            'first_name': 'Visitor',
+            'last_name': ''
+        }
     }
     return render(request, 'listing.html', context)
 
@@ -446,3 +477,109 @@ def submit_complaint(request):
 
     else:
         return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
+
+#place bid
+# def place_bid(request, listing_id):
+#     if request.method == 'POST':
+#         listing = get_object_or_404(Listing, id=listing_id)
+#         current_highest_bid = listing.highest_bid
+
+#         bid_amount = float(request.POST.get('bid_amount'))
+
+#         if bid_amount > current_highest_bid:
+#             Bid.objects.create(listing=listing, user=request.user, amount=bid_amount)
+#             listing.highest_bid = bid_amount
+#             listing.save()
+
+#             return JsonResponse({'status': 'success', 'new_highest_bid': bid_amount})
+#         else:
+#             return JsonResponse({'status': 'error', 'message': 'Bid must be higher than the current highest bid.'})
+
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+@csrf_exempt
+def place_bid(request, listing_id):
+    if request.method == 'POST':
+        try:
+            # Get listing from Supabase
+            listing_data = supabase.table('listings').select('*').eq('id', listing_id).execute()
+
+            if not listing_data.data:
+                return JsonResponse({'status': 'error', 'message': 'Listing not found'}, status=404)
+
+            listing = listing_data.data[0]
+            current_highest_bid = float(listing.get('highest_bid', 0))
+
+            data = json.loads(request.body)
+            bid_amount = float(data.get('bid_amount', 0))
+
+            if bid_amount <= current_highest_bid:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Bid must be higher than current highest bid'
+                }, status=400)
+
+            supabase.table('listings').update({
+                'highest_bid': bid_amount
+            }).eq('id', listing_id).execute()
+
+            supabase.table('bids').insert({
+                'listing_id': listing_id,
+                'user_id': request.user.id,
+                'amount': bid_amount,
+                'created_at': 'now()'
+            }).execute()
+
+            return JsonResponse({
+                'status': 'success',
+                'new_highest_bid': bid_amount
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid JSON data'
+            }, status=400)
+
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)
+
+def fetch_comments(request, listing_id):
+    comments = Comment.objects.filter(listing_id=listing_id).order_by('-created_at')
+    comments_data = [
+        {
+            'user': {
+                'first_name': comment.user.first_name,
+                'last_name': comment.user.last_name
+            },
+            'comment': comment.comment,  # Changed from content to comment to match your model
+            'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for comment in comments
+    ]
+    return JsonResponse({'comments': comments_data})
+
+def create_comment(request, listing_id):
+    if request.method == 'POST':
+        comment_text = request.POST.get('comment')
+        if comment_text:
+            # For visitors, we'll set commenter_id as NULL
+            commenter_id = request.user.id if request.user.is_authenticated else None
+
+            # Insert comment into Supabase
+            supabase.table('comments').insert({
+                'listing_id': listing_id,
+                'commenter_id': commenter_id,
+                'comment': comment_text
+            }).execute()
+
+            return redirect('listing', id=listing_id)
+
+    return redirect('listing', id=listing_id)

@@ -126,31 +126,28 @@
 
         <!-- BOTTOM SECTION: COMMENTS -->
         <div class="bottom-section">
-            <!-- COMMENT INPUT SECTION -->
+        <!-- COMMENT INPUT SECTION -->
+        <form method="POST" action="{% url 'create_comment' listing.id %}">
+            {% csrf_token %}
             <div class="comment-input">
-                <input type="text" placeholder="Leave a comment as a user">
+                <input type="text" name="comment" placeholder="Leave a comment as {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}Visitor{% endif %}">
                 <div class="comment-buttons">
-                    <button class="cancel-button" onclick="clearComment()">Cancel</button>
-                    <button class="comment-button" onclick="addComment()">Comment</button>
+                    <button type="reset" class="cancel-button">Cancel</button>
+                    <button type="submit" class="comment-button">Comment</button>
                 </div>
             </div>
+        </form>
 
             <div class="align-bottom">
-                <!-- COMMENT DISPLAYS SECTION -->
-                <div class="comments">
-                    <div class="comment">
-                        <p><strong>Srewashi Mondal</strong></p>
-                        <p>This product is nice.</p>
-                    </div>
-                    <div class="comment">
-                        <p><strong>Saanavi Goyal</strong></p>
-                        <p>This item is great! :D</p>
-                    </div>
-                    <div class="comment">
-                        <p><strong>Debasree Sen</strong></p>
-                        <p>This was a lifesaver! :)</p>
-                    </div>
+            <!-- COMMENT DISPLAYS SECTION -->
+            <div class="comments">
+                {% for comment in comments %}
+                <div class="comment">
+                    <p><strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong></p>
+                    <p>{{ comment.comment }}</p>
                 </div>
+                {% endfor %}
+            </div>
 
                 <div class="current-bids">
                     <h2>Current Bids</h2>
@@ -220,6 +217,56 @@
             const invalidMessage = document.getElementById('invalid');
 
             // Confirmation
+            async function placeBid(listingId, bidAmount) {
+                try {
+                    const response = await fetch(`/place_bid/${listingId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // If using CSRF protection
+                        },
+                        body: JSON.stringify({
+                            bid_amount: bidAmount
+                        })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Update UI with new bid
+                        document.getElementById('highestBid').textContent = data.new_highest_bid;
+                        alert('Bid placed successfully!');
+                    } else {
+                        throw new Error(data.message || 'Failed to place bid');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message);
+                }
+            }            async function placeBid(listingId, bidAmount) {
+                try {
+                    const response = await fetch(`/place_bid/${listingId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // If using CSRF protection
+                        },
+                        body: JSON.stringify({
+                            bid_amount: bidAmount
+                        })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        // Update UI with new bid
+                        document.getElementById('highestBid').textContent = data.new_highest_bid;
+                        alert('Bid placed successfully!');
+                    } else {
+                        throw new Error(data.message || 'Failed to place bid');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message);
+                }
+            }
             const confirmationPopup = document.getElementById('confirmation-popup');
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
@@ -231,7 +278,7 @@
 
             startBidButton.addEventListener('click', () => {
                 startBidPopup.style.display = 'block';
-                invalidMessage.innerText = ''; // Clear error messages
+                invalidMessage.innerText = '';
             });
 
             closeButton.addEventListener('click', () => {
@@ -247,22 +294,72 @@
                 ratePopup.style.display = 'none';
             });
 
-            makeBidButton.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent form default behavior
+            async function placeBid(event)
+            {
+                event.preventDefault();
 
                 const amount = parseFloat(bidAmount.value);
+                const listingId = {{ listing.id }};
                 const currentHighest = parseFloat(highestAmount.innerText);
 
-                if (!isNaN(amount) && amount > currentHighest) {
-                    highestAmount.innerText = amount.toFixed(2); // Update the highest bid
+                console.log("Bid Amount:", amount);
+                console.log("Listing ID:", listingId);
+                console.log("Current Highest Bid:", currentHighest);
 
-                    bidAmount.value = '';
-                    startBidPopup.style.display = 'none'
-                    confirmationPopup.style.display = 'block';
+                if (!isNaN(amount) && amount > currentHighest) {
+                    try {
+                        const response = await fetch(`/place_bid/${listingId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken'),
+                            },
+                            body: JSON.stringify({
+                                bid_amount: amount,
+                                listing_id: listingId
+                            })
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        if (data.status === 'success')
+                        {
+                            highestAmount.innerText = data.new_highest_bid.toFixed(2);
+                            confirmationPopup.style.display = 'block';
+                            startBidPopup.style.display = 'none';
+                            bidAmount.value = '';
+                        }
+                        else
+                        {
+                            invalidMessage.innerText = data.message || 'Failed to place bid';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        invalidMessage.innerText = error.message;
+                    }
                 } else {
-                    alert('Insufficient funds or bid is not greater than the current highest bid.');
+                    invalidMessage.innerText = 'Bid must be higher than current highest bid';
                 }
-            });
+            }
+            makeBidButton.addEventListener('click', placeBid);
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            makeBidButton.addEventListener('click', placeBid);
 
             function setRating(rating) {
                 currentRating = rating;
@@ -304,41 +401,6 @@
 
                 // Add the active class to the clicked thumbnail
                 thumbnail.classList.add("active");
-            }
-
-            function addComment() {
-                const commentInput = document.querySelector(".comment-input input[type='text']");
-                const commentsContainer = document.querySelector(".comments");
-                const commentText = commentInput.value.trim();
-
-                if (commentText) {
-                    // Create a new comment div
-                    const newComment = document.createElement("div");
-                    newComment.classList.add("comment");
-
-                    // Add author and timestamp
-                    const authorPara = document.createElement("p");
-                    authorPara.innerHTML = `<strong>Visitor</strong>`;
-
-                    // Add comment text
-                    const textPara = document.createElement("p");
-                    textPara.textContent = commentText;
-
-                    // Append all parts to the new comment div
-                    newComment.appendChild(authorPara);
-                    newComment.appendChild(textPara);
-
-                    // Insert the new comment at the top of the comments container
-                    commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
-
-                    // Store the last added comment for undo
-                    lastComment = newComment;
-
-                    // Clear the input field
-                    commentInput.value = "";
-                } else {
-                    alert("Please enter a comment.");
-                }
             }
 
             function clearComment() {
