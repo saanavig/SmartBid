@@ -8,6 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Details</title>
     <link rel="stylesheet" href="{% static 'listing.css' %}">
+    <style>
+        .bid-message {
+            color: #666;
+            font-style: italic;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -22,15 +32,15 @@
             <!-- DROPDOWN FOR USER OPTIONS -->
             <div class="dropdown">
                 {% if user.is_authenticated %}
-                <a class="login-btn">You</a>
-                <div class="dropdown-content">
-                    <a href="{% url 'dashboard' %}">Dashboard</a>
-                        {% if user.is_staff %} 
+                    <a class="login-btn">You</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'dashboard' %}">Dashboard</a>
+                        {% if user.is_staff %}  <!-- Only show Admin link if user is staff -->
                             <a href="{% url 'adminPage' %}">Admin</a>
                         {% endif %}
-                    <a href="{% url 'profile' %}">Profile</a>
-                    <a href="{% url 'logout' %}">Sign Out</a>
-                </div>
+                        <a href="{% url 'profile' %}">Profile</a>
+                        <a href="{% url 'logout' %}">Sign Out</a>
+                    </div>
                 {% else %}
                     <a href="{% url 'login' %}" class="login-btn">Login</a>
                 {% endif %}
@@ -139,33 +149,29 @@
                 <p><strong>Category:</strong> {{ listing.category }}</p>
                 <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }}</p>
                 <p>{{ listing.description }}</p>
-
+                
                 {% if user.is_authenticated %}
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
                     {% else %}
-                        <button class="bid-button" id="bid-button">Start Bidding</button>
+                        {% with user_has_bid=True %}
+                            {% for bid in bids %}
+                                {% if bid.user.id == user.id %}
+                                    {% with user_has_bid=True %}{% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if user_has_bid %}
+                                <p class="bid-message">You've already placed a bid. Check your bid status below.</p>
+                            {% else %}
+                                <button class="bid-button" id="bid-button">Start Bidding</button>
+                            {% endif %}
+                        {% endwith %}
                     {% endif %}
                 {% else %}
                     <a href="{% url 'login' %}" class="bid-button" style="text-decoration: none;">Login to Bid</a>
                 {% endif %}
             </div>
-
-            <!-- ACCEPT/DECLINE BID -->
-            <form id="manage-bid-popup" class="popup">
-                <div class="popup-content">
-                    <span class="close-listing" id="close-button">&times;</span>
-                    <h2 id="bid-header">Accept or Decline Bid</h2>
-                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
-                    <div class="row">
-                        <p id="highest-bid" style="font-weight: bold">US $500.00</p>
-                    </div>
-                    <div class="row">
-                        <button class="accept-bid-button" id="accept-bid-button">Accept</button>
-                        <button class="decline-bid-button" id="decline-bid-button">Decline</button>
-                    </div>
-                </div>
-            </form>
         </div>
 
         <!-- BOTTOM SECTION: COMMENTS -->
@@ -213,12 +219,11 @@
                                 </div>
                                 {% if user.is_authenticated and user.id == listing.seller_id %}
                                     <div class="bid-actions">
-                                        <button class="accept-button" data-bid-id="{{ bid.id }}">Accept</button>
-                                        <button class="decline-button" data-bid-id="{{ bid.id }}" 
-                                                onclick="declineBid('{{ bid.id }}')">Decline</button>
+                                        <button class="accept-button" data-bid-id="{{ bid.id }}" onclick="acceptBid('{{ bid.id }}')">Accept</button>
+                                        <button class="decline-button" data-bid-id="{{ bid.id }}" onclick="declineBid('{{ bid.id }}')">Decline</button>
                                     </div>
                                 {% endif %}
-                                </div>
+                            </div>
                         {% endfor %}
                     {% else %}
                         <p class="no-bids">No bids yet.</p>
@@ -238,39 +243,25 @@
             const confirmationPopup = document.getElementById('confirmation-popup');
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
-            // Check if user has already bid
-            const currentBids = JSON.parse('{{ bids|escapejs|safe }}');
-            const currentUserId = "{{ user.id }}";
-            // Check if any of the bids belong to the current user
-            const userHasBid = currentBids.some(bid =>
-                String(bid.user.id) === currentUserId ||
-                bid.user_id === currentUserId
-            );
+            function changeImage(thumbnail) {
+                // Get the larger image element
+                const largeImage = document.querySelector("#displayed-image img");
 
-            console.log('Current User ID:', currentUserId);
-            console.log('Current Bids:', currentBids);
-            console.log('User has bid:', userHasBid);
+                // Update the src of the larger image
+                largeImage.src = thumbnail.src;
 
-            // Disable bidding if user has already bid
-            if (userHasBid) {
-                if (startBidButton) {
-                    startBidButton.disabled = true;
-                    startBidButton.textContent = "You've already placed a bid";
-                    startBidButton.style.backgroundColor = '#cccccc';
-                }
-                if (makeBidButton) {
-                    makeBidButton.disabled = true;
-                    makeBidButton.textContent = "You've already placed a bid";
-                    makeBidButton.style.backgroundColor = '#cccccc';
-                }
+                // Remove the active class from all thumbnails
+                document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                    img.classList.remove("active");
+                });
+
+                // Add the active class to the clicked thumbnail
+                thumbnail.classList.add("active");
             }
 
             startBidButton.addEventListener('click', () => {
-                //shouldn't it be (userHasBid)?
-                if (!userHasBid) {
                 startBidPopup.style.display = 'block';
                 invalidMessage.innerText = '';
-                }
             });
 
             closeButton.addEventListener('click', () => {
@@ -279,314 +270,287 @@
 
             closeConfirmationButton.addEventListener('click', () => {
                 confirmationPopup.style.display = 'none';
-                ratePopup.style.display = 'block';
             });
 
-            closeRatingButton.addEventListener('click', () => {
-                ratePopup.style.display = 'none';
-            });
+            async function placeBid(event) {
+                event.preventDefault();
 
-        async function placeBid(event) {
-            event.preventDefault();
-            console.log("Place Bid triggered");
-            const amount = parseFloat(bidAmount.value);
-            const listingId = "{{ listing.id }}";
-            const currentHighest = parseFloat(highestAmount.innerText);
+                const amount = parseFloat(bidAmount.value);
+                const listingId = "{{ listing.id }}";
+                const currentHighest = parseFloat(highestAmount.innerText);
                 const userBalance = parseFloat("{{ user_balance }}");
                 const invalidMessage = document.getElementById('invalid');
 
                 // First check if bid is valid and higher than current highest
-            if (!isNaN(amount) && amount > currentHighest) {
+                if (!isNaN(amount) && amount > currentHighest) {
                     // Then check if user has enough balance
                     if (amount > userBalance) {
                         invalidMessage.innerText = `Insufficient funds. Your balance is $${userBalance.toFixed(2)}`;
                         return;
                     }
 
+                    try {
+                        const response = await fetch(`/place_bid/${listingId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({ bid_amount: amount })
+                        });
+                        
+                        const data = await response.json();
+                
+                        if (data.status === 'success') {
+                            highestAmount.innerText = amount.toFixed(2);
+                            startBidPopup.style.display = 'none';
+                            confirmationPopup.style.display = 'block';
+                            location.reload();
+                        } else {
+                            invalidMessage.innerText = data.message;
+                        }
+                    } catch (error) {
+                        console.error('Error placing bid:', error);
+                        invalidMessage.innerText = 'An unexpected error occurred.';
+                    }
+                } else {
+                    invalidMessage.innerText = 'Please enter a valid bid higher than the current amount.';
+                }
+            }
+
+            makeBidButton.addEventListener('click', placeBid);
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function setRating(rating) {
+                currentRating = rating;
+
+                const stars = document.querySelectorAll("#star-rating .star");
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("selected");
+                    } else {
+                        star.classList.remove("selected");
+                    }
+                });
+
+                //console.log(`Rating: ${rating}`); // Check it works
+            }
+
+            rateButton.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                ratePopup.style.display = 'none';
+                startBidButton.disabled = true; // disabled button for now once bid already made
+                startBidButton.style.background = 'grey';
+
+                // Process rating logic (send to database) NOT DONE YET
+                // {currentRating}/5
+            });
+
+            function changeImage(thumbnail) {
+                const largeImage = document.querySelector("#displayed-image img");
+
+                largeImage.src = thumbnail.src;
+
+                document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                    img.classList.remove("active");
+                });
+
+                thumbnail.classList.add("active");
+            }
+
+            function clearComment() {
+                const commentInput = document.querySelector(".comment-input input[type='text']");
+                const commentsContainer = document.querySelector(".comments");
+
+                // Clear the input field
+                commentInput.value = "";
+            }
+
+            // Add event listeners for Accept and Decline buttons
+            document.querySelectorAll(".accept-button").forEach((button) => {
+                button.addEventListener("click", async(event) => {
+                    event.preventDefault();
+
+                    // Open the Rate Buyer popup
+                    ratePopup.style.display = 'block';
+
+                    // Store reference to the bid card container and header
+                    const bidCardContainer = document.querySelector(".current-bids");
+                    const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
+
+                    // When the user rates the buyer, remove all the bid cards and update the header
+                    rateButton.addEventListener('click', (rateEvent) => {
+                        rateEvent.preventDefault();
+                        // Remove all bid cards
+                        const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
+                        allBidCards.forEach(card => card.remove());
+
+                        // Change the header text to "Bid Completed"
+                        currentBidsHeader.textContent = "Bid Completed"; // Update the header text
+
+                        // Close the Rate Buyer popup
+                        ratePopup.style.display = 'none';
+                    });
+                });
+            });
+
+            // Add event listener for "Decline" button
+            document.querySelectorAll(".decline-button").forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
+
+                    ratePopup.style.display = 'none';
+                startBidButton.disabled = true; // disabled button for now once bid already made
+                startBidButton.style.background = 'grey';
+
+                // Process rating logic (send to database) NOT DONE YET
+                // {currentRating}/5
+            });
+
+            function changeImage(thumbnail) {
+                // Get the larger image element
+                const largeImage = document.querySelector("#displayed-image img");
+
+                // Update the src of the larger image
+                largeImage.src = thumbnail.src;
+                // Remove the active class from all thumbnails
+                document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                    img.classList.remove("active");
+                });
+                // Add the active class to the clicked thumbnail
+                thumbnail.classList.add("active");
+            }
+
+            function clearComment() {
+                const commentInput = document.querySelector(".comment-input input[type='text']");
+                const commentsContainer = document.querySelector(".comments");
+
+                // Clear the input field
+                commentInput.value = "";
+            }
+
+            // Add event listeners for Accept and Decline buttons
+
+
+            function declineBid(bidId) {
+                if (confirm("Are you sure you want to decline this bid?")) {
+                    fetch(`/decline_bid/${bidId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => response.json())  // Convert the response to JSON
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Refresh the page if the bid was successfully declined
+                            location.reload();
+                        } else {
+                            alert(data.message);  // Alert if something went wrong
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error declining bid:', error);
+                        alert('An unexpected error occurred.');
+                    });
+                }
+            }
+
+            function acceptBid(bidId) {
+                if (confirm("Are you sure you want to accept this bid?")) {
+                    fetch(`/accept_bid/${bidId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => response.json())  // Convert the response to JSON
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Refresh the page if the bid was successfully accepted
+                            location.reload();
+                        } else {
+                            alert(data.message);  // Alert if something went wrong
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error accepting bid:', error);
+                        alert('An unexpected error occurred.');
+                    });
+                }
+            }
+
+            let currentTransactionId = null;
+            let selectedRating = 0;
+
+            // Handle star rating selection
+            document.querySelectorAll('.star-rating .star').forEach(star => {
+                star.addEventListener('click', (e) => {
+                    selectedRating = parseInt(e.target.dataset.rating);
+                    updateStars(e.target.parentElement, selectedRating);
+                });
+            });
+
+            function updateStars(container, rating) {
+                container.querySelectorAll('.star').forEach(star => {
+                    const starRating = parseInt(star.dataset.rating);
+                    star.classList.toggle('selected', starRating <= rating);
+                });
+            }
+
+            // Handle rating submission
+            document.getElementById('submit-rating').addEventListener('click', async () => {
+                if (!selectedRating || !currentTransactionId) return;
+                
+                const comment = document.getElementById('rating-comment').value;
+                
                 try {
-                    const response = await fetch(`/place_bid/${listingId}/`, {
+                    const response = await fetch(`/submit_rating/${currentTransactionId}/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify({ bid_amount: amount })
+                        body: JSON.stringify({
+                            rating: selectedRating,
+                            comment: comment
+                        })
                     });
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        highestAmount.innerText = amount.toFixed(2);
-                        startBidPopup.style.display = 'none';
-                        confirmationPopup.style.display = 'block';
+                    
+                    if (response.ok) {
+                        document.getElementById('seller-rating-popup').style.display = 'none';
+                        // Refresh the page or update UI as needed
                         location.reload();
-                        }
-                        else if (data.status === 'insufficient_funds')
-                        {
-                            invalidMessage.innerText = 'Insufficient funds in your account.';
-                        }
-                    else
-                    {
-                        invalidMessage.innerText = data.message;
                     }
                 } catch (error) {
-                    console.error('Error placing bid:', error);
-                    invalidMessage.innerText = 'An unexpected error occurred.';
-                }
-            } else {
-                invalidMessage.innerText = 'Please enter a valid bid higher than the current amount.';
-            }
-        }
-
-        makeBidButton.addEventListener('click', placeBid);
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        function setRating(rating) {
-            currentRating = rating;
-
-            const stars = document.querySelectorAll("#star-rating .star");
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add("selected");
-                } else {
-                    star.classList.remove("selected");
+                    console.error('Error submitting rating:', error);
                 }
             });
 
-            //console.log(`Rating: ${rating}`); // Check it works
-        }
-
-        rateButton.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            ratePopup.style.display = 'none';
-            startBidButton.disabled = true; // disabled button for now once bid already made
-            startBidButton.style.background = 'grey';
-
-            // Process rating logic (send to database) NOT DONE YET
-            // {currentRating}/5
-        });
-
-        function changeImage(thumbnail) {
-            const largeImage = document.querySelector("#displayed-image img");
-
-            largeImage.src = thumbnail.src;
-
-            document.querySelectorAll(".thumbnail-container img").forEach(img => {
-                img.classList.remove("active");
-            });
-
-            thumbnail.classList.add("active");
-        }
-
-        function clearComment() {
-            const commentInput = document.querySelector(".comment-input input[type='text']");
-            const commentsContainer = document.querySelector(".comments");
-
-            // Clear the input field
-            commentInput.value = "";
-        }
-
-        // Add event listeners for Accept and Decline buttons
-        document.querySelectorAll(".accept-button").forEach((button) => {
-            button.addEventListener("click", async(event) => {
-                event.preventDefault();
-
-                // Open the Rate Buyer popup
-                ratePopup.style.display = 'block';
-
-                // Store reference to the bid card container and header
-                const bidCardContainer = document.querySelector(".current-bids");
-                const currentBidsHeader = document.querySelector(".current-bids h2"); // Reference the header
-
-                // When the user rates the buyer, remove all the bid cards and update the header
-                rateButton.addEventListener('click', (rateEvent) => {
-                    rateEvent.preventDefault();
-                    // Remove all bid cards
-                    const allBidCards = bidCardContainer.querySelectorAll(".bid-card");
-                    allBidCards.forEach(card => card.remove());
-
-                    // Change the header text to "Bid Completed"
-                    currentBidsHeader.textContent = "Bid Completed"; // Update the header text
-
-                    // Close the Rate Buyer popup
-                    ratePopup.style.display = 'none';
+            // Close rating popup
+            document.querySelectorAll('.close-rating').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.target.closest('.popup').style.display = 'none';
                 });
             });
-        });
-
-        // Add event listener for "Decline" button
-        document.querySelectorAll(".decline-button").forEach((button) => {
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-
-                ratePopup.style.display = 'none';
-            startBidButton.disabled = true; // disabled button for now once bid already made
-            startBidButton.style.background = 'grey';
-
-            // Process rating logic (send to database) NOT DONE YET
-            // {currentRating}/5
-        });
-
-        function changeImage(thumbnail) {
-            // Get the larger image element
-            const largeImage = document.querySelector("#displayed-image img");
-
-            // Update the src of the larger image
-            largeImage.src = thumbnail.src;
-
-            // Remove the active class from all thumbnails
-            document.querySelectorAll(".thumbnail-container img").forEach(img => {
-                img.classList.remove("active");
-            });
-
-            // Add the active class to the clicked thumbnail
-            thumbnail.classList.add("active");
-        }
-
-        function clearComment() {
-            const commentInput = document.querySelector(".comment-input input[type='text']");
-            const commentsContainer = document.querySelector(".comments");
-
-            // Clear the input field
-            commentInput.value = "";
-        }
-
-        // Add event listeners for Accept and Decline buttons
-        document.querySelectorAll(".accept-button").forEach(button => {
-            button.addEventListener("click", async (event) => {
-                event.preventDefault();
-                const bidId = button.dataset.bidId;
-                
-                if (confirm("Are you sure you want to accept this bid?")) {
-                    try {
-                        const response = await fetch(`/accept_bid/${bidId}/`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token }}'
-                            }
-                        });
-                        const data = await response.json();
-                        
-                        if (data.status === 'success') {
-                            currentTransactionId = data.transaction_id;
-                            
-                            // Show rating popup
-                            const ratingPopup = document.getElementById('seller-rating-popup');
-                            document.getElementById('listing-title').textContent = data.listing_title;
-                            document.getElementById('buyer-name').textContent = data.buyer_name;
-                            ratingPopup.style.display = 'block';
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-                }
-            });
-        });
-
-        function declineBid(bidId) {
-            if (confirm("Are you sure you want to decline this bid?")) {
-                fetch(`/decline_bid/${bidId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // Simply remove the bid card from the UI
-                        const bidCard = document.querySelector(`[data-bid-id="${bidId}"]`).closest('.bid-card');
-                        if (bidCard) {
-                            bidCard.remove();  // Remove the entire bid card
-                            
-                            // Check if there are any bids left
-                            const remainingBids = document.querySelectorAll('.bid-card');
-                            if (remainingBids.length === 0) {
-                                // If no bids left, show the "No bids yet" message
-                                const currentBids = document.querySelector('.current-bids');
-                                currentBids.innerHTML = '<h2>Current Bids</h2><p class="no-bids">No bids yet.</p>';
-                            }
-                        }
-                    } else {
-                        alert(data.message || 'Failed to decline bid');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while declining the bid');
-                });
-            }
-        }
-
-        let currentTransactionId = null;
-        let selectedRating = 0;
-
-        // Handle star rating selection
-        document.querySelectorAll('.star-rating .star').forEach(star => {
-            star.addEventListener('click', (e) => {
-                selectedRating = parseInt(e.target.dataset.rating);
-                updateStars(e.target.parentElement, selectedRating);
-            });
-        });
-
-        function updateStars(container, rating) {
-            container.querySelectorAll('.star').forEach(star => {
-                const starRating = parseInt(star.dataset.rating);
-                star.classList.toggle('selected', starRating <= rating);
-            });
-        }
-
-        // Handle rating submission
-        document.getElementById('submit-rating').addEventListener('click', async () => {
-            if (!selectedRating || !currentTransactionId) return;
-
-            const comment = document.getElementById('rating-comment').value;
-
-            try {
-                const response = await fetch(`/submit_rating/${currentTransactionId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({
-                        rating: selectedRating,
-                        comment: comment
-                    })
-                });
-                if (response.ok)
-                {
-                    document.getElementById('seller-rating-popup').style.display = 'none';
-                    // Refresh the page or update UI as needed
-                    location.reload();
-                }
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-            }
-        });
-
-        // Close rating popup
-        document.querySelectorAll('.close-rating').forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.target.closest('.popup').style.display = 'none';
-            });
-        });
-    </script>
+        </script>
     </div>
 </body>
 </html>

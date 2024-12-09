@@ -526,8 +526,8 @@ def listing(request, id):
                     'commenter:users(first_name,last_name)'
                 )\
                 .eq('listing_id', id)\
-                .order('amount', desc=True)  # Order by amount in descending order
-            comments = comments.execute()
+                .order('created_at', desc=True)\
+                .execute()
 
             formatted_comments = []
             for comment in (comments.data or []):
@@ -562,7 +562,7 @@ def listing(request, id):
                     'bidder:users!user_id(first_name,last_name)'
                 )\
                 .eq('listing_id', id)\
-                .eq('status', 'pending')\
+                .order('amount', desc=True)\
                 .execute()
 
             formatted_bids = []
@@ -667,6 +667,7 @@ def listing(request, id):
             'highest_bid': highest_bid,
             'highest_bidder': highest_bidder,
             'user': request.user,
+            'user_balance': user_balance,
         }
         return render(request, 'listing.html', context)
 
