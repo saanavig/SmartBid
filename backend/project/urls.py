@@ -30,15 +30,13 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Includes allauth's URLs (signup, login, etc.)
     path('profile/', profile, name='profile'),  # Profile view
     path('login/', CustomLoginView.as_view(next_page='profile'), name='login'),
-    #path('', TemplateView.as_view(template_name='homepage.html')),
     path('', homepage, name='homepage'),
-    #path('login/', LoginView.as_view(), name='login'),
-    # path('login/', CustomLoginView.as_view(), name='login'),
     path('signup/', CustomSignupView.as_view(), name='signup'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('adminPage/', views.adminPage, name='adminPage'),
     path('adminPage/applications/', views.applications, name='applications'),
     path('adminPage/complaints/', views.complaints, name='complaints'),
+    path('adminPage/users/update-status/', views.update_user_status, name='update_user_status'),
     path('adminPage/users/', views.users, name='users'),
     path('dashboard/account/', views.account, name='account'),
     path('dashboard/viewbids/', views.viewbids, name='viewbids'),
@@ -53,6 +51,9 @@ urlpatterns = [
     path('place_bid/<int:listing_id>/', views.place_bid, name='place_bid'),
     path('fetch_comments/<int:listing_id>/', views.fetch_comments, name='fetch_comments'),
     path('create_comment/<int:listing_id>/', views.create_comment, name='create_comment'),
+    path('complaints/', views.complaints, name='complaints'),
+    path('update_status/', views.update_status, name='update_status'),
+    path('request-deactivation/', views.request_deactivation, name='request_deactivation'),
 ]
 
 

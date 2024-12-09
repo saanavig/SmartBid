@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link rel="stylesheet" href="../../../static/users.css">o
+    <link rel="stylesheet" href="../../../static/users.css">
 </head>
 <body>
     <!-- NAVBAR -->
@@ -19,9 +20,9 @@
         <div class="dropdown">
             <a class="login-btn">You</a>
             <div class="dropdown-content">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="admin.html">Admin</a>
-                <a href="profile.html">Profile</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'adminPage' %}">Admin</a>
+                <a href="{% url 'profile' %}">Profile</a>
                 <a href="{% url 'logout' %}">Sign Out</a>
             </div>
         </div>
@@ -58,124 +59,32 @@
         <!-- USERS TABLE -->
         <table class="users-table">
             <thead>
-                <!-- COLUMN NAMES -->
                 <tr>
                     <th>Full Name</th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Date Joined</th>
-                    <th>Total Bids</th>
+                    <!-- <th>Role</th> -->
                     <th>VIP Status</th>
-                    <th>Status</th>
+                    <th>User Status</th>
                     <th>Manage</th>
                 </tr>
             </thead>
-            
-            <!-- USERS ROW DATA -->
             <tbody id="users-body">
+                {% for user in users %}
                 <tr>
-                    <td>John Doe</td>
-                    <td>johndoe123</td>
-                    <td>john.doe@example.com</td>
-                    <td>2023-01-01</td>
-                    <td>25</td>
-                    <td>No</td>
-                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.created_at|date:"Y-m-d" }}</td>
+                    <td>{% if user.is_vip %}Yes{% else %}No{% endif %}</td>
+                    <!-- <th>Role</th> -->
+                    <td><button class="status-btn {{ user.status }}" onclick="toggleStatus(this)">{{ user.status|title }}</button></td>
                     <td>
-                        <button class="manage-btn" onclick="openManageModal('John Doe', 'john.doe@example.com')">Manage</button>
+                        <button class="manage-btn" onclick="openManageModal('{% if user.first_name %}{{ user.first_name }}{% endif %} {% if user.last_name %}{{ user.last_name }}{% endif %}', '{{ user.email|escapejs }}', '{{ user.id }}')">Manage</button>
                     </td>
                 </tr>
-
-                <tr>
-                    <td>Jane Smith</td>
-                    <td>janesmith456</td>
-                    <td>jane.smith@example.com</td>
-                    <td>2022-11-15</td>
-                    <td>15</td>
-                    <td>No</td>
-                    <td><button class="status-btn suspended" onclick="toggleStatus(this)">Suspended</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Jane Smith', 'jane.smith@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Michael Johnson</td>
-                    <td>mjohnson789</td>
-                    <td>michael.johnson@example.com</td>
-                    <td>2021-08-22</td>
-                    <td>40</td>
-                    <td>No</td>
-                    <td><button class="status-btn deactivated" onclick="toggleStatus(this)">Deactivated</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Michael Johnson', 'michael.johnson@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Emily Davis</td>
-                    <td>emilyd2023</td>
-                    <td>emily.davis@example.com</td>
-                    <td>2023-04-10</td>
-                    <td>5</td>
-                    <td>No</td>
-                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Emily Davis', 'emily.davis@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Chris Lee</td>
-                    <td>clee999</td>
-                    <td>chris.lee@example.com</td>
-                    <td>2024-10-01</td>
-                    <td>2</td>
-                    <td>No</td>
-                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Chris Lee', 'chris.lee@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Alex Brown</td>
-                    <td>alexb_no_bids</td>
-                    <td>alex.brown@example.com</td>
-                    <td>2023-06-30</td>
-                    <td>0</td>
-                    <td>No</td>
-                    <td><button class="status-btn deactivated" onclick="toggleStatus(this)">Deactivated</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Alex Brown', 'alex.brown@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Olivia Wilson</td>
-                    <td>olivia_wilson</td>
-                    <td>olivia.wilson@example.com</td>
-                    <td>2020-12-05</td>
-                    <td>100</td>
-                    <td>Yes</td>
-                    <td><button class="status-btn active" onclick="toggleStatus(this)">Active</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Olivia Wilson', 'olivia.wilson@example.com')">Manage</button>
-                    </td>
-                </tr>
-            
-                <tr>
-                    <td>Daniel Green</td>
-                    <td>dgreen007</td>
-                    <td>daniel.green@example.com</td>
-                    <td>2022-03-12</td>
-                    <td>30</td>
-                    <td>Yes</td>
-                    <td><button class="status-btn suspended" onclick="toggleStatus(this)">Suspended</button></td>
-                    <td>
-                        <button class="manage-btn" onclick="openManageModal('Daniel Green', 'daniel.green@example.com')">Manage</button>
-                    </td>
-                </tr>                     
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -217,32 +126,16 @@
             });
         });
         
-        // SEARCH
-        document.getElementById("search-button").addEventListener("click", function () {
-            const input = document.getElementById("search-input").value.toLowerCase();
-            const tableBody = document.getElementById("users-body");
-            const rows = tableBody.querySelectorAll("tr");
-
-            rows.forEach(row => {
-                const fullName = row.cells[0].innerText.toLowerCase();
-                const username = row.cells[1].innerText.toLowerCase();
-
-                if (fullName.includes(input) || username.includes(input)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
-
         const manageModal = document.getElementById("manage-modal");
         const manageUserName = document.getElementById("manage-user-name");
         let selectedUserEmail = "";
+        let selectedUserId = null;
 
         // OPEN MANAGE USER POPUP
-        function openManageModal(userName, userEmail) {
+        function openManageModal(userName, userEmail, userId) {
             manageUserName.textContent = `User: ${userName}`;
             selectedUserEmail = userEmail;
+            selectedUserId = userId;
             manageModal.style.display = "block";
         }
 
@@ -259,35 +152,92 @@
         };
 
         // CHANGE USER STATUS
-        function changeUserStatus(action) {
-            const tableBody = document.getElementById("users-body");
-            const rows = tableBody.querySelectorAll("tr");
+        async function changeUserStatus(action) {
+            if (!selectedUserId) {
+                console.error('No user selected');
+                return;
+            }
 
-            rows.forEach(row => {
-                const emailCell = row.cells[2];
-                const statusButton = row.cells[5].querySelector("button");
+            const status = action === 'activate' || action === 'unsuspend' ? 'active' :
+                action === 'deactivate' || action === 'pending_deactivation' ? 'deactivated' :
+                action === 'suspend' ? 'suspended' : 'active';
 
-                if (emailCell.textContent === selectedUserEmail) {
-                    if (action === "activate" || action === "unsuspend") {
-                        statusButton.className = "status-btn active";
-                        statusButton.textContent = "Active";
-                    } else if (action === "deactivate") {
-                        statusButton.className = "status-btn deactivated";
-                        statusButton.textContent = "Deactivated";
-                    } else if (action === "suspend") {
-                        statusButton.className = "status-btn suspended";
-                        statusButton.textContent = "Suspended";
-                    }
+            try {
+                const response = await fetch('/adminPage/users/update-status/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `user_id=${selectedUserId}&status=${status}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update UI
+                    const tableBody = document.getElementById("users-body");
+                    const rows = tableBody.querySelectorAll("tr");
+
+                    rows.forEach(row => {
+                        const emailCell = row.cells[2];
+                        const statusButton = row.cells[5].querySelector("button");
+
+                        if (emailCell.textContent === selectedUserEmail) {
+                            statusButton.className = `status-btn ${status}`;
+                            statusButton.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                        }
+                    });
+
+                    closeManageModal();
+                } else {
+                    throw new Error(data.error || 'Failed to update status');
                 }
-            });
-
-            closeManageModal();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating user status: ' + error.message);
+            }
         }
 
         // CONTACT USER
         function contactUser() {
             window.location.href = `mailto:${selectedUserEmail}`;
         }
+
+        // GET CSRF TOKEN
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // SEARCH FUNCTIONALITY
+        document.getElementById("search-button").addEventListener("click", function () {
+            const input = document.getElementById("search-input").value.toLowerCase();
+            const tableBody = document.getElementById("users-body");
+            const rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                const fullName = row.cells[0].innerText.toLowerCase();
+                const username = row.cells[1].innerText.toLowerCase();
+                const email = row.cells[2].innerText.toLowerCase();
+
+                if (fullName.includes(input) || username.includes(input) || email.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
     </script>
 </body>
 </html>

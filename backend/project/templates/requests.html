@@ -72,9 +72,9 @@
     <div id="deactivate-popup" class="deactivate-popup">
         <div class="deactivate-popup-content">
             <h3>Are you sure you'd like to deactivate your account?</h3>
-            <p>You’ll no longer have access to your account or its data.</p>
-            <button onclick="closePopup()">Yes</button>
-            <button onclick="closePopup()">No</button>
+            <p>You'll no longer have access to your account or its data.</p>
+            <button onclick="handleDeactivation('yes')">Yes</button>
+            <button onclick="handleDeactivation('no')">No</button>
         </div>
     </div>
 
@@ -121,6 +121,8 @@
         // Create the Supabase client
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        const currentUserId = '{{ request.user.id }}';
+
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('complaint-form').addEventListener('submit', handleSubmit);
         });
@@ -134,25 +136,42 @@
 
             if (!defendantUserIdElement || !complaintTextElement) {
                 console.error('One or more form elements are missing.');
-                return; // Exit the function if any element is missing
+                return;
             }
 
             const complaintData = {
+                complainant_user_id: currentUserId,
                 defendant_user_id: defendantUserIdElement.value,
                 complaint_text: complaintTextElement.value,
-                status: 'pending', // Default status for new complaints
+                status: 'pending',
             };
 
-            // Send data to Supabase
-            const { data, error } = await supabaseClient
-                .from('complaints')
-                .insert([complaintData]);
+            // Close the popup immediately after submit
+            const complaintPopup = document.getElementById('complaint-popup');
+            if (complaintPopup) {
+                complaintPopup.style.display = 'none';
+            }
 
-            if (error) {
-                console.error('Error submitting complaint:', error.message);
-            } else {
+            try {
+                // Send data to Supabase
+                const { data, error } = await supabaseClient
+                    .from('complaints')
+                    .insert([complaintData]);
+
+                if (error) {
+                    throw error;
+                }
+
                 console.log('Complaint added successfully:', data);
                 alert('Complaint submitted successfully!');
+                
+                // Clear the form
+                defendantUserIdElement.value = '';
+                complaintTextElement.value = '';
+                
+            } catch (error) {
+                console.error('Error submitting complaint:', error.message);
+                alert('Error submitting complaint: ' + error.message);
             }
         }
         
@@ -263,6 +282,27 @@
                 alert("Error submitting complaint: " + error.message);
             }
         });
+
+        async function handleDeactivation(choice) {
+            if (choice === 'yes') {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .update({ status: 'pending_deactivation' })
+                        .eq('id', currentUserId);
+
+                    if (error) throw error;
+
+                    alert('Your deactivation request has been submitted. An admin will review your request.');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error submitting deactivation request: ' + error.message);
+                }
+            }
+
+            // Close the popup regardless of choice
+            closePopup();
+        }
 
     </script>
 </body>

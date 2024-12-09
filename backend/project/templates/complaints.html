@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../../static/complaints.css">
 </head>
 <body>
+    {% csrf_token %}
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="logo">
@@ -68,97 +69,41 @@
                 </tr>
             </thead>
 
-            <!-- COMPLAINTS ROW DATA -->
-            <tbody id="complaints-body">
-                <tr data-complainant="John Doe" data-complainee="Stacy Davis" data-issue="Delayed Delivery" 
-                    data-description="The delivery of the product was delayed by more than two weeks." 
-                    data-complainant-email="john.doe@example.com" data-complainee-email="stacy.davis@example.com"
-                    data-complainant-username="johndoe123" data-complainee-username="stacydavis456">
-                    <td>John Doe</td>
-                    <td>Stacy Davis</td>
-                    <td>2024-11-20</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
-                </tr>
+                <!-- COMPLAINTS ROW DATA -->
+                <tbody id="complaints-body">
+                    {% if complaints %}
+                        {% for complaint in complaints %}
+                            <tr data-complainant="{{ complaint.complainant.name }}" 
+                                data-complainee="{{ complaint.defendant.name }}" 
+                                data-description="{{ complaint.complaint_text }}"
+                                data-complainant-email="{{ complaint.complainant.email }}" 
+                                data-complainee-email="{{ complaint.defendant.email }}"
+                                data-complaint-id="{{ complaint.id }}">
+                                
+                                <td>{{ complaint.complainant.name }}</td>
+                                <td>{{ complaint.defendant.name }}</td>
+                                <td>{{ complaint.created_at }}</td>
+                                <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
+                                <td>
+                                    <button class="status-btn {{ complaint.status }}" onclick="toggleStatus(this)">
+                                        {{ complaint.status|title }}
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="no-complaints">No complaints found</td>
+                        </tr>
+                    {% endif %}
+        </tbody>
+    </table>
 
-                <tr data-complainant="Jane Smith" data-complainee="Alex Green" data-issue="Quality Issues"
-                    data-description="The item arrived damaged and unusable."
-                    data-complainant-email="jane.smith@example.com" data-complainee-email="alex.green@example.com"
-                    data-complainant-username="janesmith789" data-complainee-username="alexgreen321">
-                    <td>Jane Smith</td>
-                    <td>Alex Green</td>
-                    <td>2024-11-18</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
-                </tr>
-
-                <tr data-complainant="John Doe" data-complainee="Stacy Davis" data-issue="Delayed Delivery" 
-                    data-description="The delivery of the product was delayed by more than two weeks." 
-                    data-complainant-email="john.doe@example.com" data-complainee-email="stacy.davis@example.com"
-                    data-complainant-username="johndoe123" data-complainee-username="stacydavis456">
-                    <td>John Doe</td>
-                    <td>Stacy Davis</td>
-                    <td>2024-11-20</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
-                </tr>
-
-                <tr data-complainant="Jane Smith" data-complainee="Alex Green" data-issue="Quality Issues"
-                    data-description="The item arrived damaged and unusable." 
-                    data-complainant-email="jane.smith@example.com" data-complainee-email="alex.green@example.com"
-                    data-complainant-username="janesmith789" data-complainee-username="alexgreen321">
-                    <td>Jane Smith</td>
-                    <td>Alex Green</td>
-                    <td>2024-11-18</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
-                </tr>
-
-                <tr data-complainant="Emily Johnson" data-complainee="Mike Brown" data-issue="Overcharging"
-                    data-description="The amount charged was higher than the agreed price." 
-                    data-complainant-email="emily.johnson@example.com" data-complainee-email="mike.brown@example.com"
-                    data-complainant-username="emilyj123" data-complainee-username="mikeb456">
-                    <td>Emily Johnson</td>
-                    <td>Mike Brown</td>
-                    <td>2024-11-15</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
-                </tr>
-
-                <tr data-complainant="Carlos Ramirez" data-complainee="Sara Lee" data-issue="Wrong Item"
-                    data-description="The wrong item was sent, not what was ordered." 
-                    data-complainant-email="carlos.ramirez@example.com" data-complainee-email="sara.lee@example.com"
-                    data-complainant-username="carlosr789" data-complainee-username="saralee321">
-                    <td>Carlos Ramirez</td>
-                    <td>Sara Lee</td>
-                    <td>2024-11-12</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
-                </tr>
-
-                <tr data-complainant="Olivia Davis" data-complainee="William Turner" data-issue="Missing Package"
-                    data-description="The package was reported as delivered but was never received." 
-                    data-complainant-email="olivia.davis@example.com" data-complainee-email="william.turner@example.com"
-                    data-complainant-username="oliviadavis101" data-complainee-username="willturner88">
-                    <td>Olivia Davis</td>
-                    <td>William Turner</td>
-                    <td>2024-11-10</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn resolved" onclick="toggleStatus(this)">Resolved</button></td>
-                </tr>
-
-                <tr data-complainant="Samuel Clark" data-complainee="Grace Morgan" data-issue="Customer Service"
-                    data-description="The customer service was unresponsive and unhelpful." 
-                    data-complainant-email="samuel.clark@example.com" data-complainee-email="grace.morgan@example.com"
-                    data-complainant-username="samuelclark234" data-complainee-username="gracemorgan567">
-                    <td>Samuel Clark</td>
-                    <td>Grace Morgan</td>
-                    <td>2024-11-05</td>
-                    <td><button class="details-btn" onclick="showComplaintDetails(this)">View</button></td>
-                    <td><button class="status-btn pending" onclick="toggleStatus(this)">Pending</button></td>
-                </tr>
-            </tbody>
-        </table>
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
     </div>
 
     <!-- VIEW COMPLAINT POPUP -->
@@ -167,10 +112,7 @@
             <span class="complaint-close" onclick="closeComplaintModal()">&times;</span>
             <h2>Complaint Details</h2>
             <p><strong>Complainant Name:</strong> <span id="complainant-name"></span></p>
-            <p><strong>Complainant Username:</strong> <span id="complainant-username"></span></p>
             <p><strong>Complainee Name:</strong> <span id="complainee-name"></span></p>
-            <p><strong>Complainee Username:</strong> <span id="complainee-username"></span></p>
-            <p><strong>Issue:</strong> <span id="complaint-issue"></span></p>
             <p><strong>Description:</strong> <span id="complaint-description"></span></p>
             <div class="modal-actions">
                 <button onclick="contactComplainant()">Contact Complainant</button>
@@ -221,19 +163,6 @@
             });
         });
 
-        // TOGGLE PENDING VS RESOLVED
-        function toggleStatus(button) {
-            if (button.classList.contains("pending")) {
-                button.classList.remove("pending");
-                button.classList.add("resolved");
-                button.textContent = "Resolved";
-            } else {
-                button.classList.remove("resolved");
-                button.classList.add("pending");
-                button.textContent = "Pending";
-            }
-        }
-
         // CLOSING COMPLAINT POPUP
         function closeComplaintModal() {
             document.getElementById("complaint-modal").style.display = "none";
@@ -249,34 +178,52 @@
             const complaintData = {
                 complainant: row.getAttribute('data-complainant'),
                 complainee: row.getAttribute('data-complainee'),
-                issue: row.getAttribute('data-issue'),
                 description: row.getAttribute('data-description'),
                 complainantEmail: row.getAttribute('data-complainant-email'),
                 complaineeEmail: row.getAttribute('data-complainee-email'),
-                complainantUsername: row.getAttribute('data-complainant-username'),
-                complaineeUsername: row.getAttribute('data-complainee-username')
+                complaintId: row.getAttribute('data-complaint-id')
             };
 
             document.getElementById("complainant-name").innerText = complaintData.complainant;
             document.getElementById("complainee-name").innerText = complaintData.complainee;
-            document.getElementById("complaint-issue").innerText = complaintData.issue;
             document.getElementById("complaint-description").innerText = complaintData.description;
-            document.getElementById("complainant-username").innerText = complaintData.complainantUsername;
-            document.getElementById("complainee-username").innerText = complaintData.complaineeUsername;
 
             document.getElementById("complaint-modal").style.display = "block";
         }
 
         // RESOLVING COMPLAINT
-        function resolveComplaint() {
+        async function resolveComplaint() {
             if (currentRow) {
+                const complaintId = currentRow.getAttribute('data-complaint-id');
                 const statusButton = currentRow.querySelector(".status-btn");
-                statusButton.classList.remove("pending");
-                statusButton.classList.add("resolved");
-                statusButton.textContent = "Resolved";
 
-                alert("Complaint resolved!");
-                document.getElementById("complaint-modal").style.display = "none";
+                try {
+                    const response = await fetch('/update_status/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({
+                            complaint_id: complaintId,
+                            status: 'resolved'
+                        })
+                    });
+
+                    if (response.ok) {
+                        statusButton.classList.remove("pending");
+                        statusButton.classList.add("resolved");
+                        statusButton.textContent = "Resolved";
+
+                        alert("Complaint resolved!");
+                        document.getElementById("complaint-modal").style.display = "none";
+                    } else {
+                        alert('Failed to resolve complaint');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to resolve complaint');
+                }
             }
         }
 

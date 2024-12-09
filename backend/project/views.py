@@ -19,9 +19,9 @@ from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import random
-import datetime
-from dashboard.models import Listing, Bid, User, Comment
-
+from datetime import datetime
+from dashboard.models import Listing, Bid, User, Comment, VIPStatus, Complaint, UserApplication
+from django.views.decorators.http import require_POST
 
 
 load_dotenv()
@@ -76,8 +76,6 @@ class CustomSignupView(View):
         })
 
     def post(self, request):
-        supabase = create_client('https://tocrntktnrrrcaxtnvly.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvY3JudGt0bnJycmNheHRudmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODA1NzksImV4cCI6MjA0Nzc1NjU3OX0.bTG7DuVYl8R-FhL3pW_uHJSYwSFClS1VO3--1eA6d-E')
-
         form = CustomSignupForm(request.POST)
         arithmetic_answer = request.POST.get('arithmetic_answer')
         security_question = request.POST.get('security_question')
@@ -310,10 +308,25 @@ def viewbids(request):
     # Get all listings for display
     listings = supabase.table('listings').select('*').eq('user_id', request.user.id).execute()
     return render(request, 'viewbids.html', {'all_listings': listings.data})
+
 # Dashboard's Requests
 @login_required
 def requests(request):
     return render(request, 'requests.html')
+
+@login_required
+def request_deactivation(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+    try:
+        user = User.objects.get(email=request.user.email)
+        user.status = 'pending_deactivation'
+        user.save()
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 # Admin Pages - For Superusers Only
 @superuser_access
@@ -350,11 +363,96 @@ def applications(request):
 
 @superuser_access
 def complaints(request):
-    return render(request, 'complaints.html')
+    try:
+        print("Fetching complaints...")
+
+        # Updated query to use auth_user instead of users
+        complaints_data = supabase.table('complaints')\
+            .select(
+                'id, complaint_text, status, created_at, resolved_at',
+                'complainant:auth_user!complainant_user_id(first_name,last_name, email)',
+                'defendant:auth_user!defendant_user_id(first_name,last_name, email)'
+            )\
+            .execute()
+
+        print("Raw data:", complaints_data.data)
+
+        formatted_complaints = []
+        for complaint in complaints_data.data:
+            try:
+                formatted_complaints.append({
+                    'id': complaint['id'],
+                    'complainant': {
+                        'name': f"{complaint['complainant']['first_name']} {complaint['complainant']['last_name']}",
+                        'email': complaint['complainant']['email'],
+                    },
+                    'defendant': {
+                        'name': f"{complaint['defendant']['first_name']} {complaint['defendant']['last_name']}",
+                        'email': complaint['defendant']['email'],
+                    },
+                    'created_at': complaint['created_at'].split('T')[0] if complaint['created_at'] else '',
+                    'status': complaint['status'],
+                    'complaint_text': complaint['complaint_text']  # Add this line
+                })
+            except Exception as e:
+                print(f"Error formatting complaint: {str(e)}")
+                continue
+
+        return render(request, 'complaints.html', {'complaints': formatted_complaints})
+    except Exception as e:
+        print(f"Error fetching complaints: {str(e)}")
+        return render(request, 'complaints.html', {'error': str(e)})
+
 
 @superuser_access
 def users(request):
-    return render(request, 'users.html')
+    try:
+        current_user = User.objects.get(email=request.user.email)
+        if current_user.role != 'super-user':
+            return redirect('dashboard')
+
+        # Get all users
+        users_data = User.objects.all().values(
+            'id', 'email', 'username', 'first_name', 'last_name',
+            'created_at', 'status'
+        )
+        # Get active VIP users
+        vip_users = VIPStatus.objects.filter(status='active').values_list('user_id', flat=True)
+        # Add VIP status to users data
+        for user in users_data:
+            user['is_vip'] = user['id'] in vip_users
+        context = {
+            'users': users_data,
+            'error': None
+        }
+    except Exception as e:
+        context = {
+            'users': [],
+            'error': str(e)
+        }
+    return render(request, 'users.html', context)
+
+@superuser_access
+def update_user_status(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    try:
+        user_id = request.POST.get('user_id')
+        new_status = request.POST.get('status')
+        # Update valid statuses to include pending_deactivation
+        valid_statuses = ['active', 'suspended', 'deactivated', 'pending_deactivation']
+        if new_status not in valid_statuses:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+        # Update user status
+        user = User.objects.get(id=user_id)
+        user.status = new_status
+        user.save()
+        return JsonResponse({'success': True, 'status': new_status})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 def homepage(request):
         # Fetch all listings by category, excluding sold items
@@ -525,6 +623,23 @@ def manage_funds(request):
 
     return render(request, 'account.html', {'current_balance': new_balance})
 
+@require_POST
+def update_status(request):
+    try:
+        data = json.loads(request.body)
+        complaint_id = data.get('complaint_id')
+        new_status = data.get('status')
+
+        # Update Supabase
+        supabase.table('complaints')\
+            .update({'status': new_status})\
+            .eq('id', complaint_id)\
+            .execute()
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        print(f"Error updating status: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
 @login_required
@@ -648,15 +763,17 @@ def place_bid(request, listing_id):
                 }, status=400)
 
             # Get current listing
-            listing = supabase.table('listings').select('*').eq('id', listing_id).execute()
-
-            if not listing.data:
+            response = supabase.table('listings').select('*').eq('id', listing_id).execute()
+            
+            if not response.data:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Listing not found'
                 }, status=404)
 
-            current_highest_bid = float(listing.data[0].get('highest_bid', 0))
+            listing = response.data[0]
+            # If highest_bid doesn't exist, use the listing price as the current highest
+            current_highest_bid = float(listing.get('highest_bid', listing.get('price', 0)))
 
             # Check if bid is higher than current highest
             if bid_amount <= current_highest_bid:
@@ -665,25 +782,42 @@ def place_bid(request, listing_id):
                     'message': 'Bid must be higher than current highest bid'
                 }, status=400)
 
-            # Record bid in bids table (creating a new bid record)
-            supabase.table('bids').insert({
+            # Record bid in bids table
+            bid_data = {
+                'user_id': request.user.id,
                 'listing_id': listing_id,
-                'user_email': request.user.email,
                 'amount': bid_amount,
-                'created_at': datetime.now().isoformat()
-            }).execute()
+                'status': 'pending'
+            }
 
-            # Update listing with new highest bid and highest bidder
-            supabase.table('listings').update({
-                'highest_bid': bid_amount,
-                'highest_bidder': request.user.email
-            }).eq('id', listing_id).execute()
+            try:
+                # Insert the bid
+                response = supabase.table('bids').insert(bid_data).execute()
+                
+                if hasattr(response, 'data') and response.data:
+                    try:
+                        # Update listing with new highest bid
+                        supabase.table('listings').update({
+                            'highest_bid': bid_amount,
+                            'highest_bidder_id': request.user.id
+                        }).eq('id', listing_id).execute()
+                    except Exception as e:
+                        print(f"Warning: Could not update listing highest bid: {str(e)}")
 
-            return JsonResponse({
-                'status': 'success',
-                'new_highest_bid': bid_amount,
-                'message': 'Bid placed successfully'
-            })
+                    return JsonResponse({
+                        'status': 'success',
+                        'new_highest_bid': bid_amount,
+                        'message': 'Bid placed successfully'
+                    })
+                else:
+                    raise Exception('Failed to insert bid')
+
+            except Exception as e:
+                print(f"Error inserting bid: {str(e)}")  # Debug print
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Failed to place bid: {str(e)}'
+                }, status=500)
 
         except json.JSONDecodeError:
             return JsonResponse({
@@ -691,6 +825,7 @@ def place_bid(request, listing_id):
                 'message': 'Invalid JSON data'
             }, status=400)
         except Exception as e:
+            print(f"Error placing bid: {str(e)}")  # Add this for debugging
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)

@@ -11,7 +11,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <div id='overlay'>
         <div class="navbar">
             <div class="logo">
@@ -47,54 +46,56 @@
                 </div>
             </div>
 
-            <!--START BIDDING POPUP -->
-            <form id="bid-popup" class="popup">
-                <div class="popup-content">
-                    <span class="close-listing" id="close-button">&times;</span>
-                    <h2 id="bid-header">Start Bidding</h2>
-                    <div class="row">
-                        <p id="highest-bid">Current Highest Bid: $<span id="highest-amount"
-                                style="font-weight: bold">500.00</span></p>
+            <!-- Popups: Group all popups together -->
+            <div class="popups-container">
+                <!-- Bid Popup -->
+                <form id="bid-popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close-listing" id="close-button">&times;</span>
+                        <h2 id="bid-header">Start Bidding</h2>
+                        <div class="row">
+                            <p id="highest-bid">Current Highest Bid: $<span id="highest-amount" style="font-weight: bold">500.00</span></p>
+                        </div>
+                        <div class="row">
+                            <label for="amount">Your Bid Amount:</label>
+                            <input type="number" id="amount" placeholder="0.00">
+                        </div>
+                        <p class="row" id="invalid"></p>
+                        <button class="make-bid-button" id="make-bid-button">Bid</button>
                     </div>
-                    <div class="row">
-                        <label for="amount">Your Bid Amount:</label>
-                        <input type="number" id="amount" placeholder="0.00">
-                    </div>
-                    <p class="row" id="invalid"></p>
-                    <button class="make-bid-button" id="make-bid-button">Bid</button>
-                </div>
-            </form>
+                </form>
 
-            <!--CONFIRMATION POPUP-->
-            <form id="confirmation-popup" class="popup">
-                <div class="popup-content">
-                    <span class="close-listing" id="close-confirmation-button">&times;</span>
-                    <h2 id="bid-header">Bid Placed Successfully!</h2>
-                    <div class="row">
-                        <p>
-                            <a href="{% url 'viewbids' %}" class="view-bids-link">View Bids </a>to get your bidding
-                            status on this item and check your notifications for updates!
-                        </p>
+                <!--CONFIRMATION POPUP-->
+                <form id="confirmation-popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close-listing" id="close-confirmation-button">&times;</span>
+                        <h2 id="bid-header">Bid Placed Successfully!</h2>
+                        <div class="row">
+                            <p>
+                                <a href="{% url 'viewbids' %}" class="view-bids-link">View Bids </a>to get your bidding
+                                status on this item and check your notifications for updates!
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
 
-            <!-- RATE SELLER POPUP -->
-            <form id="rate-popup" class="popup">
-                <div class="popup-content">
-                    <span class="close-rating" id="close-rating-button">&times;</span>
-                    <h2>Rate User</h2>
-                    <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
-                    <div id="star-rating" class="row">
-                        <span onclick="setRating(1)" class="star">★</span>
-                        <span onclick="setRating(2)" class="star">★</span>
-                        <span onclick="setRating(3)" class="star">★</span>
-                        <span onclick="setRating(4)" class="star">★</span>
-                        <span onclick="setRating(5)" class="star">★</span>
+                <!-- RATE SELLER POPUP -->
+                <form id="rate-popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close-rating" id="close-rating-button">&times;</span>
+                        <h2>Rate User</h2>
+                        <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
+                        <div id="star-rating" class="row">
+                            <span onclick="setRating(1)" class="star">★</span>
+                            <span onclick="setRating(2)" class="star">★</span>
+                            <span onclick="setRating(3)" class="star">★</span>
+                            <span onclick="setRating(4)" class="star">★</span>
+                            <span onclick="setRating(5)" class="star">★</span>
+                        </div>
+                        <button class="rate-button" id="rate-button">Rate</button>
                     </div>
-                    <button class="rate-button" id="rate-button">Rate</button>
-                </div>
-            </form>
+                </form>
+            </div>
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
@@ -126,28 +127,31 @@
 
         <!-- BOTTOM SECTION: COMMENTS -->
         <div class="bottom-section">
-        <!-- COMMENT INPUT SECTION -->
-        <form method="POST" action="{% url 'create_comment' listing.id %}">
-            {% csrf_token %}
-            <div class="comment-input">
-                <input type="text" name="comment" placeholder="Leave a comment as {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}Visitor{% endif %}">
-                <div class="comment-buttons">
-                    <button type="reset" class="cancel-button">Cancel</button>
-                    <button type="submit" class="comment-button">Comment</button>
+            <!-- Comment Input -->
+            <form method="POST" action="{% url 'create_comment' listing.id %}" class="comment-form">
+                {% csrf_token %}
+                <div class="comment-input">
+                    <input type="text" 
+                           name="comment" 
+                           placeholder="Leave a comment as {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}Visitor{% endif %}">
+                    <div class="comment-buttons">
+                        <button type="reset" class="cancel-button">Cancel</button>
+                        <button type="submit" class="comment-button">Comment</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
+            <!-- Comments and Bids Container -->
             <div class="align-bottom">
-            <!-- COMMENT DISPLAYS SECTION -->
-            <div class="comments">
-                {% for comment in comments %}
-                <div class="comment">
-                    <p><strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong></p>
-                    <p>{{ comment.comment }}</p>
+                <!-- COMMENT DISPLAYS SECTION -->
+                <div class="comments">
+                    {% for comment in comments %}
+                    <div class="comment">
+                        <p><strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong></p>
+                        <p>{{ comment.comment }}</p>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
 
                 <div class="current-bids">
                     <h2>Current Bids</h2>
@@ -212,9 +216,8 @@
         async function placeBid(event) {
             event.preventDefault();
             console.log("Place Bid triggered");
-
             const amount = parseFloat(bidAmount.value);
-            const listingId = {{ listing.id }};
+            const listingId = "{{ listing.id }}";
             const currentHighest = parseFloat(highestAmount.innerText);
 
             console.log("Amount:", amount);
@@ -223,7 +226,7 @@
 
             if (!isNaN(amount) && amount > currentHighest) {
                 try {
-                    const response = await fetch(`/place_bid/${listingId}`, {
+                    const response = await fetch(`/place_bid/${listingId}/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
