@@ -149,7 +149,7 @@
                 <p><strong>Category:</strong> {{ listing.category }}</p>
                 <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }}</p>
                 <p>{{ listing.description }}</p>
-                
+
                 {% if user.is_authenticated %}
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
@@ -160,7 +160,6 @@
                                     {% with user_has_bid=True %}{% endwith %}
                                 {% endif %}
                             {% endfor %}
-                            
                             {% if user_has_bid %}
                                 <p class="bid-message">You've already placed a bid. Check your bid status below.</p>
                             {% else %}
@@ -298,9 +297,8 @@
                             },
                             body: JSON.stringify({ bid_amount: amount })
                         });
-                        
                         const data = await response.json();
-                
+
                         if (data.status === 'success') {
                             highestAmount.innerText = amount.toFixed(2);
                             startBidPopup.style.display = 'none';

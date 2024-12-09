@@ -12,7 +12,7 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>
+            </a>                      
         </div>
         
         <!-- DROPDOWN FOR USER OPTIONS -->
@@ -38,7 +38,7 @@
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
                 </div>
             </div>
         </div>
@@ -72,9 +72,9 @@
     <div id="deactivate-popup" class="deactivate-popup">
         <div class="deactivate-popup-content">
             <h3>Are you sure you'd like to deactivate your account?</h3>
-            <p>You'll no longer have access to your account or its data.</p>
-            <button onclick="handleDeactivation('yes')">Yes</button>
-            <button onclick="handleDeactivation('no')">No</button>
+            <p>You’ll no longer have access to your account or its data.</p>
+            <button onclick="closePopup()">Yes</button>
+            <button onclick="closePopup()">No</button>
         </div>
     </div>
 
@@ -95,15 +95,15 @@
             <h3>File a Complaint</h3>
             <form id="complaint-form">
 
-
+        
                 <label for="defendantUserId">Defendant User ID:</label>
                 <input type="number" id="defendantUserId" name="defendantUserId" required />
                 <br>
-
+        
                 <label for="complaintText">Complaint Text:</label>
                 <textarea id="complaintText" name="complaintText" required></textarea>
                 <br>
-
+        
                 <button type="submit">Submit Complaint</button>
             </form>
         </div>
@@ -121,105 +121,38 @@
         // Create the Supabase client
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const currentUserId = '{{ request.user.id }}';
-
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('complaint-form').addEventListener('submit', handleSubmit);
         });
 
-        document.addEventListener("DOMContentLoaded", async function() {
-            // Fetch user status
-            const { data: user, error } = await supabaseClient
-                .from('users')
-                .select('status')
-                .eq('id', '{{ user.id }}') // Assuming you have access to the logged-in user's ID
-                .single();
-
-            if (error) {
-                console.error('Error fetching user status:', error.message);
-                document.getElementById('account-status').textContent = 'Error loading status';
-            } else {
-                document.getElementById('account-status').textContent = user.status; // Update the status in the HTML
-            }
-        });
-
-        async function checkAndSuspendUser() {
-            const currentUserId = '{{ user.id }}'; // Assuming you have access to the logged-in user's ID
-
-            // Fetch ratings for the current user
-            const { data: ratings, error } = await supabaseClient
-                .from('ratings')
-                .select('rated_user_id, rating')
-                .eq('rated_user_id', currentUserId);
-
-            if (error) {
-                console.error('Error fetching ratings:', error.message);
-                return;
-            }
-
-            // Count how many ratings are less than or equal to 2
-            const lowRatingsCount = ratings.filter(rating => rating.rating <= 2).length;
-
-            // If there are 3 or more low ratings, suspend the user
-            if (lowRatingsCount >= 3) {
-                const { error: updateError } = await supabaseClient
-                    .from('users')
-                    .update({ status: 'suspended' })
-                    .eq('id', currentUserId);
-
-                if (updateError) {
-                    console.error('Error updating user status:', updateError.message);
-                } else {
-                    console.log('User status updated to suspended.');
-                }
-            }
-        }
-
         async function handleSubmit(event) {
             event.preventDefault();
-
+            
             // Collect form data with null checks
             const defendantUserIdElement = document.getElementById('defendantUserId');
             const complaintTextElement = document.getElementById('complaintText');
 
             if (!defendantUserIdElement || !complaintTextElement) {
                 console.error('One or more form elements are missing.');
-                return;
+                return; // Exit the function if any element is missing
             }
 
             const complaintData = {
-                complainant_user_id: currentUserId,
                 defendant_user_id: defendantUserIdElement.value,
                 complaint_text: complaintTextElement.value,
-                status: 'pending',
+                status: 'pending', // Default status for new complaints
             };
 
-            // Close the popup immediately after submit
-            const complaintPopup = document.getElementById('complaint-popup');
-            if (complaintPopup) {
-                complaintPopup.style.display = 'none';
-            }
+            // Send data to Supabase
+            const { data, error } = await supabaseClient
+                .from('complaints')
+                .insert([complaintData]);
 
-            try {
-                // Send data to Supabase
-                const { data, error } = await supabaseClient
-                    .from('complaints')
-                    .insert([complaintData]);
-
-                if (error) {
-                    throw error;
-                }
-
+            if (error) {
+                console.error('Error submitting complaint:', error.message);
+            } else {
                 console.log('Complaint added successfully:', data);
                 alert('Complaint submitted successfully!');
-                
-                // Clear the form
-                defendantUserIdElement.value = '';
-                complaintTextElement.value = '';
-                
-            } catch (error) {
-                console.error('Error submitting complaint:', error.message);
-                alert('Error submitting complaint: ' + error.message);
             }
         }
         
@@ -279,26 +212,68 @@
             }
         }
     
-        function closePayFeePopup() {
+        // Function to handle payment and balance update inside closePayFeePopup()
+        async function closePayFeePopup() {
             const payFeePopup = document.getElementById('pay-fee-popup');
             if (payFeePopup) {
                 payFeePopup.style.display = 'none';
             }
-        }
-    
-        function openComplaintPopup() {
-            const complaintPopup = document.getElementById('complaint-popup');
-            if (complaintPopup) {
-                complaintPopup.style.display = 'flex';
+
+            // Check if the user is authenticated
+            const { data: { user }, error: authError } = await supabaseClient.auth.getUser ();
+
+            if (authError) {
+                console.error('Error fetching user:', authError.message);
+                alert('You must be logged in to pay the fee.');
+                return; // Exit if user is not authenticated
+            }
+
+            if (!user) {
+                console.error('No user logged in');
+                alert('You must be logged in to pay the fee.');
+                return; // Exit if user is not authenticated
+            }
+
+            // Proceed with fetching user balance and processing payment
+            try {
+                // Get the user's current balance from the database
+                const { data: userData, error: fetchError } = await supabaseClient
+                    .from('users')  // Replace with your table name
+                    .select('balance')
+                    .eq('id', user.id)  // Ensure user.id is being passed
+                    .single();
+
+                if (fetchError) {
+                    console.error('Error fetching user data:', fetchError.message);
+                    return;
+                }
+
+                let currentBalance = userData.balance || 0; // Default to 0 if balance is undefined
+
+                if (currentBalance >= 50) {
+                    // Subtract 50 from the current balance
+                    const newBalance = currentBalance - 50;
+
+                    // Update the balance in the database
+                    const { error: updateError } = await supabaseClient
+                        .from('users')  // Replace with your table name
+                        .update({ balance: newBalance })
+                        .eq('id', user.id);
+
+                    if (updateError) {
+                        console.error('Error updating balance:', updateError.message);
+                        return;
+                    }
+
+                    // Optionally update the balance displayed on the page
+                    document.getElementById('current-balance').textContent = `$${newBalance.toFixed(2)}`;
+                } else {
+                    alert('Insufficient balance to pay the fee.');
+                }
+            } catch (error) {
+                console.error('Error processing payment:', error.message);
             }
         }
-    
-        const closeButton = document.getElementById("close-button");
-
-        closeButton.addEventListener("click", () => {
-            const listing = document.getElementById("complaint-popup"); 
-            listing.style.display = "none";
-        });
     
 
         document.getElementById("complaint-form").addEventListener("submit", async function(event) {
@@ -311,7 +286,7 @@
                 const { data, error } = await supabase
                     .from('complaints')
                     .insert([
-                        {
+                        {   
                             defendant_user_id: defendantUserId,
                             complaint_text: complaintText,
                             status: 'pending'
@@ -331,29 +306,73 @@
             }
         });
 
-        async function handleDeactivation(choice) {
-            if (choice === 'yes') {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('users')
-                        .update({ status: 'pending_deactivation' })
-                        .eq('id', currentUserId);
+        async function checkAndSuspendUser() {
+            const currentUserId = '{{ user.id }}'; // Assuming you have access to the logged-in user's ID
 
-                    if (error) throw error;
+            // Fetch ratings where the rated_user_id is the current user ID
+            const { data: ratings, error } = await supabaseClient
+                .from('ratings')
+                .select('rated_user_id, rating')
+                .eq('rated_user_id', currentUserId);
 
-                    alert('Your deactivation request has been submitted. An admin will review your request.');
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error submitting deactivation request: ' + error.message);
-                }
+            if (error) {
+                console.error('Error fetching ratings:', error.message);
+                return;
             }
 
-            // Close the popup regardless of choice
-            closePopup();
+            // Count how many ratings are less than or equal to 2
+            const lowRatingsCount = ratings.filter(rating => rating.rating <= 2).length;
+            console.log('Low Ratings Count:', lowRatingsCount); // Debugging log
+
+            // Count how many ratings are 4 or more
+            const highRatingsCount = ratings.filter(rating => rating.rating >= 4).length;
+            console.log('High Ratings Count:', highRatingsCount); // Debugging log
+
+            // Calculate average rating
+            const averageRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length : 0;
+            console.log('Average Rating:', averageRating); // Debugging log
+
+            // If there are 3 or more low ratings or average rating is less than 2 or greater than 4, suspend the user
+            if (lowRatingsCount >= 3 || averageRating < 2 || averageRating > 4) {
+                const { error: updateError } = await supabaseClient
+                    .from('users')
+                    .update({ status: 'suspended' })
+                    .eq('id', currentUserId); // Ensure this is the correct user ID
+
+                if (updateError) {
+                    console.error('Error updating user status:', updateError.message);
+                } else {
+                    console.log('User status updated to suspended.');
+                }
+            } else {
+                console.log('User remains active.'); // Debugging log
+            }
         }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            try {
+                // Fetch user status to display
+                const { data: user, error } = await supabaseClient
+                    .from('users')
+                    .select('status')
+                    .eq('id', '{{ user.id }}')
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching user status:', error.message);
+                    document.getElementById('account-status').textContent = 'Error loading status';
+                } else {
+                    document.getElementById('account-status').textContent = user.status; // Update status in UI
+                }
+
+                // Check ratings and suspend if necessary
+                await checkAndSuspendUser();
+            } catch (err) {
+                console.error('Unexpected error in DOMContentLoaded:', err.message);
+            }
+        });
+
 
     </script>
 </body>
-</html>
-
-
+</html
