@@ -1,0 +1,14 @@
+<!-- templates/visitor_message.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Message</title>
+</head>
+<body>
+    <h1>Application Submitted. Please wait 24 hours for a Superuser to approve/deny your application. Then, please attempt login.</h1>
+    <p>{{ message|safe }}</p>
+    <p>Please click <a href="{% url 'login' %}">here</a> to log in or click <a href="/">here</a> to view the SmartBid homepage.</p>
+</body>
+</html>

@@ -21,12 +21,19 @@
 
             <!-- DROPDOWN FOR USER OPTIONS -->
             <div class="dropdown">
+                {% if user.is_authenticated %}
                 <a class="login-btn">You</a>
                 <div class="dropdown-content">
                     <a href="{% url 'dashboard' %}">Dashboard</a>
+                        {% if user.is_staff %} 
+                            <a href="{% url 'adminPage' %}">Admin</a>
+                        {% endif %}
                     <a href="{% url 'profile' %}">Profile</a>
                     <a href="{% url 'logout' %}">Sign Out</a>
                 </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                {% endif %}
             </div>
         </div>
 
@@ -54,13 +61,16 @@
                         <span class="close-listing" id="close-button">&times;</span>
                         <h2 id="bid-header">Start Bidding</h2>
                         <div class="row">
-                            <p id="highest-bid">Current Highest Bid: $<span id="highest-amount" style="font-weight: bold">500.00</span></p>
+                            <p id="highest-bid">Bid Higher Than: $<span id="highest-amount" style="font-weight: bold">{{ highest_bid }}</span></p>
+                            {% if highest_bidder %}
+                                <p class="current-highest-bidder">Current Highest Bidder: {{ highest_bidder.name }}</p>
+                            {% endif %}
                         </div>
                         <div class="row">
                             <label for="amount">Your Bid Amount:</label>
-                            <input type="number" id="amount" placeholder="0.00">
+                            <input type="number" id="amount" placeholder="0.00" min="{{ highest_bid }}" step="0.01">
                         </div>
-                        <p class="row" id="invalid"></p>
+                        <p class="row" id="invalid" style="color: red;"></p>
                         <button class="make-bid-button" id="make-bid-button">Bid</button>
                     </div>
                 </form>
@@ -79,33 +89,66 @@
                     </div>
                 </form>
 
-                <!-- RATE SELLER POPUP -->
-                <form id="rate-popup" class="popup">
+                <!-- Rating Popup for Seller -->
+                <div id="seller-rating-popup" class="popup">
                     <div class="popup-content">
-                        <span class="close-rating" id="close-rating-button">&times;</span>
-                        <h2>Rate User</h2>
-                        <p class="row">Debasree Sen - 4.2 (10 ratings)</p>
-                        <div id="star-rating" class="row">
-                            <span onclick="setRating(1)" class="star">★</span>
-                            <span onclick="setRating(2)" class="star">★</span>
-                            <span onclick="setRating(3)" class="star">★</span>
-                            <span onclick="setRating(4)" class="star">★</span>
-                            <span onclick="setRating(5)" class="star">★</span>
+                        <span class="close-rating">&times;</span>
+                        <h2>Rate Buyer</h2>
+                        <p>Your item "<span id="listing-title"></span>" has been delivered and shipped to <span id="buyer-name"></span>.</p>
+                        <div class="star-rating">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
                         </div>
-                        <button class="rate-button" id="rate-button">Rate</button>
+                        <textarea id="rating-comment" placeholder="Add a comment (optional)"></textarea>
+                        <button id="submit-rating" class="rating-submit-btn">Submit Rating</button>
                     </div>
-                </form>
+                </div>
+
+                <!-- Rating Popup for Buyer -->
+                <div id="buyer-rating-popup" class="popup">
+                    <div class="popup-content">
+                        <span class="close-rating">&times;</span>
+                        <h2>Rate Seller</h2>
+                        <p>Your item "<span id="listing-title-buyer"></span>" has been received. Rate <span id="seller-name"></span>.</p>
+                        <div class="star-rating">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                        <textarea id="rating-comment-buyer" placeholder="Add a comment (optional)"></textarea>
+                        <button id="submit-rating-buyer" class="rating-submit-btn">Submit Rating</button>
+                    </div>
+                </div>
             </div>
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
                 <h2>{{ listing.title }}</h2>
-                <h3>US ${{ listing.price }}</h3>
+                {% if highest_bidder %}
+                    <h3>Current Highest Bid: <br> US ${{ highest_bid }}</h3>
+                    <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }}</p>
+                {% else %}
+                    <h3>Starting Price: <br> US ${{ highest_bid }}</h3>
+                {% endif %}
                 <p><strong>Created At:</strong> {{ listing.created_at }}</p>
                 <p><strong>Category:</strong> {{ listing.category }}</p>
-                <p><strong>Seller:</strong> John Doe - 4.2 (10 Ratings)</p>
+                <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }}</p>
                 <p>{{ listing.description }}</p>
-                <button class="bid-button" id="bid-button">Start Bidding</button>
+
+                {% if user.is_authenticated %}
+                    {% if user.id == listing.seller_id %}
+                        <p class="seller-message">This is your listing. You can manage bids below.</p>
+                    {% else %}
+                        <button class="bid-button" id="bid-button">Start Bidding</button>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="bid-button" style="text-decoration: none;">Login to Bid</a>
+                {% endif %}
             </div>
 
             <!-- ACCEPT/DECLINE BID -->
@@ -131,9 +174,9 @@
             <form method="POST" action="{% url 'create_comment' listing.id %}" class="comment-form">
                 {% csrf_token %}
                 <div class="comment-input">
-                    <input type="text" 
-                           name="comment" 
-                           placeholder="Leave a comment as {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}Visitor{% endif %}">
+                    <input type="text"
+                        name="comment"
+                        placeholder="Leave a comment as {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}Visitor{% endif %}">
                     <div class="comment-buttons">
                         <button type="reset" class="cancel-button">Cancel</button>
                         <button type="submit" class="comment-button">Comment</button>
@@ -147,7 +190,13 @@
                 <div class="comments">
                     {% for comment in comments %}
                     <div class="comment">
-                        <p><strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong></p>
+                        <p><strong>
+                            {% if comment.user.first_name %}
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                            {% else %}
+                                Visitor
+                            {% endif %}
+                        </strong></p>
                         <p>{{ comment.comment }}</p>
                     </div>
                     {% endfor %}
@@ -162,11 +211,14 @@
                                     <p><strong>{{ bid.user.first_name }} {{ bid.user.last_name }}</strong></p>
                                     <p>${{ bid.amount }}</p>
                                 </div>
-                                <div class="bid-actions">
-                                    <button class="accept-button" id="accept-button">Accept</button>
-                                    <button class="decline-button" id="decline-button">Decline</button>
+                                {% if user.is_authenticated and user.id == listing.seller_id %}
+                                    <div class="bid-actions">
+                                        <button class="accept-button" data-bid-id="{{ bid.id }}">Accept</button>
+                                        <button class="decline-button" data-bid-id="{{ bid.id }}" 
+                                                onclick="declineBid('{{ bid.id }}')">Decline</button>
+                                    </div>
+                                {% endif %}
                                 </div>
-                            </div>
                         {% endfor %}
                     {% else %}
                         <p class="no-bids">No bids yet.</p>
@@ -180,24 +232,45 @@
             const startBidPopup = document.getElementById('bid-popup');
             const makeBidButton = document.getElementById('make-bid-button');
             const closeButton = document.getElementById('close-button');
-
-            // Valid bid check
             const bidAmount = document.getElementById('amount');
             const highestAmount = document.getElementById('highest-amount');
             const invalidMessage = document.getElementById('invalid');
-
             const confirmationPopup = document.getElementById('confirmation-popup');
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
-            // Rating
-            const rateButton = document.getElementById('rate-button');
-            const ratePopup = document.getElementById('rate-popup');
-            const closeRatingButton = document.getElementById('close-rating-button');
-            let currentRating = 0;
+            // Check if user has already bid
+            const currentBids = JSON.parse('{{ bids|escapejs|safe }}');
+            const currentUserId = "{{ user.id }}";
+            // Check if any of the bids belong to the current user
+            const userHasBid = currentBids.some(bid =>
+                String(bid.user.id) === currentUserId ||
+                bid.user_id === currentUserId
+            );
+
+            console.log('Current User ID:', currentUserId);
+            console.log('Current Bids:', currentBids);
+            console.log('User has bid:', userHasBid);
+
+            // Disable bidding if user has already bid
+            if (userHasBid) {
+                if (startBidButton) {
+                    startBidButton.disabled = true;
+                    startBidButton.textContent = "You've already placed a bid";
+                    startBidButton.style.backgroundColor = '#cccccc';
+                }
+                if (makeBidButton) {
+                    makeBidButton.disabled = true;
+                    makeBidButton.textContent = "You've already placed a bid";
+                    makeBidButton.style.backgroundColor = '#cccccc';
+                }
+            }
 
             startBidButton.addEventListener('click', () => {
+                //shouldn't it be (userHasBid)?
+                if (!userHasBid) {
                 startBidPopup.style.display = 'block';
                 invalidMessage.innerText = '';
+                }
             });
 
             closeButton.addEventListener('click', () => {
@@ -213,34 +286,23 @@
                 ratePopup.style.display = 'none';
             });
 
-
-        const startBidButton = document.getElementById('bid-button');
-
-        startBidButton.addEventListener('click', () => {
-            const isLoggedIn = startBidButton.getAttribute('data-logged-in') === 'true';
-            if (isLoggedIn)
-            {
-                startBidPopup.style.display = 'block';
-                invalidMessage.innerText = '';
-            }
-            else
-            {
-                window.location.href = "{% url 'login' %}";
-            }
-        });
-
         async function placeBid(event) {
             event.preventDefault();
             console.log("Place Bid triggered");
             const amount = parseFloat(bidAmount.value);
             const listingId = "{{ listing.id }}";
             const currentHighest = parseFloat(highestAmount.innerText);
+                const userBalance = parseFloat("{{ user_balance }}");
+                const invalidMessage = document.getElementById('invalid');
 
-            console.log("Amount:", amount);
-            console.log("Listing ID:", listingId);
-            console.log("Current Highest:", currentHighest);
-
+                // First check if bid is valid and higher than current highest
             if (!isNaN(amount) && amount > currentHighest) {
+                    // Then check if user has enough balance
+                    if (amount > userBalance) {
+                        invalidMessage.innerText = `Insufficient funds. Your balance is $${userBalance.toFixed(2)}`;
+                        return;
+                    }
+
                 try {
                     const response = await fetch(`/place_bid/${listingId}/`, {
                         method: 'POST',
@@ -255,8 +317,14 @@
                         highestAmount.innerText = amount.toFixed(2);
                         startBidPopup.style.display = 'none';
                         confirmationPopup.style.display = 'block';
-                    }
-                    else {
+                        location.reload();
+                        }
+                        else if (data.status === 'insufficient_funds')
+                        {
+                            invalidMessage.innerText = 'Insufficient funds in your account.';
+                        }
+                    else
+                    {
                         invalidMessage.innerText = data.message;
                     }
                 } catch (error) {
@@ -312,18 +380,14 @@
         });
 
         function changeImage(thumbnail) {
-            // Get the larger image element
             const largeImage = document.querySelector("#displayed-image img");
 
-            // Update the src of the larger image
             largeImage.src = thumbnail.src;
 
-            // Remove the active class from all thumbnails
             document.querySelectorAll(".thumbnail-container img").forEach(img => {
                 img.classList.remove("active");
             });
 
-            // Add the active class to the clicked thumbnail
             thumbnail.classList.add("active");
         }
 
@@ -337,7 +401,7 @@
 
         // Add event listeners for Accept and Decline buttons
         document.querySelectorAll(".accept-button").forEach((button) => {
-            button.addEventListener("click", (event) => {
+            button.addEventListener("click", async(event) => {
                 event.preventDefault();
 
                 // Open the Rate Buyer popup
@@ -368,11 +432,161 @@
             button.addEventListener("click", (event) => {
                 event.preventDefault();
 
-                const bidCard = button.closest(".bid-card"); // Get the parent bid card
-                bidCard.style.display = 'none'; // Hide the declined bid
+                ratePopup.style.display = 'none';
+            startBidButton.disabled = true; // disabled button for now once bid already made
+            startBidButton.style.background = 'grey';
+
+            // Process rating logic (send to database) NOT DONE YET
+            // {currentRating}/5
+        });
+
+        function changeImage(thumbnail) {
+            // Get the larger image element
+            const largeImage = document.querySelector("#displayed-image img");
+
+            // Update the src of the larger image
+            largeImage.src = thumbnail.src;
+
+            // Remove the active class from all thumbnails
+            document.querySelectorAll(".thumbnail-container img").forEach(img => {
+                img.classList.remove("active");
+            });
+
+            // Add the active class to the clicked thumbnail
+            thumbnail.classList.add("active");
+        }
+
+        function clearComment() {
+            const commentInput = document.querySelector(".comment-input input[type='text']");
+            const commentsContainer = document.querySelector(".comments");
+
+            // Clear the input field
+            commentInput.value = "";
+        }
+
+        // Add event listeners for Accept and Decline buttons
+        document.querySelectorAll(".accept-button").forEach(button => {
+            button.addEventListener("click", async (event) => {
+                event.preventDefault();
+                const bidId = button.dataset.bidId;
+                
+                if (confirm("Are you sure you want to accept this bid?")) {
+                    try {
+                        const response = await fetch(`/accept_bid/${bidId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        });
+                        const data = await response.json();
+                        
+                        if (data.status === 'success') {
+                            currentTransactionId = data.transaction_id;
+                            
+                            // Show rating popup
+                            const ratingPopup = document.getElementById('seller-rating-popup');
+                            document.getElementById('listing-title').textContent = data.listing_title;
+                            document.getElementById('buyer-name').textContent = data.buyer_name;
+                            ratingPopup.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            });
+        });
+
+        function declineBid(bidId) {
+            if (confirm("Are you sure you want to decline this bid?")) {
+                fetch(`/decline_bid/${bidId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Simply remove the bid card from the UI
+                        const bidCard = document.querySelector(`[data-bid-id="${bidId}"]`).closest('.bid-card');
+                        if (bidCard) {
+                            bidCard.remove();  // Remove the entire bid card
+                            
+                            // Check if there are any bids left
+                            const remainingBids = document.querySelectorAll('.bid-card');
+                            if (remainingBids.length === 0) {
+                                // If no bids left, show the "No bids yet" message
+                                const currentBids = document.querySelector('.current-bids');
+                                currentBids.innerHTML = '<h2>Current Bids</h2><p class="no-bids">No bids yet.</p>';
+                            }
+                        }
+                    } else {
+                        alert(data.message || 'Failed to decline bid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while declining the bid');
+                });
+            }
+        }
+
+        let currentTransactionId = null;
+        let selectedRating = 0;
+
+        // Handle star rating selection
+        document.querySelectorAll('.star-rating .star').forEach(star => {
+            star.addEventListener('click', (e) => {
+                selectedRating = parseInt(e.target.dataset.rating);
+                updateStars(e.target.parentElement, selectedRating);
+            });
+        });
+
+        function updateStars(container, rating) {
+            container.querySelectorAll('.star').forEach(star => {
+                const starRating = parseInt(star.dataset.rating);
+                star.classList.toggle('selected', starRating <= rating);
+            });
+        }
+
+        // Handle rating submission
+        document.getElementById('submit-rating').addEventListener('click', async () => {
+            if (!selectedRating || !currentTransactionId) return;
+
+            const comment = document.getElementById('rating-comment').value;
+
+            try {
+                const response = await fetch(`/submit_rating/${currentTransactionId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        rating: selectedRating,
+                        comment: comment
+                    })
+                });
+                if (response.ok)
+                {
+                    document.getElementById('seller-rating-popup').style.display = 'none';
+                    // Refresh the page or update UI as needed
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+            }
+        });
+
+        // Close rating popup
+        document.querySelectorAll('.close-rating').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.target.closest('.popup').style.display = 'none';
             });
         });
     </script>
+    </div>
 </body>
-
 </html>

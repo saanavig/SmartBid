@@ -4,7 +4,7 @@ from django.views import View
 from .forms import CustomSignupForm
 from .forms import CustomLoginForm
 from django.contrib.auth import login
-from .utils import superuser_access
+from .utils import superuser_access, visitor_access
 from django.contrib.auth.views import LoginView
 from supabase import create_client
 from django.contrib import messages
@@ -20,8 +20,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import random
 from datetime import datetime
-from dashboard.models import Listing, Bid, User, Comment, VIPStatus, Complaint, UserApplication
+from dashboard.models import Listing, Bid, User, Comment, VIPStatus, Complaint, UserApplication, Rating, Transaction
 from django.views.decorators.http import require_POST
+from django.db.models import Max
+from decimal import Decimal
+from django import forms
 
 
 load_dotenv()
@@ -116,11 +119,8 @@ class CustomSignupView(View):
             # Log the user in after successful signup
             login(request, user)
 
-            # Add a success message
-            messages.success(request, "Your application has been submitted. Please wait for the superuser to approve your application.")
-
-            # Redirect to the profile or success page
-            return redirect('profile')
+            # Redirect to the visitor message page instead of profile
+            return redirect('visitor_message')  # Change this to the URL name for the visitor message page
         else:
             # If the form is invalid, render the page with errors
             return render(request, 'signup.html', {
@@ -128,6 +128,7 @@ class CustomSignupView(View):
                 'arithmetic_question': security_question,
                 'errors': form.errors
             })
+
 
 # class CustomLoginView(View):
 #     def get(self, request):
@@ -170,6 +171,7 @@ def homepage(request):
 # def profile(request):
 #     return render(request, 'profile.html', {'user': request.user})
 @login_required
+@visitor_access
 def profile(request):
     print(f"Logged in user: {request.user.username} ({request.user.id})")
     user_id = request.user.id  # Get the current user's ID
@@ -360,7 +362,6 @@ def applications(request):
         print(f"Error fetching from Supabase: {str(e)}")
         return render(request, 'applications.html', {'error': 'Unable to load listings'})
 
-
 @superuser_access
 def complaints(request):
     try:
@@ -402,7 +403,6 @@ def complaints(request):
     except Exception as e:
         print(f"Error fetching complaints: {str(e)}")
         return render(request, 'complaints.html', {'error': str(e)})
-
 
 @superuser_access
 def users(request):
@@ -495,79 +495,184 @@ def homepage(request):
 
 # visit listings
 def listing(request, id):
-    # Fetch listing and images from Supabase
-    listing = supabase.table('listings').select('*').eq('id', id).execute()
-    images = supabase.table('listing_images').select('*').eq('listing_id', id).execute()
+    try:
+        # Fetch listing with seller information
+        listing = supabase.table('listings')\
+            .select(
+                '*',
+                'users(first_name,last_name)'
+            )\
+            .eq('id', id)\
+            .execute()
 
-    # Fetch comments from Supabase
-    comments = supabase.table('comments').select(
-        'comment',
-        'created_at',
-        'commenter:users(first_name,last_name)'  # Join with users table
-    ).eq('listing_id', id).order('created_at', desc=True).execute()
+        if not listing.data or len(listing.data) == 0:
+            return render(request, 'error.html', {'message': 'Listing not found'})
 
-    # Debug prints
-    print("Listing data:", listing.data)
-    print("Images data:", images.data)
-    print("Comments data:", comments.data)
+        listing_data = listing.data[0]
+        # Safely get images with fallback to empty list
+        try:
+            images = supabase.table('listing_images').select('*').eq('listing_id', id).execute()
+            images_data = images.data if images and images.data else []
+        except Exception as e:
+            print(f"Error fetching images: {str(e)}")
+            images_data = []
 
-    # Process comments data to match your template's expected format
-    formatted_comments = []
-    for comment in comments.data:
-        formatted_comments.append({
-            'user': {
-                'first_name': comment['commenter']['first_name'] if comment['commenter'] else 'Visitor',
-                'last_name': comment['commenter']['last_name'] if comment['commenter'] else ''
-            },
-            'comment': comment['comment']
-        })
+        # Safely get comments with fallback to empty list
+        try:
+            comments = supabase.table('comments')\
+                .select(
+                    'comment',
+                    'created_at',
+                    'commenter:users(first_name,last_name)'
+                )\
+                .eq('listing_id', id)\
+                .order('amount', desc=True)  # Order by amount in descending order
+            comments = comments.execute()
 
-    bids = supabase.table('bids')\
-    .select(
-        'id',
-        'amount',
-        'status',
-        'created_at',
-        'bidder:users!user_id(first_name,last_name)'
-    )\
-    .eq('listing_id', id)\
-    .order('amount', desc=True)\
-    .execute()
+            formatted_comments = []
+            for comment in (comments.data or []):
+                # Handle case where commenter might be null (visitor)
+                if comment.get('commenter') is None:
+                    user_info = {
+                        'first_name': 'Visitor',
+                        'last_name': ''
+                    }
+                else:
+                    user_info = {
+                        'first_name': comment['commenter'].get('first_name', 'Anonymous'),
+                        'last_name': comment['commenter'].get('last_name', '')
+                    }
 
-    #Format bids for template
-    formatted_bids = []
-    for bid in bids.data:
-        formatted_bids.append({
-            'id': bid['id'],
-            'user': {
-                'first_name': bid['bidder']['first_name'],
-                'last_name': bid['bidder']['last_name']
-            },
-            'amount': bid['amount'],
-            'status': bid['status']
-        })
+                formatted_comments.append({
+                    'user': user_info,
+                    'comment': comment.get('comment', '')
+                })
+        except Exception as e:
+            print(f"Error fetching comments: {str(e)}")
+            formatted_comments = []
 
-    #debugging statements
-    print("Listing data:", listing.data)
-    print("Images data:", images.data)
-    print("Comments data:", comments.data)
+        # Safely get bids with fallback to empty list
+        try:
+            bids = supabase.table('bids')\
+                .select(
+                    'id',
+                    'amount',
+                    'status',
+                    'created_at',
+                    'bidder:users!user_id(first_name,last_name)'
+                )\
+                .eq('listing_id', id)\
+                .eq('status', 'pending')\
+                .execute()
 
-    context = {
-        'listing': listing.data[0],
-        'images': images.data,
-        'comments': formatted_comments,
-        'bids': formatted_bids,
-        # Add user context conditionally
-        'user': {
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name
-        } if request.user.is_authenticated else {
-            'first_name': 'Visitor',
-            'last_name': ''
+            formatted_bids = []
+            for bid in (bids.data or []):
+                bidder = bid.get('bidder', {})
+                formatted_bids.append({
+                    'id': bid.get('id'),
+                    'user': {
+                        'first_name': bidder.get('first_name', 'Anonymous'),
+                        'last_name': bidder.get('last_name', '')
+                    },
+                    'amount': bid.get('amount', 0),
+                    'status': bid.get('status', 'unknown')
+                })
+        except Exception as e:
+            print(f"Error fetching bids: {str(e)}")
+            formatted_bids = []
+
+        # Safely get seller information with fallback to default values
+        try:
+            if 'users' in listing_data and listing_data['users']:
+                seller_info = listing_data['users']
+            else:
+                # Fallback to fetching user separately
+                user_response = supabase.table('users')\
+                    .select('first_name,last_name')\
+                    .eq('id', listing_data.get('user_id'))\
+                    .execute()
+                seller_info = user_response.data[0] if user_response.data else {}
+        except Exception as e:
+            print(f"Error fetching seller info: {str(e)}")
+            seller_info = {}
+
+        # Safely construct listing data with fallback values
+        safe_listing_data = {
+            'id': listing_data.get('id'),
+            'title': listing_data.get('title', 'Untitled Listing'),
+            'description': listing_data.get('description', 'No description available'),
+            'price': listing_data.get('price', 0),
+            'category': listing_data.get('category', 'Uncategorized'),
+            'created_at': listing_data.get('created_at', ''),
+            'seller_id': listing_data.get('user_id'),
+            'seller': {
+                'first_name': seller_info.get('first_name', 'Anonymous'),
+                'last_name': seller_info.get('last_name', 'Seller')
+            }
         }
-    }
-    return render(request, 'listing.html', context)
 
+        # First get all bids for this listing
+        bids_response = supabase.table('bids')\
+            .select(
+                'amount',
+                'user_id',
+                'users(first_name,last_name)'
+            )\
+            .eq('listing_id', id)\
+            .execute()
+
+        # Find the highest bid
+        highest_bid = 0
+        highest_bidder = None
+        if bids_response.data:
+            for bid in bids_response.data:
+                if float(bid['amount']) > highest_bid:
+                    highest_bid = float(bid['amount'])
+                    highest_bidder = {
+                        'id': bid['user_id'],
+                        'name': f"{bid['users']['first_name']} {bid['users']['last_name']}"
+                    }
+
+        # If no bids, use listing price as starting bid
+        if highest_bid == 0:
+            highest_bid = float(listing_data.get('price', 0))
+
+        # Format the highest bid to 2 decimal places
+        highest_bid = "{:.2f}".format(highest_bid)
+
+        # Debug user authentication
+        print(f"User authenticated: {request.user.is_authenticated}")
+        print(f"User email: {request.user.email if request.user.is_authenticated else 'Not logged in'}")
+
+        # Get user's balance if authenticated
+        user_balance = 0
+        if request.user.is_authenticated:
+            balance_response = supabase.table('users')\
+                .select('balance')\
+                .eq('email', request.user.email)\
+                .execute()
+
+            print(f"Balance response: {balance_response.data}")  # Debug print
+
+            if balance_response.data:
+                user_balance = float(balance_response.data[0].get('balance', 0))
+            print(f"Final user balance: {user_balance}")  # Debug print
+
+        # Add user_balance to context and print it
+        context = {
+            'listing': safe_listing_data,
+            'images': images_data,
+            'comments': formatted_comments,
+            'bids': formatted_bids,
+            'highest_bid': highest_bid,
+            'highest_bidder': highest_bidder,
+            'user': request.user,
+        }
+        return render(request, 'listing.html', context)
+
+    except Exception as e:
+        print(f"Error in listing view: {str(e)}")
+        return render(request, 'error.html', {'message': 'Error loading listing'})
 
 @login_required
 def manage_funds(request):
@@ -635,11 +740,11 @@ def update_status(request):
             .update({'status': new_status})\
             .eq('id', complaint_id)\
             .execute()
-
         return JsonResponse({'success': True})
     except Exception as e:
-        print(f"Error updating status: {str(e)}")
+        print(f"Error updating status: {str(e)}")  # For debugging
         return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 @login_required
@@ -753,120 +858,115 @@ def place_bid(request, listing_id):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            bid_amount = float(data.get('bid_amount', 0))
+            bid_amount = Decimal(data.get('bid_amount'))
 
-            # Validate bid amount
-            if bid_amount <= 0:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Invalid bid amount'
-                }, status=400)
-
-            # Get current listing
-            response = supabase.table('listings').select('*').eq('id', listing_id).execute()
-            if not response.data:
+            listing_response = supabase.table('listings').select('*').eq('id', listing_id).execute()
+            if not listing_response.data:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Listing not found'
                 }, status=404)
 
-            listing = response.data[0]
-            # If highest_bid doesn't exist, use the listing price as the current highest
-            current_highest_bid = float(listing.get('highest_bid', listing.get('price', 0)))
+            listing = listing_response.data[0]
 
-            # Check if bid is higher than current highest
-            if bid_amount <= current_highest_bid:
+            if request.user.email == listing.get('user_email'):
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Bid must be higher than current highest bid'
-                }, status=400)
+                    'message': 'You cannot bid on your own listing'
+                }, status=403)
 
-            # Record bid in bids table
+            user_response = supabase.table('users').select('balance').eq('email', request.user.email).execute()
+            if not user_response.data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'User not found'
+                }, status=404)
+
+            current_balance = Decimal(user_response.data[0].get('balance', 0))
+
+            #current balance
+            if current_balance < bid_amount:
+                print(f"Insufficient funds: balance={current_balance}, bid={bid_amount}")  # Debug print
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Insufficient funds in your account.'
+                })
+
+            #new bid
             bid_data = {
                 'user_id': request.user.id,
                 'listing_id': listing_id,
-                'amount': bid_amount,
+                'amount': float(bid_amount),
                 'status': 'pending'
             }
 
-            try:
-                # Insert the bid
-                response = supabase.table('bids').insert(bid_data).execute()
-                if hasattr(response, 'data') and response.data:
-                    try:
-                        # Update listing with new highest bid
-                        supabase.table('listings').update({
-                            'highest_bid': bid_amount,
-                            'highest_bidder_id': request.user.id
-                        }).eq('id', listing_id).execute()
-                    except Exception as e:
-                        print(f"Warning: Could not update listing highest bid: {str(e)}")
+            supabase.table('bids').insert(bid_data).execute()
+            return JsonResponse({'status': 'success'})
 
-                    return JsonResponse({
-                        'status': 'success',
-                        'new_highest_bid': bid_amount,
-                        'message': 'Bid placed successfully'
-                    })
-                else:
-                    raise Exception('Failed to insert bid')
-
-            except Exception as e:
-                print(f"Error inserting bid: {str(e)}")  # Debug print
-                return JsonResponse({
-                    'status': 'error',
-                    'message': f'Failed to place bid: {str(e)}'
-                }, status=500)
-
-        except json.JSONDecodeError:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Invalid JSON data'
-            }, status=400)
         except Exception as e:
-            print(f"Error placing bid: {str(e)}")  # Add this for debugging
+            print(f"Error in place_bid: {str(e)}")  # Debug print
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
             }, status=500)
 
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Invalid request method'
-    }, status=405)
-
-
 def fetch_comments(request, listing_id):
-    comments = Comment.objects.filter(listing_id=listing_id).order_by('-created_at')
-    comments_data = [
-        {
-            'user': {
-                'first_name': comment.user.first_name,
-                'last_name': comment.user.last_name
-            },
-            'comment': comment.comment,  # Changed from content to comment to match your model
-            'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        }
-        for comment in comments
-    ]
-    return JsonResponse({'comments': comments_data})
+    try:
+        comments = supabase.table('comments')\
+            .select(
+                'comment',
+                'created_at',
+                'commenter:users(first_name,last_name)'
+            )\
+            .eq('listing_id', listing_id)\
+            .order('created_at', desc=True)\
+            .execute()
+
+        comments_data = []
+        for comment in comments.data:
+            # when visitor comments
+            if comment.get('commenter') is None:
+                user_info = {
+                    'first_name': 'Visitor',
+                    'last_name': ''
+                }
+            else:
+                user_info = {
+                    'first_name': comment['commenter'].get('first_name', 'Anonymous'),
+                    'last_name': comment['commenter'].get('last_name', '')
+                }
+            comments_data.append({
+                'user': user_info,
+                'comment': comment.get('comment', ''),
+                'created_at': comment.get('created_at', '')
+            })
+        return JsonResponse({'comments': comments_data})
+    except Exception as e:
+        print(f"Error in fetch_comments: {str(e)}")
+        return JsonResponse({'comments': []})
+
 
 def create_comment(request, listing_id):
     if request.method == 'POST':
         comment_text = request.POST.get('comment')
         if comment_text:
-            # For visitors, we'll set commenter_id as NULL
-            commenter_id = request.user.id if request.user.is_authenticated else None
+            try:
+                commenter_id = request.user.id if request.user.is_authenticated else None
 
-            # Insert comment into Supabase
-            supabase.table('comments').insert({
-                'listing_id': listing_id,
-                'commenter_id': commenter_id,
-                'comment': comment_text
-            }).execute()
+                comment_data = {
+                    'listing_id': listing_id,
+                    'comment': comment_text
+                }
 
-            return redirect('listing', id=listing_id)
+                if commenter_id is not None:
+                    comment_data['commenter_id'] = commenter_id
+
+                supabase.table('comments').insert(comment_data).execute()
+            except Exception as e:
+                print(f"Error creating comment: {str(e)}")
 
     return redirect('listing', id=listing_id)
+
 
 @superuser_access
 def update_application_status(request):
@@ -912,3 +1012,135 @@ def update_application_status(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+def visitor_message(request):
+    return render(request, 'visitor_message.html')
+
+def get_user_rating_info(user_id):
+    try:
+        response = supabase.table('ratings')\
+            .select('rating')\
+            .eq('rated_user_id', user_id)\
+            .execute()
+        ratings = [r['rating'] for r in response.data]
+        if ratings:
+            average_rating = sum(ratings) / len(ratings)
+            rating_count = len(ratings)
+            return {
+                'average': round(average_rating, 1),
+                'count': rating_count
+            }
+        return {
+            'average': 0.0,
+            'count': 0
+        }
+    except Exception as e:
+        print(f"Error calculating rating: {str(e)}")
+        return {
+            'average': 0.0,
+            'count': 0
+        }
+
+@login_required
+def accept_bid(request, bid_id):
+    if request.method == 'POST':
+        bid = Bid.objects.get(id=bid_id)
+        listing = bid.listing
+
+
+        if request.user != listing.seller:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Unauthorized'
+            })
+        with transaction.atomic():
+            # Transfer funds
+            buyer = bid.user
+            seller = listing.seller
+
+            buyer.balance -= bid.amount
+            seller.balance += bid.amount
+
+            buyer.save()
+            seller.save()
+
+            transaction = Transaction.objects.create(
+                buyer=buyer,
+                seller=seller,
+                listing=listing,
+                amount=bid.amount,
+                status='completed'
+            )
+
+            # Mark listing as sold
+            listing.availability = 'sold'
+            listing.save()
+
+            # Delete other bids
+            Bid.objects.filter(listing=listing).exclude(id=bid.id).delete()
+
+            return JsonResponse({
+                'status': 'success',
+                'transaction_id': transaction.id,
+                'buyer_name': f"{buyer.first_name} {buyer.last_name}",
+                'listing_title': listing.title
+            })
+
+
+@login_required
+def decline_bid(request, bid_id):
+    if request.method == 'POST':
+        try:
+            print(f"Attempting to decline bid {bid_id}")
+
+            # update the bid status in Supabase
+            response = supabase.table('bids')\
+                .update({'status': 'rejected'})\
+                .eq('id', bid_id)\
+                .execute()
+
+            if response.data:
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Failed to update bid status'
+                }, status=500)
+
+        except Exception as e:
+            print(f"Exception in decline_bid: {str(e)}") 
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+@login_required
+def submit_rating(request, transaction_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            rating_value = data.get('rating')
+            comment = data.get('comment')
+
+            transaction = Transaction.objects.get(id=transaction_id)
+
+            if request.user == transaction.buyer:
+                rated_user = transaction.seller
+            else:
+                rated_user = transaction.buyer
+
+            # Create the rating
+            Rating.objects.create(
+                rater_user=request.user,
+                rated_user=rated_user,
+                transaction=transaction,
+                rating=rating_value,
+                comment=comment
+            )
+
+            return JsonResponse({'status': 'success'})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
