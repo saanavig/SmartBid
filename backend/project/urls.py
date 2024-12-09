@@ -20,7 +20,7 @@ from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 #from .views import CustomSignupView
-from .views import homepage, profile, CustomSignupView, CustomLoginView
+from .views import homepage, profile, CustomSignupView, CustomLoginView, update_application_status
 from . import views
 from django.contrib.auth.views import LogoutView
 
@@ -54,6 +54,7 @@ urlpatterns = [
     path('complaints/', views.complaints, name='complaints'),
     path('update_status/', views.update_status, name='update_status'),
     path('request-deactivation/', views.request_deactivation, name='request_deactivation'),
+    path('update_application_status/', update_application_status, name='update_application_status'),
 ]
 
 

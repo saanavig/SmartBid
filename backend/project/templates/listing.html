@@ -213,6 +213,22 @@
                 ratePopup.style.display = 'none';
             });
 
+
+        const startBidButton = document.getElementById('bid-button');
+
+        startBidButton.addEventListener('click', () => {
+            const isLoggedIn = startBidButton.getAttribute('data-logged-in') === 'true';
+            if (isLoggedIn)
+            {
+                startBidPopup.style.display = 'block';
+                invalidMessage.innerText = '';
+            }
+            else
+            {
+                window.location.href = "{% url 'login' %}";
+            }
+        });
+
         async function placeBid(event) {
             event.preventDefault();
             console.log("Place Bid triggered");

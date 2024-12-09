@@ -12,9 +12,9 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
-        
+
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -79,8 +79,8 @@
                     <td>{{ application.arithmetic_question }}</td>
                     <td>{{ application.user_answer }}</td>
                     <td>
-                        <button class="approve-btn" onclick="confirmApplication('approve', '{{ application.full_name }}')">Approve</button>
-                        <button class="deny-btn" onclick="confirmApplication('deny', '{{ application.full_name }}')">Deny</button>
+                        <button class="approve-btn" onclick="confirmApplication('approve', '{{ application.username }}', this)">Approve</button>
+                        <button class="deny-btn" onclick="confirmApplication('deny', '{{ application.username }}', this)">Deny</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -147,48 +147,58 @@
         });
 
         // CONFIRM APPLICATION MODAL
-        function confirmApplication(action, name) {
+        function confirmApplication(action, name, button) {
             const modal = document.getElementById('applications-modal');
             const message = document.getElementById('applications-confirmation-message');
             const confirmBtn = document.getElementById('confirm-applications-btn');
-            const additionalInfoContainer = document.getElementById('additional-info-container');
-            const additionalInfo = document.getElementById('additional-info');
-
-            const tableBody = document.getElementById('applications-body');
-            const rows = tableBody.querySelectorAll('tr');
-            let targetRow = null;
-
-            rows.forEach(row => {
-                if (row.cells[0].innerText === name) {
-                    targetRow = row;
-                }
-            });
 
             message.innerText = `Are you sure you want to ${action} ${name}?`;
 
-            if (action === 'deny') {
-                additionalInfoContainer.style.display = 'block';
-            } else {
-                additionalInfoContainer.style.display = 'none';
-            }
-
-
             confirmBtn.onclick = function() {
-                if (action === 'approve') {
-                    alert(`${name} has been approved.`);
-                } else if (action === 'deny') {
-                    alert(`${name} has been denied.`);
-                }
+                console.log("Username:", name);  // Debugging output
+                console.log("Action:", action);   // Debugging output
 
-                if (targetRow) {
-                    tableBody.removeChild(targetRow);
-                }
+                // Send the request to update the application status
+                fetch('/update_application_status/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token for security
+                    },
+                    body: JSON.stringify({
+                        username: name,  // Ensure this is the correct username
+                        action: action
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Remove the row from the table regardless of action
+                        const row = button.closest('tr');
+                        row.remove();
 
-                closeApplicationsModal();
+                        // Show alert based on action
+                        if (action === 'approve') {
+                            // Optionally, you can show a success message for approval
+                            alert('User application approved.');
+                        } else if (action === 'deny') {
+                            alert('User application denied.');
+                        }
+
+                        closeApplicationsModal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the application status.');
+                });
             };
 
             modal.style.display = 'block';
         }
+
 
         // CLOSE APPLICATION
         function closeApplicationsModal() {

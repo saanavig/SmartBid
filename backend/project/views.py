@@ -764,7 +764,6 @@ def place_bid(request, listing_id):
 
             # Get current listing
             response = supabase.table('listings').select('*').eq('id', listing_id).execute()
-            
             if not response.data:
                 return JsonResponse({
                     'status': 'error',
@@ -793,7 +792,6 @@ def place_bid(request, listing_id):
             try:
                 # Insert the bid
                 response = supabase.table('bids').insert(bid_data).execute()
-                
                 if hasattr(response, 'data') and response.data:
                     try:
                         # Update listing with new highest bid
@@ -869,3 +867,48 @@ def create_comment(request, listing_id):
             return redirect('listing', id=listing_id)
 
     return redirect('listing', id=listing_id)
+
+@superuser_access
+def update_application_status(request):
+    if request.method == "POST":
+        try:
+            # Parse JSON request body
+            data = json.loads(request.body)
+            username = data.get('username')
+            action = data.get('action')
+
+            if not username or not action:
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+
+            print("Updating role for username:", username)  # Debugging output
+
+            # Determine the new status based on the action
+            new_status = 'approved' if action == 'approve' else 'rejected'
+
+            # Update the application status in Supabase
+            response = supabase.table('user_applications').update({'status': new_status}).eq('username', username).execute()
+
+            print("Application update response:", response)  # Debugging output
+
+            # Check for errors in the response
+            if hasattr(response, 'error') and response.error:
+                return JsonResponse({"error": response.error.message}, status=500)
+
+            # If the action is approve, update the user's role
+            if action == 'approve':
+                # Update the user's role in the users table
+                user_response = supabase.table('users').update({'role': 'user'}).eq('username', username).execute()
+
+                print("User role update response:", user_response)  # Debugging output
+                print("User role update data:", user_response.data)  # Debugging output
+
+                # Check for errors in the user role update response
+                if hasattr(user_response, 'error') and user_response.error:
+                    return JsonResponse({"error": user_response.error.message}, status=500)
+
+            return JsonResponse({"message": f"Application {new_status} successfully."}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
