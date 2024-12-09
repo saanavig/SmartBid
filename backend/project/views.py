@@ -494,6 +494,7 @@ def homepage(request):
     #     return render(request, 'homepage.html', {'error': 'Unable to load listings'})
 
 # visit listings
+
 def listing(request, id):
     try:
         # Fetch listing with seller information
@@ -860,48 +861,52 @@ def place_bid(request, listing_id):
         try:
             data = json.loads(request.body)
             bid_amount = Decimal(data.get('bid_amount'))
-
+            
+            # Get the listing
             listing_response = supabase.table('listings').select('*').eq('id', listing_id).execute()
             if not listing_response.data:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Listing not found'
                 }, status=404)
-
+                
             listing = listing_response.data[0]
-
+            
+            # Check if user is the seller
             if request.user.email == listing.get('user_email'):
                 return JsonResponse({
                     'status': 'error',
                     'message': 'You cannot bid on your own listing'
                 }, status=403)
-
+            
+            # Get user's current balance from Supabase
             user_response = supabase.table('users').select('balance').eq('email', request.user.email).execute()
             if not user_response.data:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'User not found'
                 }, status=404)
-
+                
             current_balance = Decimal(user_response.data[0].get('balance', 0))
-
-            #current balance
+            
+            # Check if user has sufficient funds
             if current_balance < bid_amount:
                 print(f"Insufficient funds: balance={current_balance}, bid={bid_amount}")  # Debug print
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Insufficient funds in your account.'
                 })
-
-            #new bid
+            
+            # Create new bid in Supabase
             bid_data = {
                 'user_id': request.user.id,
                 'listing_id': listing_id,
                 'amount': float(bid_amount),
                 'status': 'pending'
             }
-
+            
             supabase.table('bids').insert(bid_data).execute()
+            
             return JsonResponse({'status': 'success'})
 
         except Exception as e:
@@ -925,7 +930,7 @@ def fetch_comments(request, listing_id):
 
         comments_data = []
         for comment in comments.data:
-            # when visitor comments
+            # Handle case where commenter might be null (visitor)
             if comment.get('commenter') is None:
                 user_info = {
                     'first_name': 'Visitor',
@@ -936,11 +941,13 @@ def fetch_comments(request, listing_id):
                     'first_name': comment['commenter'].get('first_name', 'Anonymous'),
                     'last_name': comment['commenter'].get('last_name', '')
                 }
+
             comments_data.append({
                 'user': user_info,
                 'comment': comment.get('comment', ''),
                 'created_at': comment.get('created_at', '')
             })
+
         return JsonResponse({'comments': comments_data})
     except Exception as e:
         print(f"Error in fetch_comments: {str(e)}")
@@ -1045,61 +1052,129 @@ def get_user_rating_info(user_id):
 @login_required
 def accept_bid(request, bid_id):
     if request.method == 'POST':
-        bid = Bid.objects.get(id=bid_id)
-        listing = bid.listing
+        try:
+            # Get the bid and related information
+            bid_response = supabase.table('bids')\
+                .select('*, listing:listings(*), user:users(*)')\
+                .eq('id', bid_id)\
+                .single()\
+                .execute()
 
+            if not bid_response.data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Bid not found'
+                }, status=404)
 
-        if request.user != listing.seller:
+            bid = bid_response.data
+            listing_id = bid['listing_id']
+            buyer_id = bid['user_id']
+            seller_id = bid['listing']['user_id']
+            amount = Decimal(bid['amount'])
+
+            # Verify the current user is the seller
+            if request.user.id != seller_id:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Unauthorized'
+                }, status=403)
+
+            try:
+                # 1. Update bid status to accepted
+                supabase.table('bids')\
+                    .update({'status': 'accepted'})\
+                    .eq('id', bid_id)\
+                    .execute()
+
+                # 2. Mark all other bids as rejected
+                supabase.table('bids')\
+                    .update({'status': 'rejected'})\
+                    .neq('id', bid_id)\
+                    .eq('listing_id', listing_id)\
+                    .execute()
+
+                # 3. Transfer funds
+                # Get buyer's balance
+                buyer_response = supabase.table('users')\
+                    .select('balance')\
+                    .eq('id', buyer_id)\
+                    .single()\
+                    .execute()
+
+                buyer_balance = Decimal(buyer_response.data['balance'])
+
+                seller_response = supabase.table('users')\
+                    .select('balance')\
+                    .eq('id', seller_id)\
+                    .single()\
+                    .execute()
+
+                seller_balance = Decimal(seller_response.data['balance'])
+
+                # Update balances
+                supabase.table('users')\
+                    .update({'balance': float(buyer_balance - amount)})\
+                    .eq('id', buyer_id)\
+                    .execute()
+
+                supabase.table('users')\
+                    .update({'balance': float(seller_balance + amount)})\
+                    .eq('id', seller_id)\
+                    .execute()
+
+                transaction_data = {
+                    'buyer_id': buyer_id,
+                    'seller_id': seller_id,
+                    'listing_id': listing_id,
+                    'amount': float(amount),
+                    'status': 'completed',
+                    'created_at': 'now()',
+                    'updated_at': 'now()'
+                }
+
+                transaction_response = supabase.table('transactions')\
+                    .insert(transaction_data)\
+                    .execute()
+
+                supabase.table('listings')\
+                    .update({'availability': 'sold'})\
+                    .eq('id', listing_id)\
+                    .execute()
+                return JsonResponse({
+                    'status': 'success',
+                    'transaction_id': transaction_response.data[0]['id'],
+                    'buyer_name': f"{bid['user']['first_name']} {bid['user']['last_name']}",
+                    'listing_title': bid['listing']['title']
+                })
+            except Exception as e:
+                print(f"Transaction error: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Transaction failed'
+                }, status=500)
+        except Exception as e:
+            print(f"Error in accept_bid: {str(e)}")
             return JsonResponse({
                 'status': 'error',
-                'message': 'Unauthorized'
-            })
-        with transaction.atomic():
-            # Transfer funds
-            buyer = bid.user
-            seller = listing.seller
-
-            buyer.balance -= bid.amount
-            seller.balance += bid.amount
-
-            buyer.save()
-            seller.save()
-
-            transaction = Transaction.objects.create(
-                buyer=buyer,
-                seller=seller,
-                listing=listing,
-                amount=bid.amount,
-                status='completed'
-            )
-
-            # Mark listing as sold
-            listing.availability = 'sold'
-            listing.save()
-
-            # Delete other bids
-            Bid.objects.filter(listing=listing).exclude(id=bid.id).delete()
-
-            return JsonResponse({
-                'status': 'success',
-                'transaction_id': transaction.id,
-                'buyer_name': f"{buyer.first_name} {buyer.last_name}",
-                'listing_title': listing.title
-            })
-
+                'message': str(e)
+            }, status=500)
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)
 
 @login_required
 def decline_bid(request, bid_id):
     if request.method == 'POST':
         try:
-            print(f"Attempting to decline bid {bid_id}")
-
-            # update the bid status in Supabase
+            print(f"Attempting to decline bid {bid_id}")  # Debug log
+            # Update the bid status in Supabase
             response = supabase.table('bids')\
                 .update({'status': 'rejected'})\
                 .eq('id', bid_id)\
                 .execute()
 
+            # Check if the update was successful by checking if data was returned
             if response.data:
                 return JsonResponse({'status': 'success'})
             else:
@@ -1107,13 +1182,13 @@ def decline_bid(request, bid_id):
                     'status': 'error',
                     'message': 'Failed to update bid status'
                 }, status=500)
-
         except Exception as e:
-            print(f"Exception in decline_bid: {str(e)}") 
+            print(f"Exception in decline_bid: {str(e)}")  # Debug log
             return JsonResponse({
                 'status': 'error',
                 'message': str(e)
             }, status=500)
+
 
 @login_required
 def submit_rating(request, transaction_id):
