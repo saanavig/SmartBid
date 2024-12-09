@@ -54,7 +54,7 @@
         <div class="manage-account-status">
             <h2>Manage Account Status</h2>
             <p>Manage your status or pay a fee.</p>
-            <h3>Account Status: Suspended</h3>
+            <h3>Account Status: <span id="account-status">Loading...</span></h3>
             <a href="#" onclick="openPopup()">Deactivate Account</a>
             <h3>Current Fee: $50.00</h3>
             <a href="#" onclick="openPayFeePopup()">Pay Fee</a>
@@ -95,15 +95,15 @@
             <h3>File a Complaint</h3>
             <form id="complaint-form">
 
-        
+
                 <label for="defendantUserId">Defendant User ID:</label>
                 <input type="number" id="defendantUserId" name="defendantUserId" required />
                 <br>
-        
+
                 <label for="complaintText">Complaint Text:</label>
                 <textarea id="complaintText" name="complaintText" required></textarea>
                 <br>
-        
+
                 <button type="submit">Submit Complaint</button>
             </form>
         </div>
@@ -127,9 +127,57 @@
             document.getElementById('complaint-form').addEventListener('submit', handleSubmit);
         });
 
+        document.addEventListener("DOMContentLoaded", async function() {
+            // Fetch user status
+            const { data: user, error } = await supabaseClient
+                .from('users')
+                .select('status')
+                .eq('id', '{{ user.id }}') // Assuming you have access to the logged-in user's ID
+                .single();
+
+            if (error) {
+                console.error('Error fetching user status:', error.message);
+                document.getElementById('account-status').textContent = 'Error loading status';
+            } else {
+                document.getElementById('account-status').textContent = user.status; // Update the status in the HTML
+            }
+        });
+
+        async function checkAndSuspendUser() {
+            const currentUserId = '{{ user.id }}'; // Assuming you have access to the logged-in user's ID
+
+            // Fetch ratings for the current user
+            const { data: ratings, error } = await supabaseClient
+                .from('ratings')
+                .select('rated_user_id, rating')
+                .eq('rated_user_id', currentUserId);
+
+            if (error) {
+                console.error('Error fetching ratings:', error.message);
+                return;
+            }
+
+            // Count how many ratings are less than or equal to 2
+            const lowRatingsCount = ratings.filter(rating => rating.rating <= 2).length;
+
+            // If there are 3 or more low ratings, suspend the user
+            if (lowRatingsCount >= 3) {
+                const { error: updateError } = await supabaseClient
+                    .from('users')
+                    .update({ status: 'suspended' })
+                    .eq('id', currentUserId);
+
+                if (updateError) {
+                    console.error('Error updating user status:', updateError.message);
+                } else {
+                    console.log('User status updated to suspended.');
+                }
+            }
+        }
+
         async function handleSubmit(event) {
             event.preventDefault();
-            
+
             // Collect form data with null checks
             const defendantUserIdElement = document.getElementById('defendantUserId');
             const complaintTextElement = document.getElementById('complaintText');
