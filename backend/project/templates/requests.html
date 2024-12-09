@@ -81,10 +81,12 @@
     <!-- PAY FEE POPUP -->
     <div id="pay-fee-popup" class="pay-fee-popup">
         <div class="pay-fee-popup-content">
+            {% csrf_token %}
             <h3>You must pay this fee to reactivate your account.</h3>
-            <p>Current Account Balance: $0.00</p>
+            <p>Current Account Balance: ${{ user_balance }}</p>
             <p>Current Fee Amount: $50.00</p>
             <button onclick="closePayFeePopup()">Pay</button>
+
         </div>
     </div>
 
@@ -95,15 +97,12 @@
             <h3>File a Complaint</h3>
             <form id="complaint-form">
 
-        
                 <label for="defendantUserId">Defendant User ID:</label>
                 <input type="number" id="defendantUserId" name="defendantUserId" required />
                 <br>
-        
                 <label for="complaintText">Complaint Text:</label>
                 <textarea id="complaintText" name="complaintText" required></textarea>
                 <br>
-        
                 <button type="submit">Submit Complaint</button>
             </form>
         </div>
@@ -127,8 +126,7 @@
 
         async function handleSubmit(event) {
             event.preventDefault();
-            
-            // Collect form data with null checks
+
             const defendantUserIdElement = document.getElementById('defendantUserId');
             const complaintTextElement = document.getElementById('complaintText');
 
@@ -155,7 +153,7 @@
                 alert('Complaint submitted successfully!');
             }
         }
-        
+
         document.addEventListener("DOMContentLoaded", function() {
             const profilePopup = document.getElementById('profile-popup');
             const closePopupBtn = document.querySelector('.close');
@@ -189,7 +187,7 @@
                 });
             }
         });
-    
+
         // POPUP FUNCTIONALITY
         function openPopup() {
             const deactivatePopup = document.getElementById('deactivate-popup');
@@ -197,7 +195,7 @@
                 deactivatePopup.style.display = 'flex';
             }
         }
-    
+
         function closePopup() {
             const deactivatePopup = document.getElementById('deactivate-popup');
             if (deactivatePopup) {
@@ -210,10 +208,29 @@
             if (payFeePopup) {
                 payFeePopup.style.display = 'flex';
             }
+
+            {% comment %} try {
+                const response = await fetch('/check-account-status/', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken(),
+                    }
+                });
+                const data = await response.json();
+
+                if (data.status === 'active') {
+                    alert('Your account is already activated!');
+                } else {
+                    document.getElementById('pay-fee-popup').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error checking account status');
+            } {% endcomment %}
         }
 
         // Function to handle payment and balance update inside closePayFeePopup()
-        async function closePayFeePopup() {
+        {% comment %} async function closePayFeePopup() {
             const payFeePopup = document.getElementById('pay-fee-popup');
             if (payFeePopup) {
                 payFeePopup.style.display = 'none';
@@ -259,6 +276,38 @@
                 console.error('Error processing payment:', error.message);
             }
         }
+ {% endcomment %}
+
+        // Pay Fee Popup
+
+        async function closePayFeePopup()
+        {
+            fetch('/suspension-fee/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Account reactivated successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to process payment');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to process payment');
+            });
+        }
+
+        function getCsrfToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
 
         document.getElementById("complaint-form").addEventListener("submit", async function(event) {
             event.preventDefault();

@@ -59,6 +59,7 @@ urlpatterns = [
     path('decline_bid/<int:bid_id>/', views.decline_bid, name='decline_bid'),
     path('submit_rating/<int:transaction_id>/', views.submit_rating, name='submit_rating'),
     path('visitor_message/', views.visitor_message, name='visitor_message'),
+    path('suspension-fee/', views.suspension_fee, name='suspension_fee'),
+    #path('check-account-status/', views.check_account_status, name='check_account_status'),
 ]
-
 

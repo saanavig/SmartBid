@@ -314,7 +314,25 @@ def viewbids(request):
 # Dashboard's Requests
 @login_required
 def requests(request):
-    return render(request, 'requests.html')
+    try:
+        # Fetch user's balance from Supabase
+        balance_response = supabase.table('users')\
+            .select('balance')\
+            .eq('email', request.user.email)\
+            .single()\
+            .execute()
+
+        user_balance = float(balance_response.data['balance']) if balance_response.data else 0
+        user_balance = "{:.2f}".format(user_balance)
+
+        return render(request, 'requests.html', {
+            'user_balance': user_balance
+        })
+    except Exception as e:
+        print(f"Error fetching user balance: {str(e)}")
+        return render(request, 'requests.html', {
+            'user_balance': '0.00'
+        })
 
 @login_required
 def request_deactivation(request):
@@ -857,7 +875,7 @@ def place_bid(request, listing_id):
         try:
             data = json.loads(request.body)
             bid_amount = Decimal(data.get('bid_amount'))
-            
+
             # Get the listing
             listing_response = supabase.table('listings').select('*').eq('id', listing_id).execute()
             if not listing_response.data:
@@ -1181,7 +1199,6 @@ def decline_bid(request, bid_id):
                 'message': str(e)
             }, status=500)
 
-
 @login_required
 def submit_rating(request, transaction_id):
     if request.method == 'POST':
@@ -1212,3 +1229,52 @@ def submit_rating(request, transaction_id):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+#suspension fee
+@login_required
+def suspension_fee(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+    try:
+        balance_response = supabase.table('users')\
+            .select('balance')\
+            .eq('email', request.user.email)\
+            .single()\
+            .execute()
+        current_balance = float(balance_response.data['balance']) if balance_response.data else 0
+        fee_amount = 50.00
+
+        if current_balance < fee_amount:
+            return JsonResponse({
+                'error': 'Insufficient funds. Please deposit money to activate your account again.'
+            }, status=400)
+
+        new_balance = current_balance - fee_amount
+        supabase.table('users')\
+            .update({
+                'balance': new_balance,
+                'status': 'active'
+            })\
+            .eq('email', request.user.email)\
+            .execute()
+
+        return JsonResponse({'success': True, 'new_balance': new_balance})
+
+    except Exception as e:
+        print(f"Error processing reactivation fee: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+# @login_required
+# def check_account_status(request):
+#     try:
+#         response = supabase.table('users')\
+#             .select('status')\
+#             .eq('email', request.user.email)\
+#             .single()\
+#             .execute()
+#         return JsonResponse({
+#             'status': response.data.get('status', 'inactive')
+#         })
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
