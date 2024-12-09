@@ -221,13 +221,7 @@
                     {% if listing.availability == 'sold' %}
                         <h2>Bid Completed</h2>
                         <p class="bid-status">This item has been sold.</p>
-                    {% elif listing.availability == 'rented' %}
-                        <h2>Rental Completed</h2>
-                        <p class="bid-status">This item is currently being rented.</p>
-                    {% elif listing.availability == 'for-rent' %}
-                        <h2>Rental Offers</h2>
-                        <!-- Show rental-specific UI here -->
-                    {% else %}  <!-- for-sale -->
+                    {% else %}
                         <h2>Current Bids</h2>
                         {% if bids %}
                             {% for bid in bids %}
@@ -414,7 +408,7 @@
                             'X-CSRFToken': getCookie('csrftoken')
                         }
                     })
-                    .then(response => response.json())  // Convert the response to JSON
+                    .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
                             // Refresh the page if the bid was successfully declined
@@ -442,9 +436,12 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            // Show success message before reloading
-                            alert('Bid accepted successfully! The transaction has been completed.');
-                            location.reload();
+                            // Show seller rating popup
+                            const sellerRatingPopup = document.getElementById('seller-rating-popup');
+                            document.getElementById('listing-title').textContent = data.listing_title;
+                            document.getElementById('buyer-name').textContent = data.buyer_name;
+                            currentTransactionId = data.transaction_id;
+                            sellerRatingPopup.style.display = 'block';
                         } else {
                             alert(data.message || 'Failed to accept bid');
                         }

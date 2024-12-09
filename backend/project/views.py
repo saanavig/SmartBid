@@ -510,7 +510,6 @@ def listing(request, id):
             return render(request, 'error.html', {'message': 'Listing not found'})
 
         listing_data = listing.data[0]
-        # Safely get images with fallback to empty list
         try:
             images = supabase.table('listing_images').select('*').eq('listing_id', id).execute()
             images_data = images.data if images and images.data else []
@@ -518,7 +517,6 @@ def listing(request, id):
             print(f"Error fetching images: {str(e)}")
             images_data = []
 
-        # Safely get comments with fallback to empty list
         try:
             comments = supabase.table('comments')\
                 .select(
@@ -532,7 +530,7 @@ def listing(request, id):
 
             formatted_comments = []
             for comment in (comments.data or []):
-                # Handle case where commenter might be null (visitor)
+
                 if comment.get('commenter') is None:
                     user_info = {
                         'first_name': 'Visitor',
@@ -552,7 +550,6 @@ def listing(request, id):
             print(f"Error fetching comments: {str(e)}")
             formatted_comments = []
 
-        # Safely get bids with fallback to empty list
         try:
             bids = supabase.table('bids')\
                 .select(
@@ -563,6 +560,7 @@ def listing(request, id):
                     'bidder:users!user_id(first_name,last_name)'
                 )\
                 .eq('listing_id', id)\
+                .eq('status', 'pending')\
                 .order('amount', desc=True)\
                 .execute()
 
@@ -582,12 +580,11 @@ def listing(request, id):
             print(f"Error fetching bids: {str(e)}")
             formatted_bids = []
 
-        # Safely get seller information with fallback to default values
         try:
             if 'users' in listing_data and listing_data['users']:
                 seller_info = listing_data['users']
             else:
-                # Fallback to fetching user separately
+
                 user_response = supabase.table('users')\
                     .select('first_name,last_name')\
                     .eq('id', listing_data.get('user_id'))\
@@ -597,7 +594,6 @@ def listing(request, id):
             print(f"Error fetching seller info: {str(e)}")
             seller_info = {}
 
-        # Safely construct listing data with fallback values
         safe_listing_data = {
             'id': listing_data.get('id'),
             'title': listing_data.get('title', 'Untitled Listing'),
@@ -606,13 +602,13 @@ def listing(request, id):
             'category': listing_data.get('category', 'Uncategorized'),
             'created_at': listing_data.get('created_at', ''),
             'seller_id': listing_data.get('user_id'),
+            'availability': listing_data.get('availability', 'for-sale'),
             'seller': {
                 'first_name': seller_info.get('first_name', 'Anonymous'),
                 'last_name': seller_info.get('last_name', 'Seller')
             }
         }
 
-        # First get all bids for this listing
         bids_response = supabase.table('bids')\
             .select(
                 'amount',
@@ -1072,7 +1068,6 @@ def accept_bid(request, bid_id):
             seller_id = bid['listing']['user_id']
             amount = Decimal(bid['amount'])
 
-            # Verify the current user is the seller
             if request.user.id != seller_id:
                 return JsonResponse({
                     'status': 'error',
@@ -1080,21 +1075,19 @@ def accept_bid(request, bid_id):
                 }, status=403)
 
             try:
-                # 1. Update bid status to accepted
                 supabase.table('bids')\
                     .update({'status': 'accepted'})\
                     .eq('id', bid_id)\
                     .execute()
 
-                # 2. Mark all other bids as rejected
+
                 supabase.table('bids')\
                     .update({'status': 'rejected'})\
                     .neq('id', bid_id)\
                     .eq('listing_id', listing_id)\
                     .execute()
 
-                # 3. Transfer funds
-                # Get buyer's balance
+
                 buyer_response = supabase.table('users')\
                     .select('balance')\
                     .eq('id', buyer_id)\
@@ -1111,7 +1104,6 @@ def accept_bid(request, bid_id):
 
                 seller_balance = Decimal(seller_response.data['balance'])
 
-                # Update balances
                 supabase.table('users')\
                     .update({'balance': float(buyer_balance - amount)})\
                     .eq('id', buyer_id)\

@@ -12,9 +12,9 @@
         <div class="logo">
             <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>                      
+            </a>
         </div>
-        
+ 
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -204,14 +204,14 @@
                 deactivatePopup.style.display = 'none';
             }
         }
-    
+
         function openPayFeePopup() {
             const payFeePopup = document.getElementById('pay-fee-popup');
             if (payFeePopup) {
                 payFeePopup.style.display = 'flex';
             }
         }
-    
+
         // Function to handle payment and balance update inside closePayFeePopup()
         async function closePayFeePopup() {
             const payFeePopup = document.getElementById('pay-fee-popup');
@@ -219,28 +219,14 @@
                 payFeePopup.style.display = 'none';
             }
 
-            // Check if the user is authenticated
             const { data: { user }, error: authError } = await supabaseClient.auth.getUser ();
 
-            if (authError) {
-                console.error('Error fetching user:', authError.message);
-                alert('You must be logged in to pay the fee.');
-                return; // Exit if user is not authenticated
-            }
-
-            if (!user) {
-                console.error('No user logged in');
-                alert('You must be logged in to pay the fee.');
-                return; // Exit if user is not authenticated
-            }
-
-            // Proceed with fetching user balance and processing payment
             try {
                 // Get the user's current balance from the database
                 const { data: userData, error: fetchError } = await supabaseClient
-                    .from('users')  // Replace with your table name
+                    .from('users')
                     .select('balance')
-                    .eq('id', user.id)  // Ensure user.id is being passed
+                    .eq('id', user.id)
                     .single();
 
                 if (fetchError) {
@@ -265,7 +251,6 @@
                         return;
                     }
 
-                    // Optionally update the balance displayed on the page
                     document.getElementById('current-balance').textContent = `$${newBalance.toFixed(2)}`;
                 } else {
                     alert('Insufficient balance to pay the fee.');
@@ -274,11 +259,10 @@
                 console.error('Error processing payment:', error.message);
             }
         }
-    
 
         document.getElementById("complaint-form").addEventListener("submit", async function(event) {
-            event.preventDefault(); // Prevent the default form submission
-            alert("Form submitted!"); // Alert to confirm submission
+            event.preventDefault();
+            alert("Form submitted!");
 
             const defendantUserId = document.getElementById("defendant_user_id").value;
             const complaintText = document.getElementById("complaint-text").value;
@@ -286,7 +270,7 @@
                 const { data, error } = await supabase
                     .from('complaints')
                     .insert([
-                        {   
+                        {
                             defendant_user_id: defendantUserId,
                             complaint_text: complaintText,
                             status: 'pending'
