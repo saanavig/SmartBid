@@ -379,8 +379,18 @@ def viewbids(request):
     # Get all listings + user transactions for display
     listings = supabase.table('listings').select('*').eq('user_id', request.user.id).execute()
     images = supabase.table('listing_images').select('*').execute()
-    transactions = supabase.table('transactions').select('*').eq('buyer_id', request.user.id).execute()
-
+    transactions = supabase.table('transactions')\
+        .select(
+            '*',
+            'listing:listings(id, title, description, price, category, availability, deadline)',
+            'seller:users!seller_id(id, first_name, last_name)',
+            #'listing.listing_images(id, image_url)'  # Make sure we're getting all needed fields
+        )\
+        .eq('buyer_id', request.user.id)\
+        .execute()
+    
+    # Debug print to see the structure
+    print("Transaction data:", transactions.data[0] if transactions.data else "No transactions")
     # Create a mapping of listing_id to images
     listing_images = {}
     for image in images.data:
@@ -398,6 +408,7 @@ def viewbids(request):
 
     context = {
         'listings': add_images_to_listings(listings.data),
+        #'transactions': transactions.data,
         'transactions': add_images_to_listings(transactions.data),
     }
 
