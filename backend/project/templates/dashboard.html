@@ -23,44 +23,7 @@
                 <a href="{% url 'adminPage' %}">Admin</a>
                 <a href="{% url 'profile' %}">Profile</a>
                 <a href="{% url 'logout' %}">Sign Out</a>
-                <a href="profile.html">Profile Popup</a>
-            </div>
-        </div>
-
-        <!-- PROFILE POPUP -->
-        <div id="profile-popup" class="profile-popup">
-            <div class="profile-popup-content">
-                <span class="close">&times;</span>
-                <h1>My Profile</h1>
-                <div class="profile-popup-info">
-                    <div class ="align-profile">
-                        <p>{{ user.first_name }} {{ user.last_name }}</p>
-                        <p>- 3.6 (7 Ratings)</p><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard</title>
-    <link rel="stylesheet" href="../../../static/dashboard.css">
-</head>
-<body>
-    <!-- NAVBAR -->
-    <div class="navbar">
-        <div class="logo">
-            <a href="/" style="text-decoration: none; color: inherit; display: inline-block;">
-                <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
-            </a>
-        </div>
-
-        <!-- DROPDOWN FOR USER OPTIONS -->
-        <div class="dropdown">
-            <a class="login-btn">You</a>
-            <div class="dropdown-content">
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'adminPage' %}">Admin</a>
-                <a href="{% url 'profile' %}">Profile</a>
-                <a href="{% url 'logout' %}">Sign Out</a>
-                <a href="profile.html">Profile Popup</a>
+                <!-- <a href="profile.html">Profile Popup</a> -->
             </div>
         </div>
 
@@ -75,8 +38,26 @@
                         <p>- 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+                    <p><strong>Total Transactions:</strong> 25</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- RATING POPUP -->
+        <div id="rating-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-rating">&times;</span>
+                <h2>Rate <span id="rate-user-type"></span></h2>
+                <p>Please rate your experience with this transaction.</p>
+                <div class="star-rating">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <textarea id="rating-comment" placeholder="Add a comment (optional)"></textarea>
+                <button id="submit-rating" class="rating-submit-btn">Submit Rating</button>
             </div>
         </div>
     </div>
@@ -91,106 +72,17 @@
         <div class="right-section">
             <h2>Notifications</h2>
             <div class="notifications">
-                <div class="notification-popup">New bid placed by {{ user.first_name }} {{ user.last_name }}!</div>
-                <div class="notification-popup">Congratulations! Your bid has been accepted.</div>
-                <div class="notification-popup">Sarah M. has outbid you on Item #1234.</div>
-                <div class="notification-popup">System update: New features added to SmartBid.</div>
-                <div class="notification-popup">Bid of $200 has been placed on "Vintage Watch".</div>
-                <div class="notification-popup">Mark L. canceled their bid on "Antique Vase".</div>
-                <div class="notification-popup">New bid placed by Emily R. on "Smartphone".</div>
-                <div class="notification-popup">Your profile information has been updated.</div>
-                <div class="notification-popup">New message received from the auction organizer.</div>
-                <div class="notification-popup">Michael T. placed a $500 bid on "Luxury Bag".</div>
-                <div class="notification-popup">Reminder: Auction for "Gaming Console" ends in 2 hours!</div>
-                <div class="notification-popup">Account updated successfully.</div>
-                <div class="notification-popup">James P. has left feedback on your bid.</div>
-                <div class="notification-popup">You have successfully logged in.</div>
-                <div class="notification-popup">New bidder alert: Lisa H. joined the auction!</div>
-                <div class="notification-popup">Upcoming event: Live Auction starts at 7 PM.</div>
-            </div>
-        </div>
-
-        <!-- DASHBOARD CARDS -->
-        <div class="left-section">
-            <a href="{% url 'account' %}" class="dashboard-card">
-                <h2>My Account</h2>
-                <p>View and update your personal information and account balance.</p>
-            </a>
-            <a href="{% url 'viewbids' %}" class="dashboard-card">
-                <h2>View Bids</h2>
-                <p>View and update your current and past bidding transactions.</p>
-            </a>
-            <a href="{% url 'requests' %}" class="dashboard-card">
-                <h2>Requests</h2>
-                <p>Manage your account status or report a user.</p>
-            </a>
-            <a href="viplounge.html" class="dashboard-card">
-                <h2>VIP Lounge</h2>
-                <p>Learn what it means to be a VIP with SmartBid!</p>
-            </a>
-        </div>        
-    </div>
-
-    <script>
-        // OPEN PROFILE
-        document.addEventListener("DOMContentLoaded", function() {
-            const profilePopup = document.getElementById('profile-popup');
-            const closePopupBtn = document.querySelector('.close');
-            const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
-
-            profileLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                profilePopup.style.display = 'block';
-            });
-
-            closePopupBtn.addEventListener('click', function() {
-                profilePopup.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === profilePopup) {
-                    profilePopup.style.display = 'none';
-                }
-            });
-        });
-    </script>
-</body>
-</html>
-
-                    </div>
-                    <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- DASHBOARD CONTENT -->
-    <div class="dashboard-container">
-        <div class="dashboard-title">
-            <h1>My Dashboard</h1>
-        </div>
-
-        <!-- NOTIFICATIONS CONTENT -->
-        <div class="right-section">
-            <h2>Notifications</h2>
-            <div class="notifications">
-                <div class="notification-popup">New bid placed by {{ user.first_name }} {{ user.last_name }}!</div>
-                <div class="notification-popup">Congratulations! Your bid has been accepted.</div>
-                <div class="notification-popup">Sarah M. has outbid you on Item #1234.</div>
-                <div class="notification-popup">System update: New features added to SmartBid.</div>
-                <div class="notification-popup">Bid of $200 has been placed on "Vintage Watch".</div>
-                <div class="notification-popup">Mark L. canceled their bid on "Antique Vase".</div>
-                <div class="notification-popup">New bid placed by Emily R. on "Smartphone".</div>
-                <div class="notification-popup">Your profile information has been updated.</div>
-                <div class="notification-popup">New message received from the auction organizer.</div>
-                <div class="notification-popup">Michael T. placed a $500 bid on "Luxury Bag".</div>
-                <div class="notification-popup">Reminder: Auction for "Gaming Console" ends in 2 hours!</div>
-                <div class="notification-popup">Account updated successfully.</div>
-                <div class="notification-popup">James P. has left feedback on your bid.</div>
-                <div class="notification-popup">You have successfully logged in.</div>
-                <div class="notification-popup">New bidder alert: Lisa H. joined the auction!</div>
-                <div class="notification-popup">Upcoming event: Live Auction starts at 7 PM.</div>
+                {% if notifications %}
+                    {% for notification in notifications %}
+                        <div class="notification-popup {% if notification.is_read %}read{% endif %}" 
+                            data-notification-id="{{ notification.id }}"
+                            {% if notification.action_url %}data-action-url="{{ notification.action_url }}"{% endif %}>
+                            {{ notification.content }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="notification-popup">No notifications yet.</div>
+                {% endif %}
             </div>
         </div>
 
@@ -237,6 +129,261 @@
                 }
             });
         });
+        
+        // NOTIFICATIONS
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const showRating = urlParams.get('show_rating');
+            const transactionId = urlParams.get('transaction_id');
+            
+            if (showRating && transactionId) {
+                const ratingPopup = document.getElementById('rating-popup');
+                const rateUserType = document.getElementById('rate-user-type');
+                rateUserType.textContent = showRating === 'seller' ? 'Seller' : 'Buyer';
+                ratingPopup.style.display = 'block';
+                ratingPopup.dataset.transactionId = transactionId;
+            }
+
+            document.querySelectorAll('.notification-popup').forEach(notification => {
+                notification.addEventListener('click', async () => {
+                    const notificationId = notification.dataset.notificationId;
+                    const actionUrl = notification.dataset.actionUrl;
+                    
+                    if (notificationId) {
+                        try {
+                            if (actionUrl && actionUrl.includes('show_rating')) {
+                                // Parse transaction ID from URL
+                                const url = new URL(actionUrl, window.location.origin);
+                                const transactionId = url.searchParams.get('transaction_id');
+                                
+                                console.log('Opening rating popup for transaction:', transactionId);
+                                
+                                // Check if user has already rated this transaction
+                                const checkResponse = await fetch(`/submit_rating/${transactionId}/`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': getCookie('csrftoken')
+                                    }
+                                });
+                                
+                                const checkData = await checkResponse.json();
+                                console.log('Rating check response:', checkData);
+                                
+                                if (checkData.has_rated) {
+                                    alert('You have already submitted a rating for this transaction.');
+                                    return;
+                                }
+                            }
+                            
+                            const response = await fetch(`/notifications/${notificationId}/read/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCookie('csrftoken')
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                notification.classList.add('read');
+                                
+                                if (actionUrl) {
+                                    if (actionUrl.includes('show_rating')) {
+                                        const url = new URL(actionUrl, window.location.origin);
+                                        const showRating = url.searchParams.get('show_rating');
+                                        const transactionId = url.searchParams.get('transaction_id');
+                                        
+                                        const ratingPopup = document.getElementById('rating-popup');
+                                        const rateUserType = document.getElementById('rate-user-type');
+                                        rateUserType.textContent = showRating === 'seller' ? 'Seller' : 'Buyer';
+                                        ratingPopup.dataset.transactionId = transactionId;
+                                        ratingPopup.style.display = 'block';
+                                    } else {
+                                        window.location.href = actionUrl;
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error handling notification:', error);
+                        }
+                    }
+                });
+            });
+
+            // RATING POPUP 
+            let selectedRating = 0;
+            document.querySelectorAll('.star-rating .star').forEach(star => {
+                star.addEventListener('click', (e) => {
+                    selectedRating = parseInt(e.target.dataset.rating);
+                    updateStars(e.target.parentElement, selectedRating);
+                });
+            });
+
+            document.getElementById('submit-rating').addEventListener('click', async () => {
+                const transactionId = document.getElementById('rating-popup').dataset.transactionId;
+                const comment = document.getElementById('rating-comment').value;
+                
+                console.log('Submitting rating:', { transactionId, rating: selectedRating, comment });
+                
+                if (!selectedRating || !transactionId) {
+                    alert('Please select a rating before submitting.');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/submit_rating/${transactionId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({
+                            rating: selectedRating,
+                            comment: comment
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    console.log('Rating submission response:', data);
+                    
+                    if (response.ok) {
+                        document.getElementById('rating-popup').style.display = 'none';
+                        window.history.replaceState({}, '', '/dashboard/');
+                        alert('Rating submitted successfully!');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error submitting rating');
+                    }
+                } catch (error) {
+                    console.error('Error submitting rating:', error);
+                    alert('An unexpected error occurred');
+                }
+            });
+
+            document.querySelector('.close-rating').addEventListener('click', () => {
+                document.getElementById('rating-popup').style.display = 'none';
+                window.history.replaceState({}, '', '/dashboard/');
+            });
+        });
+
+        function updateStars(container, rating) {
+            container.querySelectorAll('.star').forEach(star => {
+                const starRating = parseInt(star.dataset.rating);
+                star.classList.toggle('selected', starRating <= rating);
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
+
+    <style>
+        .notification-popup {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .notification-popup.read {
+            opacity: 0.9;
+            background-color: #f5f5f5;
+        }
+
+        .notification-popup:hover {
+            background-color: #e8f5e9;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 300px;
+        }
+
+        .popup-content h2 {
+            font-size: 20px;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 5px;;
+        }
+
+        .popup-content p {
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ddd;
+            margin: 15px 0;
+        }
+
+        .star {
+            cursor: pointer;
+        }
+
+        .star.selected {
+            color: gold;
+        }
+
+        #rating-comment {
+            width: 100%; 
+            max-width: 400px;
+            min-height: 120px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .close-rating {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        #submit-rating {
+            background-color: #007BFF;
+            color: white;    
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+    </style>
 </body>
 </html>

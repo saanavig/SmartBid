@@ -66,5 +66,7 @@ urlpatterns = [
     path('get_user_balance/', get_user_balance, name='get_user_balance'),
     path('get_user_transactions/<int:user_id>/', get_user_transactions, name='get_user_transactions'),
     path('get_user_num_complaints/<int:user_id>/', get_user_num_complaints, name='get_user_num_complaints'),
+    path('notifications/', views.get_notifications, name='get_notifications'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
 ]
 

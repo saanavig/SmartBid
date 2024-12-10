@@ -8,25 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Details</title>
     <link rel="stylesheet" href="{% static 'listing.css' %}">
-    <style>
-        .bid-message {
-            color: #666;
-            font-style: italic;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .bid-status {
-            padding: 15px;
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border-radius: 4px;
-            text-align: center;
-            margin: 10px 0;
-            font-weight: bold;
-        }
-    </style>
 </head>
 
 <body>
@@ -44,9 +25,7 @@
                     <a class="login-btn">You</a>
                     <div class="dropdown-content">
                         <a href="{% url 'dashboard' %}">Dashboard</a>
-                        {% if user.is_staff %}  <!-- Only show Admin link if user is staff -->
-                            <a href="{% url 'adminPage' %}">Admin</a>
-                        {% endif %}
+                        <a href="{% url 'adminPage' %}">Admin</a>
                         <a href="{% url 'profile' %}">Profile</a>
                         <a href="{% url 'logout' %}">Sign Out</a>
                     </div>
@@ -56,9 +35,9 @@
             </div>
         </div>
 
-        <!-- Top Section -->
+        <!-- TOP SECTION -->
         <div class="top-section">
-            <!-- Left Section: Image Carousel-->
+            <!-- LEFT SECTION: IMAGE CAROUSEL-->
             <div class="left-section">
                 <div class="image-carousel">
                     <div class="thumbnail-container">
@@ -72,9 +51,9 @@
                 </div>
             </div>
 
-            <!-- Popups: Group all popups together -->
+            <!-- ALL POPUSr -->
             <div class="popups-container">
-                <!-- Bid Popup -->
+                <!-- START BIDDING POPUP -->
                 <form id="bid-popup" class="popup">
                     <div class="popup-content">
                         <span class="close-listing" id="close-button">&times;</span>
@@ -94,7 +73,7 @@
                     </div>
                 </form>
 
-                <!--CONFIRMATION POPUP-->
+                <!-- SUCCESSFUL BIDDING POPUP-->
                 <form id="confirmation-popup" class="popup">
                     <div class="popup-content">
                         <span class="close-listing" id="close-confirmation-button">&times;</span>
@@ -107,42 +86,6 @@
                         </div>
                     </div>
                 </form>
-
-                <!-- Rating Popup for Seller -->
-                <div id="seller-rating-popup" class="popup">
-                    <div class="popup-content">
-                        <span class="close-rating">&times;</span>
-                        <h2>Rate Buyer</h2>
-                        <p>Your item "<span id="listing-title"></span>" has been delivered and shipped to <span id="buyer-name"></span>.</p>
-                        <div class="star-rating">
-                            <span class="star" data-rating="1">★</span>
-                            <span class="star" data-rating="2">★</span>
-                            <span class="star" data-rating="3">★</span>
-                            <span class="star" data-rating="4">★</span>
-                            <span class="star" data-rating="5">★</span>
-                        </div>
-                        <textarea id="rating-comment" placeholder="Add a comment (optional)"></textarea>
-                        <button id="submit-rating" class="rating-submit-btn">Submit Rating</button>
-                    </div>
-                </div>
-
-                <!-- Rating Popup for Buyer -->
-                <div id="buyer-rating-popup" class="popup">
-                    <div class="popup-content">
-                        <span class="close-rating">&times;</span>
-                        <h2>Rate Seller</h2>
-                        <p>Your item "<span id="listing-title-buyer"></span>" has been received. Rate <span id="seller-name"></span>.</p>
-                        <div class="star-rating">
-                            <span class="star" data-rating="1">★</span>
-                            <span class="star" data-rating="2">★</span>
-                            <span class="star" data-rating="3">★</span>
-                            <span class="star" data-rating="4">★</span>
-                            <span class="star" data-rating="5">★</span>
-                        </div>
-                        <textarea id="rating-comment-buyer" placeholder="Add a comment (optional)"></textarea>
-                        <button id="submit-rating-buyer" class="rating-submit-btn">Submit Rating</button>
-                    </div>
-                </div>
             </div>
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
@@ -163,19 +106,7 @@
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
                     {% else %}
-                        {% with user_has_bid=False %}
-                            {% for bid in bids %}
-                                {% if bid.user.id == user.id and bid.listing_id == listing.id %}
-                                    {% with user_has_bid=True %}{% endwith %}
-                                {% endif %}
-                            {% endfor %}
-                            
-                            {% if user_has_bid %}
-                                <p class="bid-message">You've already placed a bid. Check your bid status below.</p>
-                            {% else %}
-                                <button class="bid-button" id="bid-button">Start Bidding</button>
-                            {% endif %}
-                        {% endwith %}
+                        <button class="bid-button" id="bid-button">Start Bidding</button>
                     {% endif %}
                 {% else %}
                     <a href="{% url 'login' %}" class="bid-button" style="text-decoration: none;">Login to Bid</a>
@@ -185,7 +116,7 @@
 
         <!-- BOTTOM SECTION: COMMENTS -->
         <div class="bottom-section">
-            <!-- Comment Input -->
+            <!-- COMMENT INPUT -->
             <form method="POST" action="{% url 'create_comment' listing.id %}" class="comment-form">
                 {% csrf_token %}
                 <div class="comment-input">
@@ -199,7 +130,7 @@
                 </div>
             </form>
 
-            <!-- Comments and Bids Container -->
+            <!-- COMMENDS AND BIDS CONTAINER -->
             <div class="align-bottom">
                 <!-- COMMENT DISPLAYS SECTION -->
                 <div class="comments">
@@ -217,6 +148,7 @@
                     {% endfor %}
                 </div>
 
+                <!-- CURRENT BIDS SECTION -->
                 <div class="current-bids">
                     {% if listing.availability == 'sold' %}
                         <h2>Bid Completed</h2>
@@ -258,18 +190,12 @@
             const closeConfirmationButton = document.getElementById('close-confirmation-button');
 
             function changeImage(thumbnail) {
-                // Get the larger image element
                 const largeImage = document.querySelector("#displayed-image img");
-
-                // Update the src of the larger image
                 largeImage.src = thumbnail.src;
-
-                // Remove the active class from all thumbnails
                 document.querySelectorAll(".thumbnail-container img").forEach(img => {
                     img.classList.remove("active");
                 });
 
-                // Add the active class to the clicked thumbnail
                 thumbnail.classList.add("active");
             }
 
@@ -295,9 +221,7 @@
                 const userBalance = parseFloat("{{ user_balance }}");
                 const invalidMessage = document.getElementById('invalid');
 
-                // First check if bid is valid and higher than current highest
                 if (!isNaN(amount) && amount > currentHighest) {
-                    // Then check if user has enough balance
                     if (amount > userBalance) {
                         invalidMessage.innerText = `Insufficient funds. Your balance is $${userBalance.toFixed(2)}`;
                         return;
@@ -349,55 +273,12 @@
                 return cookieValue;
             }
 
-            function setRating(rating) {
-                currentRating = rating;
-
-                const stars = document.querySelectorAll("#star-rating .star");
-                stars.forEach((star, index) => {
-                    if (index < rating) {
-                        star.classList.add("selected");
-                    } else {
-                        star.classList.remove("selected");
-                    }
-                });
-
-                //console.log(`Rating: ${rating}`); // Check it works
-            }
-
-            rateButton.addEventListener('click', (event) => {
-                event.preventDefault();
-
-                ratePopup.style.display = 'none';
-                startBidButton.disabled = true; // disabled button for now once bid already made
-                startBidButton.style.background = 'grey';
-
-                // Process rating logic (send to database) NOT DONE YET
-                // {currentRating}/5
-            });
-
-            function changeImage(thumbnail)
-            {
-                const largeImage = document.querySelector("#displayed-image img");
-
-                largeImage.src = thumbnail.src;
-
-                document.querySelectorAll(".thumbnail-container img").forEach(img => {
-                    img.classList.remove("active");
-                });
-
-                thumbnail.classList.add("active");
-            }
-
             function clearComment() {
                 const commentInput = document.querySelector(".comment-input input[type='text']");
                 const commentsContainer = document.querySelector(".comments");
 
-                // Clear the input field
                 commentInput.value = "";
             }
-
-            // Add event listeners for Accept and Decline buttons
-
 
             function declineBid(bidId) {
                 if (confirm("Are you sure you want to decline this bid?")) {
@@ -411,10 +292,9 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            // Refresh the page if the bid was successfully declined
                             location.reload();
                         } else {
-                            alert(data.message);  // Alert if something went wrong
+                            alert(data.message); 
                         }
                     })
                     .catch(error => {
@@ -436,12 +316,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            // Show seller rating popup
-                            const sellerRatingPopup = document.getElementById('seller-rating-popup');
-                            document.getElementById('listing-title').textContent = data.listing_title;
-                            document.getElementById('buyer-name').textContent = data.buyer_name;
-                            currentTransactionId = data.transaction_id;
-                            sellerRatingPopup.style.display = 'block';
+                            alert('Bid accepted successfully! The transaction has been completed. Check your dashboard for rating options.');
+                            location.reload();
                         } else {
                             alert(data.message || 'Failed to accept bid');
                         }
@@ -452,60 +328,6 @@
                     });
                 }
             }
-
-            let currentTransactionId = null;
-            let selectedRating = 0;
-
-            // Handle star rating selection
-            document.querySelectorAll('.star-rating .star').forEach(star => {
-                star.addEventListener('click', (e) => {
-                    selectedRating = parseInt(e.target.dataset.rating);
-                    updateStars(e.target.parentElement, selectedRating);
-                });
-            });
-
-            function updateStars(container, rating) {
-                container.querySelectorAll('.star').forEach(star => {
-                    const starRating = parseInt(star.dataset.rating);
-                    star.classList.toggle('selected', starRating <= rating);
-                });
-            }
-
-            // Handle rating submission
-            document.getElementById('submit-rating').addEventListener('click', async () => {
-                if (!selectedRating || !currentTransactionId) return;
-                
-                const comment = document.getElementById('rating-comment').value;
-                
-                try {
-                    const response = await fetch(`/submit_rating/${currentTransactionId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({
-                            rating: selectedRating,
-                            comment: comment
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        document.getElementById('seller-rating-popup').style.display = 'none';
-                        // Refresh the page or update UI as needed
-                        location.reload();
-                    }
-                } catch (error) {
-                    console.error('Error submitting rating:', error);
-                }
-            });
-
-            // Close rating popup
-            document.querySelectorAll('.close-rating').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.target.closest('.popup').style.display = 'none';
-                });
-            });
         </script>
     </div>
 </body>

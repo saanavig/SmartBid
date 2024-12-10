@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 * {
@@ -556,4 +555,22 @@ body {
 
 .decline-button:hover {
     background-color: #d32f2f;
+}
+
+.bid-message {
+    color: #666;
+    font-style: italic;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+.bid-status {
+    padding: 15px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 4px;
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
 }

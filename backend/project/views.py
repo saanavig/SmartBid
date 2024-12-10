@@ -164,7 +164,59 @@ class CustomLoginView(LoginView):
 
 # Homepage View
 def homepage(request):
-    return render(request, 'homepage.html')
+    try:
+        # Get listings by category
+        electronics = Listing.objects.filter(category='Electronics')
+        school_essentials = Listing.objects.filter(category='School Essentials')
+        fashion = Listing.objects.filter(category='Fashion & Apparel')
+        accessories = Listing.objects.filter(category='Accessories & Gadgets')
+        home_kitchen = Listing.objects.filter(category='Home & Kitchen')
+
+        # Add highest bid information to each listing
+        for listings in [electronics, school_essentials, fashion, accessories, home_kitchen]:
+            for listing in listings:
+                # Get highest bid from Supabase
+                bids_response = supabase.table('bids')\
+                    .select(
+                        'amount',
+                        'user_id',
+                        'users(first_name,last_name)'
+                    )\
+                    .eq('listing_id', listing.id)\
+                    .eq('status', 'pending')\
+                    .order('amount', desc=True)\
+                    .execute()
+
+                # Process bid information
+                highest_bid = float(listing.price)  # Default to listing price
+                highest_bidder = None
+                
+                if bids_response.data:
+                    for bid in bids_response.data:
+                        bid_amount = float(bid['amount'])
+                        if bid_amount > highest_bid:
+                            highest_bid = bid_amount
+                            highest_bidder = {
+                                'id': bid['user_id'],
+                                'name': f"{bid['users']['first_name']} {bid['users']['last_name']}"
+                            }
+
+                # Add the information to the listing object
+                listing.highest_bid = "{:.2f}".format(highest_bid)
+                listing.highest_bidder = highest_bidder
+
+        context = {
+            'electronics': electronics,
+            'school_essentials': school_essentials,
+            'fashion': fashion,
+            'accessories': accessories,
+            'home_kitchen': home_kitchen,
+        }
+        
+        return render(request, 'homepage.html', context)
+    except Exception as e:
+        print(f"Error in homepage: {str(e)}")
+        return render(request, 'homepage.html', {'error': 'Unable to load listings'})
 
 # Profile View (Login Required)
 # @login_required
@@ -223,10 +275,28 @@ def account(request):
 # Dashboard View
 @login_required
 def dashboard(request):
-    if request.user.is_superuser:
-        return render(request, 'admin.html', {'admin_dashboard': True})
-    else:
-        return render(request, 'dashboard.html', {'user_dashboard': True})
+    try:
+        # Fetch notifications for the user
+        notifications = supabase.table('notifications')\
+            .select('*')\
+            .eq('user_id', request.user.id)\
+            .order('created_at', desc=True)\
+            .limit(20)\
+            .execute()
+
+        context = {
+            'user_dashboard': True,
+            'is_superuser': request.user.is_superuser,
+            'notifications': notifications.data if notifications.data else []
+        }
+        return render(request, 'dashboard.html', context)
+    except Exception as e:
+        print(f"Error fetching dashboard data: {str(e)}")
+        return render(request, 'dashboard.html', {
+            'user_dashboard': True,
+            'is_superuser': request.user.is_superuser,
+            'error': 'Unable to load notifications'
+        })
 
 # Dashboard's My Account View
 # @login_required
@@ -648,18 +718,14 @@ def listing(request, id):
                         'name': f"{bid['users']['first_name']} {bid['users']['last_name']}"
                     }
 
-        # If no bids, use listing price as starting bid
         if highest_bid == 0:
             highest_bid = float(listing_data.get('price', 0))
 
-        # Format the highest bid to 2 decimal places
         highest_bid = "{:.2f}".format(highest_bid)
-
-        # Debug user authentication
+     
         print(f"User authenticated: {request.user.is_authenticated}")
         print(f"User email: {request.user.email if request.user.is_authenticated else 'Not logged in'}")
 
-        # Get user's balance if authenticated
         user_balance = 0
         if request.user.is_authenticated:
             balance_response = supabase.table('users')\
@@ -1150,6 +1216,23 @@ def accept_bid(request, bid_id):
                     .update({'availability': 'sold'})\
                     .eq('id', listing_id)\
                     .execute()
+                
+                create_notification(
+                    buyer_id,
+                    f"Your bid of ${amount} on {bid['listing']['title']} has been accepted! Please rate the seller.",
+                    'rating_needed',
+                    related_id=transaction_response.data[0]['id'],
+                    action_url=f"/dashboard/?show_rating=seller&transaction_id={transaction_response.data[0]['id']}"
+                )
+
+                create_notification(
+                    seller_id,
+                    f"You've accepted a bid of ${amount} from {bid['user']['first_name']}. Please rate the buyer.",
+                    'rating_needed',
+                    related_id=transaction_response.data[0]['id'],
+                    action_url=f"/dashboard/?show_rating=buyer&transaction_id={transaction_response.data[0]['id']}"
+                )
+
                 return JsonResponse({
                     'status': 'success',
                     'transaction_id': transaction_response.data[0]['id'],
@@ -1177,15 +1260,38 @@ def accept_bid(request, bid_id):
 def decline_bid(request, bid_id):
     if request.method == 'POST':
         try:
-            print(f"Attempting to decline bid {bid_id}")  # Debug log
-            # Update the bid status in Supabase
+            print(f"Attempting to decline bid {bid_id}")
+            
+            # Get bid details first
+            bid_response = supabase.table('bids')\
+                .select('*, listing:listings(*), user:users(*)')\
+                .eq('id', bid_id)\
+                .single()\
+                .execute()
+                
+            if not bid_response.data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Bid not found'
+                }, status=404)
+            
+            bid = bid_response.data
+            
+            # Update bid status
             response = supabase.table('bids')\
                 .update({'status': 'rejected'})\
                 .eq('id', bid_id)\
                 .execute()
 
-            # Check if the update was successful by checking if data was returned
             if response.data:
+                # Create notification for the bidder
+                create_notification(
+                    bid['user_id'],
+                    f"Your bid of ${bid['amount']} on {bid['listing']['title']} has been declined.",
+                    'bid_declined',
+                    related_id=bid['listing_id'],
+                    action_url=f"/listing/{bid['listing_id']}/"
+                )
                 return JsonResponse({'status': 'success'})
             else:
                 return JsonResponse({
@@ -1201,34 +1307,101 @@ def decline_bid(request, bid_id):
 
 @login_required
 def submit_rating(request, transaction_id):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        try:
+            # Check if user has already rated this transaction
+            existing_rating = supabase.table('ratings')\
+                .select('id')\
+                .eq('transaction_id', transaction_id)\
+                .eq('rater_user_id', request.user.id)\
+                .execute()
+            
+            return JsonResponse({
+                'has_rated': bool(existing_rating.data)
+            })
+        except Exception as e:
+            print(f"Error checking existing rating: {str(e)}")
+            return JsonResponse({
+                'error': str(e)
+            }, status=500)
+            
+    elif request.method == 'POST':
         try:
             data = json.loads(request.body)
             rating_value = data.get('rating')
             comment = data.get('comment')
-
-            transaction = Transaction.objects.get(id=transaction_id)
-
-            if request.user == transaction.buyer:
-                rated_user = transaction.seller
+            
+            print(f"Submitting rating for transaction {transaction_id}")
+            print(f"Rating data received: {data}")
+            
+            # Check if user has already rated this transaction
+            existing_rating = supabase.table('ratings')\
+                .select('id')\
+                .eq('transaction_id', transaction_id)\
+                .eq('rater_user_id', request.user.id)\
+                .execute()
+                
+            print(f"Existing rating check: {existing_rating.data}")
+            
+            if existing_rating.data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'You have already rated this transaction'
+                }, status=400)
+            
+            # Get transaction details from Supabase
+            transaction = supabase.table('transactions')\
+                .select('*')\
+                .eq('id', transaction_id)\
+                .single()\
+                .execute()
+            print(f"Transaction data: {transaction.data}")
+            if not transaction.data:
+                return JsonResponse({
+                    'error': 'Transaction not found',
+                    'transaction_id': transaction_id
+                }, status=404)
+            if request.user.id == transaction.data['buyer_id']:
+                rated_user_id = transaction.data['seller_id']
             else:
-                rated_user = transaction.buyer
-
-            # Create the rating
-            Rating.objects.create(
-                rater_user=request.user,
-                rated_user=rated_user,
-                transaction=transaction,
-                rating=rating_value,
-                comment=comment
-            )
-
-            return JsonResponse({'status': 'success'})
-
+                rated_user_id = transaction.data['buyer_id']
+            rating_data = {
+                'rater_user_id': request.user.id,
+                'rated_user_id': rated_user_id,
+                'transaction_id': transaction_id,
+                'rating': rating_value,
+                'comment': comment,
+                'created_at': 'now()'
+            }
+            print(f"Attempting to create rating with data: {rating_data}")
+            try:
+                rating_response = supabase.table('ratings')\
+                    .insert(rating_data)\
+                    .execute()
+                print(f"Rating creation response: {rating_response.data}")
+                return JsonResponse({'status': 'success'})
+            except Exception as e:
+                print(f"Error inserting rating: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Failed to create rating: {str(e)}'
+                }, status=500)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            print(f"Error in submit_rating: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e),
+                'details': {
+                    'transaction_id': transaction_id,
+                    'user_id': request.user.id
+                }
+            }, status=500)
 
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+    # Add this default return for invalid methods
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)
 
 #suspension fee
 @login_required
@@ -1344,3 +1517,53 @@ def get_user_num_complaints(request, user_id):
 @login_required
 def viplounge (request):
     return render(request, 'viplounge.html')
+
+def create_notification(user_id, content, notification_type, related_id=None, action_url=None):
+    try:
+        notification_data = {
+            'user_id': user_id,
+            'content': content,
+            'notification_type': notification_type,
+            'related_id': related_id,
+            'action_url': action_url,
+            'created_at': 'now()'
+        }
+        supabase.table('notifications').insert(notification_data).execute()
+    except Exception as e:
+        print(f"Error creating notification: {str(e)}")
+
+@login_required
+def get_notifications(request):
+    try:
+        notifications = supabase.table('notifications')\
+            .select('*')\
+            .eq('user_id', request.user.id)\
+            .order('created_at', desc=True)\
+            .limit(20)\
+            .execute()
+
+        return JsonResponse({
+            'status': 'success',
+            'notifications': notifications.data
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@login_required
+def mark_notification_read(request, notification_id):
+    if request.method == 'POST':
+        try:
+            print(f"Processing notification {notification_id}")
+            response = supabase.table('notifications')\
+                .update({'is_read': True})\
+                .eq('id', notification_id)\
+                .execute()
+            print(f"Update response: {response.data}")
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            print(f"Error marking notification as read: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'})

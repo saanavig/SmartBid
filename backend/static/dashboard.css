@@ -241,13 +241,96 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
+        .notification-popup {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+            margin-right: 5px;
+        }
 
-.notification-popup {
-    padding: 10px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    color: #333;
-    margin-right: 5px;
-}
+        .notification-popup.read {
+            opacity: 0.9;
+            background-color: #f5f5f5;
+        }
+
+        .notification-popup:hover {
+            background-color: #e8f5e9;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 300px;
+        }
+
+        .popup-content h2 {
+            font-size: 20px;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 5px;;
+        }
+
+        .popup-content p {
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ddd;
+            margin: 15px 0;
+        }
+
+        .star {
+            cursor: pointer;
+        }
+
+        .star.selected {
+            color: gold;
+        }
+
+        #rating-comment {
+            width: 100%; 
+            max-width: 400px;
+            min-height: 120px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .close-rating {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        #submit-rating {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
