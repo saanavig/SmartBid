@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Lounge</title>
-    <link rel="stylesheet" href="../../../static/viplounge.css">
+    <link rel="stylesheet" href="../../static/viplounge.css">
 </head>
+
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
@@ -14,6 +16,7 @@
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>
         </div>
+
 
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
@@ -27,36 +30,42 @@
             </div>
         </div>
 
-        <!-- PROFILE POPUP -->
+    <!-- PROFILE POPUP -->
     <div id="profile-popup" class="profile-popup">
         <div class="profile-popup-content">
             <span class="close">&times;</span>
             <h1>My Profile</h1>
-
-            <!-- templates/profile.html -->
-            <h1>Welcome User {{ user.username }}!</h1>
-
             <div class="profile-popup-info">
                 <div class="align-profile">
                     <p>{{ user.first_name }} {{ user.last_name }}</p>
                     <p>- 3.6 (7 Ratings)</p>
                 </div>
-            <p>Email: {{ user.email }}</p>
-            <p>First Name: {{ user.first_name }}</p>
-            <p>Last Name: {{ user.last_name }}</p>
-            <!-- Add more profile information as needed -->
-
-            <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-            <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+                <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
+                <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
             </div>
         </div>
     </div>
+</div>
+    
+
 
     <!-- VIP LOUNGE CONTENT -->
     <div class="vip-lounge-container">
         <div class="vip-lounge-title">
             <h1>VIP Lounge</h1>
-            <p><b>Congratulations!</b> Learn more about what it means to be a VIP on SmartBid below!</p>
+            <p>Learn more about what it means to be a VIP on SmartBid below!</p>
+            <b>Congratulations! You are a VIP Member!</b> 
+        </div>
+
+        <!-- VIP MAINTENANCE CONTENT -->
+        <div class="vip-maintenance">
+            <h2>VIP Status</h2>
+            <p>Meet these requirements below to become VIP:</p> <br>
+            <input type="checkbox" id="balance-checkbox" style="pointer-events: none;"> Maintain a balance of at least $5,000 in your account <br>
+            <input type="checkbox" id="transactions-checkbox" style="pointer-events: none;"> Conducted more than 5 transactions <br>
+            <input type="checkbox" id="complaints-checkbox" checked style="pointer-events: none;"> No complaints filed against you <br>
+
+            <p>If you are a VIP and violate any two of the above conditions, say bye to your VIP status!</p>
         </div>
 
         <!-- VIP PERKS CONTENT -->
@@ -69,41 +78,138 @@
                 <li>Your profile will now feature an epic VIP badge.</li>
             </ul>
         </div>
-
-        <!-- VIP MAINTENANCE CONTENT -->
-        <div class="vip-maintenance">
-            <h2>VIP Maintenance</h2>
-            <ul>
-                <li>Maintain a balance of at least $5,000 in your account.</li>
-                <li>You must conduct more than 5 transactions.</li>
-                <li>No users have filed a complaint against you.</li>
-            </ul>
-            <p>If you violate any two of the above conditions, say bye to your VIP status!</p>
-        </div>
     </div>
 
     <script>
         // OPEN PROFILE
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const profilePopup = document.getElementById('profile-popup');
             const closePopupBtn = document.querySelector('.close');
             const profileLink = document.querySelector('.dropdown-content a[href="profile.html"]');
+            const balanceCheckbox = document.getElementById('balance-checkbox');
+            const transactionsCheckbox = document.getElementById('transactions-checkbox');
+            const complaintsCheckbox = document.getElementById('complaints-checkbox');
 
-            profileLink.addEventListener('click', function(event) {
+            profileLink.addEventListener('click', function (event) {
                 event.preventDefault();
                 profilePopup.style.display = 'block';
             });
 
-            closePopupBtn.addEventListener('click', function() {
+            closePopupBtn.addEventListener('click', function () {
                 profilePopup.style.display = 'none';
             });
 
-            window.addEventListener('click', function(event) {
+            window.addEventListener('click', function (event) {
                 if (event.target === profilePopup) {
                     profilePopup.style.display = 'none';
                 }
             });
+
+            // Fetch user balance from Supabase
+            async function fetchUserBalance() {
+                try {
+                    const response = await fetch('/get_user_balance/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    console.log('API Response:', data); // Log the API response
+
+                    // Check if user data is found
+                    if (data.balance !== undefined) {
+                        const balance = data.balance; // Get the balance from the response
+                        console.log(`User balance: ${balance}`); // Log the balance
+
+                        // Check the checkbox if balance is greater than or equal to 5000
+                        balanceCheckbox.checked = balance >= 5000;
+                    } else {
+                        console.log('No user data found.'); // Log if no data is found
+                    }
+                } catch (error) {
+                    console.error('Error fetching user balance:', error); // Log any errors
+                }
+            }
+
+            // Fetch user transaction count from Supabase
+            async function fetchUserTransactionCount(userId) {
+                try {
+                    const response = await fetch(`/get_user_transactions/${userId}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    console.log('Transaction Count Response:', data); // Log the API response
+
+                    // Check if user data is found
+                    if (data.num_transactions !== undefined) {
+                        const numTransactions = data.num_transactions; // Get the transaction count from the response
+                        console.log(`User transactions: ${numTransactions}`); // Log the transaction count
+
+                        // Check the checkbox if transactions are greater than or equal to 5
+                        transactionsCheckbox.checked = numTransactions >= 5;
+                    } else {
+                        console.log('No transaction data found.'); // Log if no data is found
+                    }
+                } catch (error) {
+                    console.error('Error fetching user transaction count:', error); // Log any errors
+                }
+            }
+
+            // Fetch user transaction count from Supabase
+            async function fetchUserNumComplaints(userId) {
+                try {
+                    const response = await fetch(`/get_user_num_complaints/${userId}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    console.log('numComplaints Count Response:', data); // Log the API response
+
+                    // Check if user data is found
+                    if (data.num_complaints !== undefined) {
+                        const numComplaints = data.num_complaints; // Get the complaint count from the response
+                        console.log(`User complaints: ${numComplaints}`); // Log the complaint count
+
+                        // Check the checkbox if complaints are 0
+                        complaintsCheckbox.checked = numComplaints === 0;
+                    } else {
+                        console.log('No complaints data found.'); // Log if no data is found
+                    }
+                } catch (error) {
+                    console.error('Error fetching user num complaints:', error); // Log any errors
+                }
+            }
+
+            // Fetch user balance and transaction count
+            const userId = '{{ user.id }}'; // Assuming you have access to the logged-in user's ID
+            fetchUserBalance();
+            fetchUserTransactionCount(userId);
+            fetchUserNumComplaints(userId);
+
+
         });
     </script>
 </body>
+
 </html>

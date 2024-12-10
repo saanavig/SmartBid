@@ -20,7 +20,7 @@ from dashboard import views
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 #from .views import CustomSignupView
-from .views import homepage, profile, CustomSignupView, CustomLoginView, update_application_status, visitor_access, visitor_message
+from .views import homepage, profile, CustomSignupView, CustomLoginView, update_application_status, visitor_access, visitor_message, get_user_num_complaints, get_user_balance, get_user_transactions, viplounge
 from . import views
 from django.contrib.auth.views import LogoutView
 
@@ -61,5 +61,10 @@ urlpatterns = [
     path('visitor_message/', views.visitor_message, name='visitor_message'),
     path('suspension-fee/', views.suspension_fee, name='suspension_fee'),
     #path('check-account-status/', views.check_account_status, name='check_account_status'),
+    path('get_user_num_complaints/<int:user_id>/', get_user_num_complaints, name='get_user_num_complaints'),
+    path('dashboard/viplounge/', views.viplounge, name='viplounge'),
+    path('get_user_balance/', get_user_balance, name='get_user_balance'),
+    path('get_user_transactions/<int:user_id>/', get_user_transactions, name='get_user_transactions'),
+    path('get_user_num_complaints/<int:user_id>/', get_user_num_complaints, name='get_user_num_complaints'),
 ]
 

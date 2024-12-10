@@ -14,7 +14,7 @@
                 <h1 style="margin: 0;">SmartBid <span>💡</span></h1>
             </a>
         </div>
- 
+
         <!-- DROPDOWN FOR USER OPTIONS -->
         <div class="dropdown">
             <a class="login-btn">You</a>
@@ -35,10 +35,10 @@
                 <div class="profile-popup-info">
                     <div class ="align-profile">
                         <p>{{ user.first_name }} {{ user.last_name }}</p>
-                        <p>- 3.6 (7 Ratings)</p>
+                        <p> - 3.6 (7 Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> 25</p>
+                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
         <div class="manage-account-status">
             <h2>Manage Account Status</h2>
             <p>Manage your status or pay a fee.</p>
-            <h3>Account Status: <span id="account-status">Loading...</span></h3>
+            <h3>Account Status: <span id="account-status">{{ request.session.user_status }}</span></h3>
             <a href="#" onclick="openPopup()">Deactivate Account</a>
             <h3>Current Fee: $50.00</h3>
             <a href="#" onclick="openPayFeePopup()">Pay Fee</a>
@@ -208,100 +208,38 @@
             if (payFeePopup) {
                 payFeePopup.style.display = 'flex';
             }
+        }
 
-            {% comment %} try {
-                const response = await fetch('/check-account-status/', {
+        // Pay Fee Popup
+
+        async function closePayFeePopup() {
+            try {
+                const response = await fetch('/suspension-fee/', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCsrfToken(),
                     }
                 });
                 const data = await response.json();
-
-                if (data.status === 'active') {
-                    alert('Your account is already activated!');
-                } else {
-                    document.getElementById('pay-fee-popup').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error checking account status');
-            } {% endcomment %}
-        }
-
-        // Function to handle payment and balance update inside closePayFeePopup()
-        {% comment %} async function closePayFeePopup() {
-            const payFeePopup = document.getElementById('pay-fee-popup');
-            if (payFeePopup) {
-                payFeePopup.style.display = 'none';
-            }
-
-            const { data: { user }, error: authError } = await supabaseClient.auth.getUser ();
-
-            try {
-                // Get the user's current balance from the database
-                const { data: userData, error: fetchError } = await supabaseClient
-                    .from('users')
-                    .select('balance')
-                    .eq('id', user.id)
-                    .single();
-
-                if (fetchError) {
-                    console.error('Error fetching user data:', fetchError.message);
-                    return;
-                }
-
-                let currentBalance = userData.balance || 0; // Default to 0 if balance is undefined
-
-                if (currentBalance >= 50) {
-                    // Subtract 50 from the current balance
-                    const newBalance = currentBalance - 50;
-
-                    // Update the balance in the database
-                    const { error: updateError } = await supabaseClient
-                        .from('users')  // Replace with your table name
-                        .update({ balance: newBalance })
-                        .eq('id', user.id);
-
-                    if (updateError) {
-                        console.error('Error updating balance:', updateError.message);
-                        return;
+                if (data.success) {
+                    // Update the account status display
+                    const statusElement = document.getElementById('account-status');
+                    if (statusElement) {
+                        statusElement.textContent = 'active';
                     }
 
-                    document.getElementById('current-balance').textContent = `$${newBalance.toFixed(2)}`;
-                } else {
-                    alert('Insufficient balance to pay the fee.');
-                }
-            } catch (error) {
-                console.error('Error processing payment:', error.message);
-            }
-        }
- {% endcomment %}
+                    document.getElementById('pay-fee-popup').style.display = 'none';
+                    alert('Payment successful! Your account has been reactivated.');
 
-        // Pay Fee Popup
-
-        async function closePayFeePopup()
-        {
-            fetch('/suspension-fee/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCsrfToken(),
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Account reactivated successfully!');
-                    window.location.reload();
+                    //window.location.reload();
                 } else {
                     alert(data.error || 'Failed to process payment');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to process payment');
-            });
+            }
         }
 
         function getCsrfToken() {
@@ -405,7 +343,6 @@
             }
         });
 
-
     </script>
 </body>
-</html
+</html>

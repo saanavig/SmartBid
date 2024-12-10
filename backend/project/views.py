@@ -1237,12 +1237,17 @@ def suspension_fee(request):
         return JsonResponse({'error': 'Invalid request method'}, status=400)
 
     try:
-        balance_response = supabase.table('users')\
-            .select('balance')\
+        # Get user's current balance and status from Supabase
+        user_response = supabase.table('users')\
+            .select('balance, status', 'id')\
             .eq('email', request.user.email)\
             .single()\
             .execute()
-        current_balance = float(balance_response.data['balance']) if balance_response.data else 0
+
+        if not user_response.data:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        current_balance = float(user_response.data['balance'])
         fee_amount = 50.00
 
         if current_balance < fee_amount:
@@ -1259,22 +1264,83 @@ def suspension_fee(request):
             .eq('email', request.user.email)\
             .execute()
 
-        return JsonResponse({'success': True, 'new_balance': new_balance})
+        # Update Django session
+        request.session['user_status'] = 'active'
+        request.session.modified = True
+
+        # Update the user model if you have a status field
+        try:
+            user = request.user
+            user.status = 'active'
+            user.save()
+        except Exception as user_error:
+            print(f"Error updating user model: {str(user_error)}")
+
+        return JsonResponse({
+            'success': True,
+            'new_balance': new_balance,
+            'status': 'active'
+        })
 
     except Exception as e:
         print(f"Error processing reactivation fee: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
-# @login_required
-# def check_account_status(request):
-#     try:
-#         response = supabase.table('users')\
-#             .select('status')\
-#             .eq('email', request.user.email)\
-#             .single()\
-#             .execute()
-#         return JsonResponse({
-#             'status': response.data.get('status', 'inactive')
-#         })
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
+@login_required
+def get_user_num_complaints(request, user_id):
+    try:
+        response = supabase.table('users').select('num_complaints').eq('id', user_id).execute()
+        num_complaints = response.data[0]['num_complaints'] if response.data else 0
+
+        return JsonResponse({'num_complaints': num_complaints}, status=200)
+    except Exception as e:
+        print(f"Error fetching user num complaints: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def get_user_balance(request):
+    user_id = request.user.id  # Get the logged-in user's ID
+    try:
+        # Fetch user data from Supabase
+        response = supabase.table('users').select('balance').eq('id', user_id).execute()
+
+        if response.data:
+            balance = response.data[0]['balance']  # Assuming balance is a column in your users table
+            return JsonResponse({'balance': balance}, status=200)
+        else:
+            return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def get_user_transactions(request, user_id):
+    try:
+        # Fetch the number of transactions for the user from the users table
+        response = supabase.table('users').select('num_transactions').eq('id', user_id).execute()
+
+        # Extract the count from the response
+        num_transactions = response.data[0]['num_transactions'] if response.data else 0
+
+        return JsonResponse({'num_transactions': num_transactions}, status=200)
+    except Exception as e:
+        print(f"Error fetching user transactions: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def get_user_num_complaints(request, user_id):
+    try:
+        # Fetch the number of transactions for the user from the users table
+        response = supabase.table('users').select('num_complaints').eq('id', user_id).execute()
+
+        # Extract the count from the response
+        num_complaints = response.data[0]['num_complaints'] if response.data else 0
+
+        return JsonResponse({'num_complaints': num_complaints}, status=200)
+    except Exception as e:
+        print(f"Error fetching user num complaints: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def viplounge (request):
+    return render(request, 'viplounge.html')
