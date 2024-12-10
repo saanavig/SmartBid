@@ -303,7 +303,6 @@ def dashboard(request):
 # def account(request):
 #     return render(request, 'account.html')
 
-
 # Dashboard's View Bids
 @login_required
 def viewbids(request):
@@ -377,9 +376,32 @@ def viewbids(request):
             print(f"Error in listing creation: {str(e)}")
             return render(request, 'viewbids.html', {'error': 'Failed to create listing'})
 
-    # Get all listings for display
+    # Get all listings + user transactions for display
     listings = supabase.table('listings').select('*').eq('user_id', request.user.id).execute()
-    return render(request, 'viewbids.html', {'all_listings': listings.data})
+    images = supabase.table('listing_images').select('*').execute()
+    transactions = supabase.table('transactions').select('*').eq('buyer_id', request.user.id).execute()
+
+    # Create a mapping of listing_id to images
+    listing_images = {}
+    for image in images.data:
+        listing_id = image['listing_id']
+        if listing_id not in listing_images:  # Only take the first image for each listing
+            listing_images[listing_id] = image['image_url']
+
+    def add_images_to_listings(listings):
+        processed = []
+        for listing in listings:
+            listing_copy = listing.copy()
+            listing_copy['image_url'] = listing_images.get(listing['id'])
+            processed.append(listing_copy)
+        return processed
+
+    context = {
+        'listings': add_images_to_listings(listings.data),
+        'transactions': add_images_to_listings(transactions.data),
+    }
+
+    return render(request, 'viewbids.html', {'data': context})
 
 # Dashboard's Requests
 @login_required
@@ -1324,31 +1346,31 @@ def submit_rating(request, transaction_id):
             return JsonResponse({
                 'error': str(e)
             }, status=500)
-            
+
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
             rating_value = data.get('rating')
             comment = data.get('comment')
-            
+
             print(f"Submitting rating for transaction {transaction_id}")
             print(f"Rating data received: {data}")
-            
+
             # Check if user has already rated this transaction
             existing_rating = supabase.table('ratings')\
                 .select('id')\
                 .eq('transaction_id', transaction_id)\
                 .eq('rater_user_id', request.user.id)\
                 .execute()
-                
+
             print(f"Existing rating check: {existing_rating.data}")
-            
+
             if existing_rating.data:
                 return JsonResponse({
                     'status': 'error',
                     'message': 'You have already rated this transaction'
                 }, status=400)
-            
+
             # Get transaction details from Supabase
             transaction = supabase.table('transactions')\
                 .select('*')\
