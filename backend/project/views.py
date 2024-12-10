@@ -303,6 +303,7 @@ def dashboard(request):
 # def account(request):
 #     return render(request, 'account.html')
 
+
 # Dashboard's View Bids
 @login_required
 def viewbids(request):
@@ -413,6 +414,7 @@ def viewbids(request):
     }
 
     return render(request, 'viewbids.html', {'data': context})
+
 
 # Dashboard's Requests
 @login_required
