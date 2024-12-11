@@ -321,7 +321,6 @@ def account(request):
             'rating_count': 0
         })
 
-
 # Dashboard View
 @login_required
 def dashboard(request):
@@ -1546,17 +1545,6 @@ def suspension_fee(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 @login_required
-def get_user_num_complaints(request, user_id):
-    try:
-        response = supabase.table('users').select('num_complaints').eq('id', user_id).execute()
-        num_complaints = response.data[0]['num_complaints'] if response.data else 0
-
-        return JsonResponse({'num_complaints': num_complaints}, status=200)
-    except Exception as e:
-        print(f"Error fetching user num complaints: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
-
-@login_required
 def get_user_balance(request):
     user_id = request.user.id  # Get the logged-in user's ID
     try:
@@ -1570,7 +1558,6 @@ def get_user_balance(request):
             return JsonResponse({'error': 'User not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 @login_required
 def get_user_transactions(request, user_id):

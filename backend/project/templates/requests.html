@@ -93,15 +93,14 @@
     <!-- FILE NEW COMPLAINT POPUP -->
     <div id="complaint-popup" class="complaint-popup">
         <div class="complaintpopup-content">
-            <span class="close-listing" id="close-button">&times;</span>
+            <span class="close-complaint" onclick="closeComplaintPopup()">&times;</span>
             <h3>File a Complaint</h3>
             <form id="complaint-form">
-
                 <label for="defendantUserId">Defendant User ID:</label>
-                <input type="number" id="defendantUserId" name="defendantUserId" required />
+                <input type="number" id="defendantUserId" required>
                 <br>
-                <label for="complaintText">Complaint Text:</label>
-                <textarea id="complaintText" name="complaintText" required></textarea>
+                <label for="complaintText">Complaint Details:</label>
+                <textarea id="complaintText" required></textarea>
                 <br>
                 <button type="submit">Submit Complaint</button>
             </form>
@@ -111,7 +110,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
     <script>
-        // OPEN PROFILE
+        function openComplaintPopup() {
+            document.getElementById('complaint-popup').style.display = 'block';
+        }
+
+        function closeComplaintPopup() {
+            document.getElementById('complaint-popup').style.display = 'none';
+        }
+
 
         // Initialize Supabase client
         const supabaseUrl = 'https://tocrntktnrrrcaxtnvly.supabase.co';
@@ -122,6 +128,13 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('complaint-form').addEventListener('submit', handleSubmit);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const complaintForm = document.getElementById('complaint-form');
+            if (complaintForm) {
+                complaintForm.addEventListener('submit', handleComplaintSubmit);
+            }
         });
 
         async function handleSubmit(event) {
