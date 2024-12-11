@@ -111,7 +111,8 @@
 
     <script>
         function openComplaintPopup() {
-            document.getElementById('complaint-popup').style.display = 'block';
+            const popup = document.getElementById('complaint-popup');
+            popup.style.display = 'flex';
         }
 
         function closeComplaintPopup() {

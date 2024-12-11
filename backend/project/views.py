@@ -474,7 +474,6 @@ def viewbids(request):
 
     return render(request, 'viewbids.html', {'data': context})
 
-
 # Dashboard's Requests
 @login_required
 def requests(request):
@@ -1362,7 +1361,7 @@ def decline_bid(request, bid_id):
                 .eq('id', bid_id)\
                 .single()\
                 .execute()
-                
+
             if not bid_response.data:
                 return JsonResponse({
                     'status': 'error',
