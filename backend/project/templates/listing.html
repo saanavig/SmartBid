@@ -89,6 +89,7 @@
             </div>
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
+            <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
                 <h2>{{ listing.title }}</h2>
                 {% if highest_bidder %}
@@ -97,7 +98,7 @@
                 {% else %}
                     <h3>Starting Price: <br> US ${{ highest_bid }}</h3>
                 {% endif %}
-                <p><strong>Created At:</strong> {{ listing.created_at }}</p>
+                <p><strong>Deadline:</strong> {{ listing.deadline }}</p>
                 <p><strong>Category:</strong> {{ listing.category }}</p>
                 <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }} (ID: {{ listing.seller_id}}) </p>
                 <p>{{ listing.description }}</p>

@@ -366,7 +366,7 @@ def viewbids(request):
                 'price': float(request.POST.get('price')),
                 'category': request.POST.get('category'),
                 'availability': request.POST.get('availability'),
-                'deadline': request.POST.get('deadline') + 'T24:00:00',
+                'deadline': request.POST.get('deadline'),
                 'user_id': request.user.id,
                 'highest_bid': 0,
             }
@@ -440,6 +440,7 @@ def viewbids(request):
         .execute()
 
     # Create image mapping
+    # Create image mapping
     listing_images = {}
     for image in images.data:
         listing_id = image['listing_id']
@@ -457,6 +458,13 @@ def viewbids(request):
             else:
                 # For regular listings
                 listing_copy['image_url'] = listing_images.get(listing_copy['id'])
+            if 'listing' in listing_copy:
+                # For transactions, get image through listing_id
+                listing_id = listing_copy['listing']['id']
+                listing_copy['image_url'] = listing_images.get(listing_id)
+            else:
+                # For regular listings
+                listing_copy['image_url'] = listing_images.get(listing_copy['id'])
             processed.append(listing_copy)
         return processed
     context = {
@@ -465,6 +473,7 @@ def viewbids(request):
     }
 
     return render(request, 'viewbids.html', {'data': context})
+
 
 # Dashboard's Requests
 @login_required
@@ -773,7 +782,7 @@ def listing(request, id):
             'description': listing_data.get('description', 'No description available'),
             'price': listing_data.get('price', 0),
             'category': listing_data.get('category', 'Uncategorized'),
-            'created_at': listing_data.get('created_at', ''),
+            'deadline': listing_data.get('deadline'),
             'seller_id': listing_data.get('user_id'),
             'availability': listing_data.get('availability', 'for-sale'),
             'seller': {
