@@ -61,7 +61,7 @@
                         <div class="row">
                             <p id="highest-bid">Bid Higher Than: $<span id="highest-amount" style="font-weight: bold">{{ highest_bid }}</span></p>
                             {% if highest_bidder %}
-                                <p class="current-highest-bidder">Current Highest Bidder: {{ highest_bidder.name }}</p>
+                                <p class="current-highest-bidder">Current Highest Bidder: {{ highest_bidder.name }} </p>
                             {% endif %}
                         </div>
                         <div class="row">
@@ -89,25 +89,28 @@
             </div>
 
             <!-- RIGHT SECTION: ITEM DETAILS -->
-            <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
                 <h2>{{ listing.title }}</h2>
                 {% if highest_bidder %}
                     <h3>Current Highest Bid: <br> US ${{ highest_bid }}</h3>
-                    <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }} (ID: {{ highest_bidder.id }})</p>
+                    <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }} (ID: {{ highest_bidder.id }}) </p>
                 {% else %}
                     <h3>Starting Price: <br> US ${{ highest_bid }}</h3>
                 {% endif %}
                 <p><strong>Deadline:</strong> {{ listing.deadline }}</p>
                 <p><strong>Category:</strong> {{ listing.category }}</p>
-                <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }} (ID: {{ listing.seller_id}}) </p>
+                <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }} (ID: {{ listing.seller_id}})</p>
                 <p>{{ listing.description }}</p>
-
+                
                 {% if user.is_authenticated %}
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
                     {% else %}
-                        <button class="bid-button" id="bid-button">Start Bidding</button>
+                        {% if user_status == 'suspended' %}
+                            <p class="suspended-message" style="color: red;">Your account is suspended. You cannot place bids.</p>
+                        {% else %}
+                            <button class="bid-button" id="bid-button">Start Bidding</button>
+                        {% endif %}
                     {% endif %}
                 {% else %}
                     <a href="{% url 'login' %}" class="bid-button" style="text-decoration: none;">Login to Bid</a>

@@ -832,7 +832,16 @@ def listing(request, id):
                 user_balance = float(balance_response.data[0].get('balance', 0))
             print(f"Final user balance: {user_balance}")  # Debug print
 
-        # Add user_balance to context and print it
+        # Get user status if authenticated
+        user_status = None
+        if request.user.is_authenticated:
+            user_response = supabase.table('users')\
+                .select('status')\
+                .eq('email', request.user.email)\
+                .single()\
+                .execute()
+            user_status = user_response.data['status'] if user_response.data else None
+
         context = {
             'listing': safe_listing_data,
             'images': images_data,
@@ -842,12 +851,14 @@ def listing(request, id):
             'highest_bidder': highest_bidder,
             'user': request.user,
             'user_balance': user_balance,
+            'user_status': user_status  # Add this to context
         }
         return render(request, 'listing.html', context)
 
     except Exception as e:
         print(f"Error in listing view: {str(e)}")
         return render(request, 'error.html', {'message': 'Error loading listing'})
+
 
 @login_required
 def manage_funds(request):
@@ -1042,16 +1053,14 @@ def place_bid(request, listing_id):
                     'status': 'error',
                     'message': 'Listing not found'
                 }, status=404)
-                
             listing = listing_response.data[0]
-            
             # Check if user is the seller
             if request.user.email == listing.get('user_email'):
                 return JsonResponse({
                     'status': 'error',
                     'message': 'You cannot bid on your own listing'
                 }, status=403)
-            
+
             # Get user's current balance from Supabase
             user_response = supabase.table('users').select('balance').eq('email', request.user.email).execute()
             if not user_response.data:
@@ -1069,7 +1078,7 @@ def place_bid(request, listing_id):
                     'status': 'error',
                     'message': 'Insufficient funds in your account.'
                 })
-            
+
             # Create new bid in Supabase
             bid_data = {
                 'user_id': request.user.id,
@@ -1077,9 +1086,7 @@ def place_bid(request, listing_id):
                 'amount': float(bid_amount),
                 'status': 'pending'
             }
-            
             supabase.table('bids').insert(bid_data).execute()
-            
             return JsonResponse({'status': 'success'})
 
         except Exception as e:
