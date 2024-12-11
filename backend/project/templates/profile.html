@@ -44,7 +44,7 @@
             <div class="profile-popup-info">
                 <div class="align-profile">
                     <p>{{ user.first_name }} {{ user.last_name }}</p>
-                    <p>- 3.6 (7 Ratings)</p>
+                    <p>{{ average_rating }} ({{ rating_count }} Ratings)</p>
                 </div>
             <p>Email: {{ user.email }}</p>
             <p>First Name: {{ user.first_name }}</p>
@@ -68,7 +68,7 @@
             <h1>{{ user.username }}!</h1>
             <div class="align-profile">
                 <p>{{ user.first_name }} {{ user.last_name }}</p>
-                <p>- 3.6 (7 Ratings)</p>
+                <p>{{ average_rating }} ({{ rating_count }} Ratings)</p>
             </div>
             <p>Email: {{ user.email }}</p>
             <p>First Name: {{ user.first_name }}</p>

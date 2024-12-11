@@ -222,20 +222,44 @@ def homepage(request):
 # @login_required
 # def profile(request):
 #     return render(request, 'profile.html', {'user': request.user})
-@login_required
-@visitor_access
-def profile(request):
-    print(f"Logged in user: {request.user.username} ({request.user.id})")
-    user_id = request.user.id  # Get the current user's ID
-    response = supabase.table('transactions').select('buyer_id, seller_id').eq('buyer_id', user_id).or_('seller_id.eq.' + str(user_id)).execute()
-    total_transactions = len(response.data)  # Count the number of transactions
 
-    # Combine context into a single dictionary
-    context = {
-        'user': request.user,
-        'total_transactions': total_transactions
-    }
-    return render(request, 'profile.html', context)
+def profile(request):
+    try:
+        user_id = request.user.id
+
+        # Get transactions count
+        transactions_response = supabase.table('transactions')\
+            .select('buyer_id, seller_id')\
+            .eq('buyer_id', user_id)\
+            .or_('seller_id.eq.' + str(user_id))\
+            .execute()
+        total_transactions = len(transactions_response.data)
+
+        # Get ratings data
+        ratings_response = supabase.table('ratings')\
+            .select('rating')\
+            .eq('rated_user_id', user_id)\
+            .execute()
+
+        # Calculate average rating and count
+        ratings = [float(r['rating']) for r in ratings_response.data] if ratings_response.data else []
+        avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else 0
+        rating_count = len(ratings)
+
+        context = {
+            'user': request.user,
+            'total_transactions': total_transactions,
+            'average_rating': avg_rating,
+            'rating_count': rating_count
+        }
+        return render(request, 'profile.html', context)
+    except Exception as e:
+        print(f"Error in profile view: {str(e)}")
+        return render(request, 'profile.html', {
+            'user': request.user,
+            'error': 'Unable to load user data'
+        })
+
 # Dashboard View
 # @login_required
 # def dashboard(request):
@@ -261,15 +285,41 @@ def profile(request):
 @login_required
 def account(request):
     try:
-        # Fetch the user's balance
         user_email = request.user.email
-        response = supabase.table('users').select('balance').eq('email', user_email).execute()
-        balance = response.data[0]['balance'] if response.data else 0
+        user_id = request.user.id
 
-        return render(request, 'account.html', {'current_balance': balance})
+        # Fetch user's balance and ratings in parallel
+        balance_response = supabase.table('users')\
+            .select('balance')\
+            .eq('email', user_email)\
+            .execute()
+
+        ratings_response = supabase.table('ratings')\
+            .select('rating')\
+            .eq('rated_user_id', user_id)\
+            .execute()
+
+        # Process balance
+        balance = balance_response.data[0]['balance'] if balance_response.data else 0
+
+        # Process ratings
+        ratings = [float(r['rating']) for r in ratings_response.data] if ratings_response.data else []
+        avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else 0
+        rating_count = len(ratings)
+
+        return render(request, 'account.html', {
+            'current_balance': balance,
+            'average_rating': avg_rating,
+            'rating_count': rating_count
+        })
     except Exception as e:
-        print(f"Error fetching balance for account page: {str(e)}")
-        return render(request, 'account.html', {'error': 'Unable to load balance'})
+        print(f"Error fetching account data: {str(e)}")
+        return render(request, 'account.html', {
+            'error': 'Unable to load account data',
+            'current_balance': '0.00',
+            'average_rating': 0,
+            'rating_count': 0
+        })
 
 
 # Dashboard View

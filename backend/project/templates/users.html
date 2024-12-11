@@ -35,7 +35,7 @@
                 <div class="profile-popup-info">
                     <div class ="align-profile">
                         <p>John Doe</p>
-                        <p>- 3.6 (7 Ratings)</p>
+                        <p>{{ average_rating }} ({{ rating_count }} Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
                     <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
