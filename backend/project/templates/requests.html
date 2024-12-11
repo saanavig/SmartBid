@@ -292,45 +292,65 @@
         });
 
         async function checkAndSuspendUser() {
-            const currentUserId = '{{ user.id }}'; // Assuming you have access to the logged-in user's ID
+            const currentUserId = '{{ user.id }}';
 
-            // Fetch ratings where the rated_user_id is the current user ID
-            const { data: ratings, error } = await supabaseClient
-                .from('ratings')
-                .select('rated_user_id, rating')
-                .eq('rated_user_id', currentUserId);
-
-            if (error) {
-                console.error('Error fetching ratings:', error.message);
-                return;
-            }
-
-            // Count how many ratings are less than or equal to 2
-            const lowRatingsCount = ratings.filter(rating => rating.rating <= 2).length;
-            console.log('Low Ratings Count:', lowRatingsCount); // Debugging log
-
-            // Count how many ratings are 4 or more
-            const highRatingsCount = ratings.filter(rating => rating.rating >= 4).length;
-            console.log('High Ratings Count:', highRatingsCount); // Debugging log
-
-            // Calculate average rating
-            const averageRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length : 0;
-            console.log('Average Rating:', averageRating); // Debugging log
-
-            // If there are 3 or more low ratings or average rating is less than 2 or greater than 4, suspend the user
-            if (lowRatingsCount >= 3 || averageRating < 2 || averageRating > 4) {
-                const { error: updateError } = await supabaseClient
+            try {
+                // Get user's last reset date first
+                const { data: userData, error: userError } = await supabaseClient
                     .from('users')
-                    .update({ status: 'suspended' })
-                    .eq('id', currentUserId); // Ensure this is the correct user ID
+                    .select('last_rating_reset')
+                    .eq('id', currentUserId)
+                    .single();
 
-                if (updateError) {
-                    console.error('Error updating user status:', updateError.message);
-                } else {
-                    console.log('User status updated to suspended.');
+                if (userError) throw userError;
+
+                // Get ratings after the last reset
+                const { data: ratings, error } = await supabaseClient
+                    .from('ratings')
+                    .select('rating')
+                    .eq('rated_user_id', currentUserId)
+                    .gt('created_at', userData.last_rating_reset) // Only get ratings after reset
+                    .execute();
+
+                if (error) {
+                    console.error('Error fetching ratings:', error.message);
+                    return;
                 }
-            } else {
-                console.log('User remains active.'); // Debugging log
+
+                // Calculate average rating
+                if (ratings && ratings.length > 0) {
+                    const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+                    const averageRating = totalRating / ratings.length;
+                    const lowRatingsCount = ratings.filter(rating => rating.rating <= 2).length;
+
+                    console.log('Current average rating:', averageRating);
+                    console.log('Low ratings count:', lowRatingsCount);
+
+                    // Update user status based on ratings
+                    let newStatus = 'active';
+                    if (lowRatingsCount >= 3 || averageRating < 2) {
+                        newStatus = 'suspended';
+                    }
+
+                    // Update user status in Supabase
+                    const { error: updateError } = await supabaseClient
+                        .from('users')
+                        .update({ 
+                            status: newStatus,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentUserId);
+
+                    if (updateError) {
+                        console.error('Error updating user status:', updateError.message);
+                    } else {
+                        console.log('User status updated to:', newStatus);
+                        // Update the status display on the page
+                        document.getElementById('account-status').textContent = newStatus;
+                    }
+                }
+            } catch (err) {
+                console.error('Error:', err);
             }
         }
 

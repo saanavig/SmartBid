@@ -1534,14 +1534,6 @@ def suspension_fee(request):
         request.session['user_status'] = 'active'
         request.session.modified = True
 
-        # Update the user model if you have a status field
-        try:
-            user = request.user
-            user.status = 'active'
-            user.save()
-        except Exception as user_error:
-            print(f"Error updating user model: {str(user_error)}")
-
         return JsonResponse({
             'success': True,
             'new_balance': new_balance,
