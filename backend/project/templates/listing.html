@@ -93,15 +93,15 @@
                 <h2>{{ listing.title }}</h2>
                 {% if highest_bidder %}
                     <h3>Current Highest Bid: <br> US ${{ highest_bid }}</h3>
-                    <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }}</p>
+                    <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }} (ID: {{ highest_bidder.id }})</p>
                 {% else %}
                     <h3>Starting Price: <br> US ${{ highest_bid }}</h3>
                 {% endif %}
                 <p><strong>Created At:</strong> {{ listing.created_at }}</p>
                 <p><strong>Category:</strong> {{ listing.category }}</p>
-                <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }}</p>
+                <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }} (ID: {{ listing.seller_id}}) </p>
                 <p>{{ listing.description }}</p>
-                
+
                 {% if user.is_authenticated %}
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
