@@ -305,6 +305,7 @@ def dashboard(request):
 
 
 # Dashboard's View Bids
+# Dashboard's View Bids
 @login_required
 def viewbids(request):
     if request.method == 'POST':
@@ -384,37 +385,37 @@ def viewbids(request):
         .select(
             '*',
             'listing:listings(id, title, description, price, category, availability, deadline)',
-            'seller:users!seller_id(id, first_name, last_name)',
-            #'listing.listing_images(id, image_url)'  # Make sure we're getting all needed fields
+            'seller:users!seller_id(id, first_name, last_name)'
         )\
         .eq('buyer_id', request.user.id)\
         .execute()
-    
-    # Debug print to see the structure
-    print("Transaction data:", transactions.data[0] if transactions.data else "No transactions")
-    # Create a mapping of listing_id to images
+
+    # Create image mapping
     listing_images = {}
     for image in images.data:
         listing_id = image['listing_id']
-        if listing_id not in listing_images:  # Only take the first image for each listing
+        if listing_id not in listing_images:
             listing_images[listing_id] = image['image_url']
 
     def add_images_to_listings(listings):
         processed = []
         for listing in listings:
             listing_copy = listing.copy()
-            listing_copy['image_url'] = listing_images.get(listing['id'])
+            if 'listing' in listing_copy:
+                # For transactions, get image through listing_id
+                listing_id = listing_copy['listing']['id']
+                listing_copy['image_url'] = listing_images.get(listing_id)
+            else:
+                # For regular listings
+                listing_copy['image_url'] = listing_images.get(listing_copy['id'])
             processed.append(listing_copy)
         return processed
-
     context = {
         'listings': add_images_to_listings(listings.data),
-        #'transactions': transactions.data,
-        'transactions': add_images_to_listings(transactions.data),
+        'transactions': add_images_to_listings(transactions.data)
     }
 
     return render(request, 'viewbids.html', {'data': context})
-
 
 # Dashboard's Requests
 @login_required

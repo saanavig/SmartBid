@@ -126,7 +126,7 @@
 
             <div class="listing-area">
                 {% for listing in data.listings %}
-                <div class="item-card Completed">
+                <div class="item-card Completed" data-listing-type="selling">
                     <a href="{% url 'listing' listing.id %}"
                         style="text-decoration: none; color: inherit; display: block;">
                         {% if listing.image_url %}
@@ -149,7 +149,7 @@
                 {% endfor %}
 
                 {% for transaction in data.transactions %}
-                <div class="item-card Completed">
+                <div class="item-card Completed" data-listing-type="buying">
                     <a href="{% url 'listing' transaction.listing.id %}" style="text-decoration: none; color: inherit; display: block;">
                         <div class="item-image">
                             {% if transaction.image_url %}
@@ -171,69 +171,9 @@
                     </a>
                 </div>
                 {% endfor %}
+                
             </div>
         </div>
-        <!--
-            <div class="listing-area">
-                <div class="item-card Completed">
-                    <div class="item-image">
-                        <img src="..\..\static\images\pink fujifilm.png" alt="Item Image">
-                    </div>
-                    <div class="item-info">
-                        <p class="item-name">Pink Fujifilm</p>
-                        <p class="item-price">US $99.99</p>
-                        <p class="item-time">18d 10h</p>
-                        <p class="item-account">John Doe - 4.2 (10 Ratings)</p>
-                        <p class="item-status">Buying</p>
-                        <p class="item-completion-status">Completed</p>
-                    </div>
-                </div>
-
-                <div class="item-card In-Progress">
-                    <div class="item-image">
-                        <img src="..\..\static\images\airpods pro max.jpg" alt="Item Image">
-                    </div>
-                    <div class="item-info">
-                        <p class="item-name">Apple Airpods Max</p>
-                        <p class="item-price">US $99.99</p>
-                        <p class="item-time">18d 10h</p>
-                        <p class="item-account">Srewashi Mondal - 4.3 (12 Ratings)</p>
-                        <p class="item-status">Selling</p>
-                        <p class="item-completion-status">In-Progress</p>
-                    </div>
-                </div>
-
-                <div class="item-card In-Progress">
-                    <div class="item-image">
-                        <img src="..\..\static\images\lunch box.avif" alt="Item Image">
-                    </div>
-                    <div class="item-info">
-                        <p class="item-name">Lunch Box</p>
-                        <p class="item-price">US $99.99</p>
-                        <p class="item-time">18d 10h</p>
-                        <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
-                        <p class="item-status">Buying</p>
-                        <p class="item-completion-status">In-Progress</p>
-                    </div>
-                </div>
-
-                <div class="item-card In-Progress">
-                    <div class="item-image">
-                        <img src="..\..\static\images\lunch box.avif" alt="Item Image">
-                    </div>
-                    <div class="item-info">
-                        <p class="item-name">Lunch Box</p>
-                        <p class="item-price">US $99.99</p>
-                        <p class="item-time">18d 10h</p>
-                        <p class="item-account">Saanavi Goyal - 4.3 (12 Ratings)</p>
-                        <p class="item-status">Selling</p>
-                        <p class="item-completion-status">Completed</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
--->
         <script>
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -269,69 +209,23 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const searchButton = document.getElementById("search-button");
                 const searchInput = document.querySelector("input[type='text']");
-                const filterButtons = document.querySelectorAll('.button-container button');
-                const bidItems = document.querySelectorAll('.item-card');
-
-                let searchTerm = '';
-                let activeFilters = [];
-
-                // APPLY FILTERS
-                function applyFilters() {
-                    bidItems.forEach(item => {
-                        const itemName = item.querySelector('.item-name').textContent.toLowerCase();
-                        const itemPrice = item.querySelector('.item-price').textContent.toLowerCase();
-                        const itemStatus = item.querySelector('.item-status').textContent;
-                        const itemCompletionStatus = item.querySelector('.item-completion-status').textContent;
-
-                        const matchesSearch = itemName.includes(searchTerm) || itemPrice.includes(searchTerm);
-
-                        const matchesFilters = activeFilters.every(filter => {
-                            if (filter === 'All') return true;
-                            return itemStatus === filter || itemCompletionStatus === filter;
-                        });
-
-                        if (matchesSearch && matchesFilters) {
-                            item.classList.remove('hidden');
-                        } else {
-                            item.classList.add('hidden');
-                        }
-                    });
-                }
+                const itemCards = document.querySelectorAll('.item-card');
 
                 searchButton.addEventListener('click', () => {
-                    searchTerm = searchInput.value.toLowerCase();
-                    applyFilters();
-                });
-
-                filterButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const filterStatus = button.getAttribute('data-filter');
-
-                        button.classList.toggle('active-filter');
-
-                        if (button.classList.contains('active-filter')) {
-                            if (activeFilters.includes('All')) {
-                                activeFilters = activeFilters.filter(filter => filter !== 'All');
-                                document.getElementById('all-button').classList.remove('active-filter');
-                            }
-
-                            if (!activeFilters.includes(filterStatus)) {
-                                activeFilters.push(filterStatus);
-                            }
-                        } else {
-                            activeFilters = activeFilters.filter(filter => filter !== filterStatus);
-                        }
-
-                        applyFilters();
+                    const searchTerm = searchInput.value.toLowerCase();
+                    
+                    itemCards.forEach(card => {
+                        const itemName = card.querySelector('.item-name').textContent.toLowerCase();
+                        const shouldShow = itemName.includes(searchTerm);
+                        card.style.display = shouldShow ? 'block' : 'none';
                     });
                 });
 
-                const allButton = document.getElementById('all-button');
-                allButton.addEventListener('click', () => {
-                    activeFilters = ['All'];
-                    filterButtons.forEach(button => button.classList.remove('active-filter'));
-                    allButton.classList.add('active-filter');
-                    applyFilters();
+                // Add search on Enter key press
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        searchButton.click();
+                    }
                 });
             });
 
@@ -378,6 +272,52 @@
                         reader.readAsDataURL(file);
                     }
                 });
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const filterButtons = document.querySelectorAll('.button-container button');
+                const itemCards = document.querySelectorAll('.item-card');
+
+                function applyFilters() {
+                    const activeFilter = document.querySelector('.button-container button.active-filter')
+                        .getAttribute('data-filter');
+
+                    itemCards.forEach(card => {
+                        const availability = card.querySelector('.item-status').textContent.toLowerCase();
+                        const isBuying = card.getAttribute('data-listing-type') === 'buying';
+                        const isSelling = card.getAttribute('data-listing-type') === 'selling';
+
+                        switch(activeFilter) {
+                            case 'All':
+                                card.style.display = 'block';
+                                break;
+                            case 'Completed':
+                                card.style.display = (availability === 'sold' || availability === 'rented') ? 'block' : 'none';
+                                break;
+                            case 'In-Progress':
+                                card.style.display = (availability === 'for-sale' || availability === 'for-rent') ? 'block' : 'none';
+                                break;
+                            case 'Selling':
+                                card.style.display = isSelling ? 'block' : 'none';
+                                break;
+                            case 'Buying':
+                                card.style.display = isBuying ? 'block' : 'none';
+                                break;
+                        }
+                    });
+                }
+
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        filterButtons.forEach(btn => btn.classList.remove('active-filter'));
+                        button.classList.add('active-filter');
+                        applyFilters();
+                    });
+                });
+
+                // Set "All" as default active filter
+                document.getElementById('all-button').classList.add('active-filter');
+                applyFilters();
             });
         </script>
 </body>
