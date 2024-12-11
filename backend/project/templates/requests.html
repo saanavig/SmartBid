@@ -38,7 +38,7 @@
                         <p>{{ average_rating }} ({{ rating_count }} Ratings)</p>
                     </div>
                     <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                    <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+                    <p><strong>Total Transactions:</strong> {{ num_transactions|default:0 }}</p>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
             <p>Manage your status or pay a fee.</p>
             <h3>Account Status: <span id="account-status">{{ request.session.user_status }}</span></h3>
             <a href="#" onclick="openPopup()">Deactivate Account</a>
-            <h3>Current Fee: $50.00</h3>
+            <h3>Current Fee: ${{ suspension_fee|default:"0.00" }}</h3>
             <a href="#" onclick="openPayFeePopup()">Pay Fee</a>
         </div>
 
@@ -84,9 +84,8 @@
             {% csrf_token %}
             <h3>You must pay this fee to reactivate your account.</h3>
             <p>Current Account Balance: ${{ user_balance }}</p>
-            <p>Current Fee Amount: $50.00</p>
+            <p>Current Fee Amount: ${{ suspension_fee|default:"0.00" }}</p>
             <button onclick="closePayFeePopup()">Pay</button>
-
         </div>
     </div>
 
@@ -146,13 +145,15 @@
 
             if (!defendantUserIdElement || !complaintTextElement) {
                 console.error('One or more form elements are missing.');
-                return; // Exit the function if any element is missing
+                return;
             }
 
             const complaintData = {
+                complainant_user_id: "{{ complainant_id }}",
                 defendant_user_id: defendantUserIdElement.value,
                 complaint_text: complaintTextElement.value,
-                status: 'pending', // Default status for new complaints
+                status: 'pending',
+                created_at: new Date().toISOString()
             };
 
             // Send data to Supabase
@@ -162,9 +163,11 @@
 
             if (error) {
                 console.error('Error submitting complaint:', error.message);
+                alert('Failed to submit complaint: ' + error.message);
             } else {
                 console.log('Complaint added successfully:', data);
                 alert('Complaint submitted successfully!');
+                closeComplaintPopup();
             }
         }
 
@@ -295,10 +298,10 @@
             const currentUserId = '{{ user.id }}';
 
             try {
-                // Get user's last reset date first
+                // Get user's last reset date first AND suspension count
                 const { data: userData, error: userError } = await supabaseClient
                     .from('users')
-                    .select('last_rating_reset')
+                    .select('last_rating_reset, status, suspension_count')  // Added suspension_count
                     .eq('id', currentUserId)
                     .single();
 
@@ -325,18 +328,34 @@
 
                     console.log('Current average rating:', averageRating);
                     console.log('Low ratings count:', lowRatingsCount);
+                    console.log('Current suspension count:', userData.suspension_count);
 
                     // Update user status based on ratings
                     let newStatus = 'active';
+                    let newSuspensionCount = userData.suspension_count || 0;
+
                     if (lowRatingsCount >= 3 || averageRating < 2) {
-                        newStatus = 'suspended';
+                        // Only increment suspension count if not already suspended
+                        if (userData.status !== 'suspended') {
+                            newSuspensionCount += 1;
+                            console.log('Incrementing suspension count to:', newSuspensionCount);
+                        }
+
+                        // Check if should be deactivated
+                        if (newSuspensionCount >= 3) {
+                            newStatus = 'deactivated';
+                            console.log('Account deactivated due to 3 suspensions');
+                        } else {
+                            newStatus = 'suspended';
+                        }
                     }
 
-                    // Update user status in Supabase
+                    // Update user status and suspension count in Supabase
                     const { error: updateError } = await supabaseClient
                         .from('users')
                         .update({ 
                             status: newStatus,
+                            suspension_count: newSuspensionCount,
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', currentUserId);
@@ -344,9 +363,13 @@
                     if (updateError) {
                         console.error('Error updating user status:', updateError.message);
                     } else {
-                        console.log('User status updated to:', newStatus);
-                        // Update the status display on the page
-                        document.getElementById('account-status').textContent = newStatus;
+                        console.log(`User status updated to: ${newStatus} (Suspension count: ${newSuspensionCount})`);
+                        // Update the status display on the page with suspension count
+                        const statusElement = document.getElementById('account-status');
+                        statusElement.textContent = newStatus;
+                        if (newStatus === 'suspended') {
+                            statusElement.textContent += ` (${newSuspensionCount}/3 strikes)`;
+                        }
                     }
                 }
             } catch (err) {

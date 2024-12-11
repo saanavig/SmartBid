@@ -101,13 +101,15 @@
                 <p><strong>Category:</strong> {{ listing.category }}</p>
                 <p><strong>Seller:</strong> {{ listing.seller.first_name }} {{ listing.seller.last_name }} (ID: {{ listing.seller_id}})</p>
                 <p>{{ listing.description }}</p>
-                
+
                 {% if user.is_authenticated %}
                     {% if user.id == listing.seller_id %}
                         <p class="seller-message">This is your listing. You can manage bids below.</p>
                     {% else %}
                         {% if user_status == 'suspended' %}
                             <p class="suspended-message" style="color: red;">Your account is suspended. You cannot place bids.</p>
+                        {% elif user_status == 'deactivated' %}
+                            <p class="deactivated-message" style="color: red;">Your account has been deactivated. You cannot place bids.</p>
                         {% else %}
                             <button class="bid-button" id="bid-button">Start Bidding</button>
                         {% endif %}

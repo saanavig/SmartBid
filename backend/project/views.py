@@ -478,23 +478,28 @@ def viewbids(request):
 @login_required
 def requests(request):
     try:
-        # Fetch user's balance from Supabase
-        balance_response = supabase.table('users')\
-            .select('balance')\
+        # Fetch user's balance and suspension fee from Supabase
+        user_response = supabase.table('users')\
+            .select('balance, suspension_fee, id')\
             .eq('email', request.user.email)\
             .single()\
             .execute()
 
-        user_balance = float(balance_response.data['balance']) if balance_response.data else 0
-        user_balance = "{:.2f}".format(user_balance)
+        user_balance = float(user_response.data['balance']) if user_response.data else 0
+        suspension_fee = float(user_response.data.get('suspension_fee', 0))
+        user_id = user_response.data.get('id')
 
         return render(request, 'requests.html', {
-            'user_balance': user_balance
+            'user_balance': "{:.2f}".format(user_balance),
+            'suspension_fee': "{:.2f}".format(suspension_fee),
+            'complainant_id': user_id
         })
     except Exception as e:
-        print(f"Error fetching user balance: {str(e)}")
+        print(f"Error fetching user data: {str(e)}")
         return render(request, 'requests.html', {
-            'user_balance': '0.00'
+            'user_balance': '0.00',
+            'suspension_fee': '0.00',
+            'complainant_id': None
         })
 
 @login_required
@@ -1504,6 +1509,7 @@ def submit_rating(request, transaction_id):
     }, status=405)
 
 #suspension fee
+#suspension fee
 @login_required
 def suspension_fee(request):
     if request.method != 'POST':
@@ -1512,7 +1518,7 @@ def suspension_fee(request):
     try:
         # Get user's current balance and status from Supabase
         user_response = supabase.table('users')\
-            .select('balance, status', 'id')\
+            .select('balance, status, id, suspension_count, suspension_fee')\
             .eq('email', request.user.email)\
             .single()\
             .execute()
@@ -1521,11 +1527,26 @@ def suspension_fee(request):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         current_balance = float(user_response.data['balance'])
-        fee_amount = 50.00
+        suspension_count = user_response.data.get('suspension_count', 0)
+        fee_amount = float(user_response.data.get('suspension_fee', 0))
+
+        # Check if deactivated
+        if suspension_count >= 3:
+            return JsonResponse({
+                'error': 'Your account has been permanently deactivated.',
+                'status': 'deactivated'
+            }, status=400)
+
+        # Check if there's a fee to pay
+        if fee_amount == 0:
+            return JsonResponse({
+                'error': 'No suspension fee to pay.',
+                'status': user_response.data['status']
+            }, status=400)
 
         if current_balance < fee_amount:
             return JsonResponse({
-                'error': 'Insufficient funds. Please deposit money to activate your account again.'
+                'error': f'Insufficient funds. You need ${fee_amount:.2f} to reactivate your account.'
             }, status=400)
 
         new_balance = current_balance - fee_amount
