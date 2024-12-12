@@ -77,7 +77,11 @@
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
-                        <p class="item-price">${{ item.price }}</p>
+                        {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                        <p class="item-price"> ${{ item.vip_prices|floatformat:2 }} <s>${{ item.price|floatformat:2 }}</s></p>
+                        {% else %}
+                        <p class="item-price"> ${{ item.price|floatformat:2 }}</p>
+                        {% endif %}
                         <p class="item-time">{{ item.availability }}</p>
                     </div>
                 </a>
@@ -105,7 +109,11 @@
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
-                        <p class="item-price">${{ item.price }}</p>
+                        {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                        <p class="item-price"> ${{ item.vip_prices|floatformat:2 }} <s>${{ item.price|floatformat:2 }}</s></p>
+                        {% else %}
+                        <p class="item-price"> ${{ item.price|floatformat:2 }}</p>
+                        {% endif %}
                         <p class="item-time">{{ item.availability }}</p>
                     </div>
                 </a>
@@ -133,7 +141,13 @@
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
-                        <p class="item-price">${{ item.price }}</p>
+
+                        {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                        <p class="item-price"> ${{ item.vip_prices|floatformat:2 }} <s>${{ item.price|floatformat:2 }}</s></p>
+                        {% else %}
+                        <p class="item-price"> ${{ item.price|floatformat:2 }}</p>
+                        {% endif %}
+
                         <p class="item-time">{{ item.availability }}</p>
                     </div>
                 </a>
@@ -161,7 +175,11 @@
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
-                        <p class="item-price">${{ item.price }}</p>
+                        {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                        <p class="item-price"> ${{ item.vip_prices|floatformat:2 }} <s>${{ item.price|floatformat:2 }}</s></p>
+                        {% else %}
+                        <p class="item-price"> ${{ item.price|floatformat:2 }}</p>
+                        {% endif %}
                         <p class="item-time">{{ item.availability }}</p>
                     </div>
                 </a>
@@ -189,7 +207,11 @@
                     </div>
                     <div class="item-info">
                         <p class="item-name">{{ item.title }}</p>
-                        <p class="item-price">${{ item.price }}</p>
+                        {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                        <p class="item-price"> ${{ item.vip_prices|floatformat:2 }} <s>${{ item.price|floatformat:2 }}</s></p>
+                        {% else %}
+                        <p class="item-price"> ${{ item.price|floatformat:2 }}</p>
+                        {% endif %}
                         <p class="item-time">{{ item.availability }}</p>
                     </div>
                 </a>

@@ -91,11 +91,15 @@
             <!-- RIGHT SECTION: ITEM DETAILS -->
             <div class="right-section">
                 <h2>{{ listing.title }}</h2>
+                {% if user.is_authenticated and vip_status.0.user_id == user.id %}
+                    <h3> VIP Price: ${{ listing.vip_prices|floatformat:2 }} <s>${{ listing.price|floatformat:2 }}</s></h3>
+                {% else %}
+                    <h3> Starting Price: ${{ listing.price|floatformat:2 }}</h3>
+                {% endif %}
+
                 {% if highest_bidder %}
                     <h3>Current Highest Bid: <br> US ${{ highest_bid }}</h3>
                     <p><strong>Highest Bidder:</strong> {{ highest_bidder.name }} (ID: {{ highest_bidder.id }}) </p>
-                {% else %}
-                    <h3>Starting Price: <br> US ${{ highest_bid }}</h3>
                 {% endif %}
                 <p><strong>Deadline:</strong> {{ listing.deadline }}</p>
                 <p><strong>Category:</strong> {{ listing.category }}</p>

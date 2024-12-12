@@ -164,60 +164,45 @@ class CustomLoginView(LoginView):
 
 # Homepage View
 def homepage(request):
-    try:
-        # Get listings by category
-        electronics = Listing.objects.filter(category='Electronics')
-        school_essentials = Listing.objects.filter(category='School Essentials')
-        fashion = Listing.objects.filter(category='Fashion & Apparel')
-        accessories = Listing.objects.filter(category='Accessories & Gadgets')
-        home_kitchen = Listing.objects.filter(category='Home & Kitchen')
+        # Fetch all listings by category, excluding sold items
+        electronics = supabase.table('listings').select('id, title, price, availability, category, vip_prices').eq('category', 'Electronics').neq('availability', 'sold').execute()
+        school_essentials = supabase.table('listings').select('id, title, price, availability, category, vip_prices').eq('category', 'School Essentials').neq('availability', 'sold').execute()
+        fashion = supabase.table('listings').select('id, title, price, availability, category, vip_prices').eq('category', 'Fashion & Apparel').neq('availability', 'sold').execute()
+        accessories = supabase.table('listings').select('id, title, price, availability, category, vip_prices').eq('category', 'Accessories & Gadgets').neq('availability', 'sold').execute()
+        vip_status = supabase.table('vip_status').select('*').eq('user_id', request.user.id).execute()
 
-        # Add highest bid information to each listing
-        for listings in [electronics, school_essentials, fashion, accessories, home_kitchen]:
+        # Fetch all images
+        images = supabase.table('listing_images').select('*').execute()
+
+        # Create mapping of listing_id to first image URL
+        listing_images = {}
+        for image in images.data:
+            listing_id = image['listing_id']
+            if listing_id not in listing_images:  # Only take the first image for each listing
+                listing_images[listing_id] = image['image_url']
+
+        # Function to add image URLs to listings
+        def add_images_to_listings(listings):
+            processed = []
             for listing in listings:
-                # Get highest bid from Supabase
-                bids_response = supabase.table('bids')\
-                    .select(
-                        'amount',
-                        'user_id',
-                        'users(first_name,last_name)'
-                    )\
-                    .eq('listing_id', listing.id)\
-                    .eq('status', 'pending')\
-                    .order('amount', desc=True)\
-                    .execute()
-
-                # Process bid information
-                highest_bid = float(listing.price)  # Default to listing price
-                highest_bidder = None
-                
-                if bids_response.data:
-                    for bid in bids_response.data:
-                        bid_amount = float(bid['amount'])
-                        if bid_amount > highest_bid:
-                            highest_bid = bid_amount
-                            highest_bidder = {
-                                'id': bid['user_id'],
-                                'name': f"{bid['users']['first_name']} {bid['users']['last_name']}"
-                            }
-
-                # Add the information to the listing object
-                listing.highest_bid = "{:.2f}".format(highest_bid)
-                listing.highest_bidder = highest_bidder
+                listing_copy = listing.copy()
+                listing_copy['image_url'] = listing_images.get(listing['id'])
+                processed.append(listing_copy)
+            return processed
 
         context = {
-            'electronics': electronics,
-            'school_essentials': school_essentials,
-            'fashion': fashion,
-            'accessories': accessories,
-            'home_kitchen': home_kitchen,
+            'electronics': add_images_to_listings(electronics.data),
+            'school_essentials': add_images_to_listings(school_essentials.data),
+            'fashion': add_images_to_listings(fashion.data),
+            'accessories': add_images_to_listings(accessories.data),
+            'vip_status': vip_status.data,
         }
-        
-        return render(request, 'homepage.html', context)
-    except Exception as e:
-        print(f"Error in homepage: {str(e)}")
-        return render(request, 'homepage.html', {'error': 'Unable to load listings'})
 
+        return render(request, 'homepage.html', context)
+
+    # except Exception as e:
+    #     print(f"Error: {str(e)}")
+    #     return render(request, 'homepage.html', {'error': 'Unable to load listings'})
 # Profile View (Login Required)
 # @login_required
 # def profile(request):
@@ -354,7 +339,6 @@ def dashboard(request):
 
 
 # Dashboard's View Bids
-# Dashboard's View Bids
 @login_required
 def viewbids(request):
     if request.method == 'POST':
@@ -364,8 +348,9 @@ def viewbids(request):
                 'title': request.POST.get('title'),
                 'description': request.POST.get('description'),
                 'price': float(request.POST.get('price')),
+                'vip_prices': round(float(request.POST.get('price')) * 0.9, 2),
                 'category': request.POST.get('category'),
-                'availability': request.POST.get('availability'),
+                'availability': 'for-sale',
                 'deadline': request.POST.get('deadline'),
                 'user_id': request.user.id,
                 'highest_bid': 0,
@@ -440,7 +425,6 @@ def viewbids(request):
         .execute()
 
     # Create image mapping
-    # Create image mapping
     listing_images = {}
     for image in images.data:
         listing_id = image['listing_id']
@@ -458,18 +442,11 @@ def viewbids(request):
             else:
                 # For regular listings
                 listing_copy['image_url'] = listing_images.get(listing_copy['id'])
-            if 'listing' in listing_copy:
-                # For transactions, get image through listing_id
-                listing_id = listing_copy['listing']['id']
-                listing_copy['image_url'] = listing_images.get(listing_id)
-            else:
-                # For regular listings
-                listing_copy['image_url'] = listing_images.get(listing_copy['id'])
             processed.append(listing_copy)
         return processed
     context = {
         'listings': add_images_to_listings(listings.data),
-        'transactions': add_images_to_listings(transactions.data)
+        'transactions': add_images_to_listings(transactions.data),
     }
 
     return render(request, 'viewbids.html', {'data': context})
@@ -640,41 +617,6 @@ def update_user_status(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-def homepage(request):
-        # Fetch all listings by category, excluding sold items
-        electronics = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Electronics').neq('availability', 'sold').execute()
-        school_essentials = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'School Essentials').neq('availability', 'sold').execute()
-        fashion = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Fashion & Apparel').neq('availability', 'sold').execute()
-        accessories = supabase.table('listings').select('id, title, price, availability, category').eq('category', 'Accessories & Gadgets').neq('availability', 'sold').execute()
-
-        # Fetch all images
-        images = supabase.table('listing_images').select('*').execute()
-
-        # Create mapping of listing_id to first image URL
-        listing_images = {}
-        for image in images.data:
-            listing_id = image['listing_id']
-            if listing_id not in listing_images:  # Only take the first image for each listing
-                listing_images[listing_id] = image['image_url']
-
-        # Function to add image URLs to listings
-        def add_images_to_listings(listings):
-            processed = []
-            for listing in listings:
-                listing_copy = listing.copy()
-                listing_copy['image_url'] = listing_images.get(listing['id'])
-                processed.append(listing_copy)
-            return processed
-
-        context = {
-            'electronics': add_images_to_listings(electronics.data),
-            'school_essentials': add_images_to_listings(school_essentials.data),
-            'fashion': add_images_to_listings(fashion.data),
-            'accessories': add_images_to_listings(accessories.data),
-        }
-
-        return render(request, 'homepage.html', context)
-
     # except Exception as e:
     #     print(f"Error: {str(e)}")
     #     return render(request, 'homepage.html', {'error': 'Unable to load listings'})
@@ -789,6 +731,7 @@ def listing(request, id):
             'deadline': listing_data.get('deadline'),
             'seller_id': listing_data.get('user_id'),
             'availability': listing_data.get('availability', 'for-sale'),
+            'vip_prices': listing_data.get('vip_prices', 0),
             'seller': {
                 'first_name': seller_info.get('first_name', 'Anonymous'),
                 'last_name': seller_info.get('last_name', 'Seller')
@@ -837,16 +780,9 @@ def listing(request, id):
                 user_balance = float(balance_response.data[0].get('balance', 0))
             print(f"Final user balance: {user_balance}")  # Debug print
 
-        # Get user status if authenticated
-        user_status = None
-        if request.user.is_authenticated:
-            user_response = supabase.table('users')\
-                .select('status')\
-                .eq('email', request.user.email)\
-                .single()\
-                .execute()
-            user_status = user_response.data['status'] if user_response.data else None
+        vip_status = supabase.table('vip_status').select('*').eq('user_id', request.user.id).execute()
 
+        # Add user_balance to context and print it
         context = {
             'listing': safe_listing_data,
             'images': images_data,
@@ -856,14 +792,13 @@ def listing(request, id):
             'highest_bidder': highest_bidder,
             'user': request.user,
             'user_balance': user_balance,
-            'user_status': user_status  # Add this to context
+            'vip_status': vip_status.data,
         }
         return render(request, 'listing.html', context)
 
     except Exception as e:
         print(f"Error in listing view: {str(e)}")
         return render(request, 'error.html', {'message': 'Error loading listing'})
-
 
 @login_required
 def manage_funds(request):

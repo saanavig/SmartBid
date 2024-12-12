@@ -87,13 +87,6 @@
                     </select>
                 </div>
                 <div class="filter-option">
-                    <select name="availability" id="categories" required>
-                        <option value="" disabled selected>Availability</option>
-                        <option value="for-rent">For Rent</option>
-                        <option value="for-sale">For Sale</option>
-                    </select>
-                </div>
-                <div class="filter-option">
                     <input type="number" name="price" placeholder="Starting Bid Amount" min="0" required>
                 </div>
 
@@ -136,7 +129,7 @@
                         {% endif %}
                         <div class="item-info">
                             <p class="item-name">{{listing.title}}</p>
-                            <p class="item-price">${{listing.price}}</p>
+                            <p class="item-price">${{listing.price|floatformat:2}}</p>
                             <p class="item-time">{{ listing.created_at|date:"M d, Y H:i" }}</p>
                             <p class="item-account">{{user.username}} - 4.2 (10 Ratings)</p>
                             <p class="item-status">{{listing.availability}}</p>
@@ -160,7 +153,7 @@
                         </div>
                         <div class="item-info">
                             <p class="item-name">{{transaction.listing.title}}</p>
-                            <p class="item-price">${{transaction.amount}}</p>
+                            <p class="item-price">${{transaction.amount|floatformat:2}}</p>
                             <p class="item-time">{{ transaction.created_at|date:"M d, Y H:i" }}</p>
                             <p class="item-account">{{transaction.seller.first_name}} {{transaction.seller.last_name}} - 4.2 (10 Ratings)</p>
                             <p class="item-status">{{transaction.listing.availability}}</p>

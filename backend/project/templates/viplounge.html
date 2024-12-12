@@ -41,7 +41,7 @@
                     <p>{{ average_rating }} ({{ rating_count }} Ratings)</p>
                 </div>
                 <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
-                <p><strong>Total Transactions:</strong> {{ total_transactions|default:0 }}</p>
+                <p><strong>Total Transactions:</strong> {{ num_transactions|default:0 }}</p>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
             <p>Meet these requirements below to become VIP:</p> <br>
             <input type="checkbox" id="balance-checkbox" style="pointer-events: none;"> Maintain a balance of at least $5,000 in your account <br>
             <input type="checkbox" id="transactions-checkbox" style="pointer-events: none;"> Conducted more than 5 transactions <br>
-            <input type="checkbox" id="complaints-checkbox" checked style="pointer-events: none;"> No complaints filed against you <br>
+            <input type="checkbox" id="complaints-checkbox" style="pointer-events: none;"> No complaints filed against you <br>
 
             <p>If you are a VIP and violate any two of the above conditions, say bye to your VIP status!</p>
         </div>
@@ -206,8 +206,6 @@
             fetchUserBalance();
             fetchUserTransactionCount(userId);
             fetchUserNumComplaints(userId);
-
-
         });
     </script>
 </body>
