@@ -11,17 +11,17 @@ SmartBid offers a robust set of features for visitors, users, and super-users:
 - Apply to become a User, with validation (e.g., random arithmetic question).  
 
 ### **User Capabilities**  
-- Deposit/withdraw money from their account.  
-- List items or services for sale or rent.  
-- Bid on items within their budget.  
-- Accept or reject bids.  
-- Rate buyers/renters anonymously.  
-- File complaints with Super-Users.  
+- Deposit/withdraw money from their account.
+- List items or services for sale or rent.
+- Bid on items within their budget.
+- Accept or reject bids.
+- Rate buyers/renters anonymously.
+- File complaints with Super-Users.
 
-### **Super-User Capabilities**  
-- Approve or reject applications for Users.  
-- Suspend Users based on ratings or violations.  
-- Reactivate Users upon payment of fines or other conditions.  
+### **Super-User Capabilities**
+- Approve or reject applications for Users.
+- Suspend Users based on ratings or violations.
+- Reactivate Users upon payment of fines or other conditions.
 
 ### **Rating System**  
 - Users can rate each other anonymously after completing a transaction.  
@@ -47,12 +47,12 @@ SmartBid offers a robust set of features for visitors, users, and super-users:
 
 ## **Tech Stack**  
 
-### **Backend**  
+### **Backend**
 - **Django**: Backend logic, user authentication, and database management.  
 - **Supabase**: Real-time data handling, user management, and storing listings.  
 
 ### **Frontend**  
-- **HTML/CSS**: User interface design with responsive layouts.  
+- **HTML/CSS**: User interface design with responsive layouts.
 - **JavaScript**: Enhances interactivity, especially in bidding features and real-time updates.  
 
 ---
